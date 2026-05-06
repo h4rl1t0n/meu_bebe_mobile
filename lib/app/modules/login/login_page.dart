@@ -46,8 +46,6 @@ class LoginPageState extends State<LoginPage> {
       labelText: label,
       prefixIcon: Icon(icon, color: ColorsApp.instance.darkText, size: 20),
       suffixIcon: suffix,
-      filled: true,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
     );
   }
 
@@ -58,12 +56,6 @@ class LoginPageState extends State<LoginPage> {
 
     return Observer(
       builder: (_) {
-        if (controller.logged) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Modular.to.pushReplacementNamed(routeTab);
-          });
-        }
-
         return Scaffold(
           backgroundColor: colors.secondary,
           body: Center(
@@ -127,11 +119,13 @@ class LoginPageState extends State<LoginPage> {
                           suffix: IconButton(
                             onPressed: controller.passwordToggle,
                             icon: Observer(
-                              builder: (_) => Icon(
-                                size: 20,
-                                controller.obscurePassword ? Icons.visibility : Icons.visibility_off,
-                                color: colors.darkText,
-                              ),
+                              builder: (context) {
+                                return Icon(
+                                  size: 20,
+                                  controller.obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                  color: colors.darkText,
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -145,7 +139,7 @@ class LoginPageState extends State<LoginPage> {
                           onPressed: () {
                             Messages.showError('Funcionalidade ainda não implementada');
                           },
-                          child: const Text('Esqueceu a senha?', style: TextStyle(fontSize: 15)),
+                          child: const Text('Esqueceu a senha?', style: TextStyle(fontSize: 16)),
                         ),
                       ),
 
@@ -161,9 +155,9 @@ class LoginPageState extends State<LoginPage> {
                           ),
                           onPressed: () {
                             final valid = formKey.currentState?.validate() ?? false;
+
                             if (valid) {
-                              controller.debug();
-                              // controller.login(emailTEC.text, passwordTEC.text);
+                              Modular.to.pushReplacementNamed(routeTab);
                             }
                           },
                           label: const Text('Entrar', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),

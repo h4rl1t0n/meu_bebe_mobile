@@ -1,11 +1,12 @@
-// ignore_for_file: avoid_unnecessary_containers
-
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/extensions/size_extension.dart';
 import '../../core/helpers/messages.dart';
 import '../../core/ui/widgets/stepper_header/stepper_header.dart';
-import 'widgets/item_tab_page/item_tab_page.dart';
+import 'formulario_controller.dart';
+import 'widgets/item_tab_page.dart';
 
 class FormularioPage extends StatefulWidget {
   const FormularioPage({super.key});
@@ -15,8 +16,8 @@ class FormularioPage extends StatefulWidget {
 }
 
 class FormularioPageState extends State<FormularioPage> {
-  final _formKey = GlobalKey<FormState>();
-  int _currentStep = 0;
+  late final FormularioController controller;
+  late final GlobalKey<FormState> formKey;
 
   // Dados do formulário
   String escolaridade = '';
@@ -107,6 +108,13 @@ class FormularioPageState extends State<FormularioPage> {
   String avaliacaoAlimentacao = '';
 
   @override
+  void initState() {
+    controller = Modular.get<FormularioController>();
+    formKey = GlobalKey<FormState>();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -115,18 +123,21 @@ class FormularioPageState extends State<FormularioPage> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50),
           child: InkWell(
-            child: StepperHeader(
-              currentStep: _currentStep,
-              stepTitles: ['Educação', 'Trabalho', 'Saneamento', 'Saúde', 'Habitação', 'Alimentação'],
+            child: Observer(
+              builder: (context) {
+                return StepperHeader(
+                  currentStep: controller.currentStep,
+                  stepTitles: ['Educação', 'Trabalho', 'Saneamento', 'Saúde', 'Habitação', 'Alimentação'],
+                );
+              },
             ),
           ),
         ),
       ),
       body: Form(
-        key: _formKey,
+        key: formKey,
         child: Column(
           children: [
-            // Conteúdo das páginas
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(8),
@@ -137,68 +148,68 @@ class FormularioPageState extends State<FormularioPage> {
                     image: AssetImage('assets/images/mother.png'),
                   ),
                 ),
-                child: _buildCurrentStepContent(),
+                child: Observer(
+                  builder: (context) {
+                    return _buildCurrentStepContent();
+                  },
+                ),
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          spacing: 20,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            if (_currentStep > 0)
-              Expanded(
-                child: SizedBox(
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: () => setState(() => _currentStep--),
-                    icon: Icon(Icons.navigate_before),
-                    label: const Text('Voltar'),
+      bottomNavigationBar: Observer(
+        builder: (context) {
+          final currentStep = controller.currentStep;
+          return BottomAppBar(
+            child: Row(
+              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                if (currentStep > 0) ...[
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: controller.voltar,
+                      icon: Icon(Icons.navigate_before),
+                      label: const Text('Voltar'),
+                    ),
                   ),
-                ),
-              ),
-            if (_currentStep < 5)
-              Expanded(
-                child: SizedBox(
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      //if (_formKey.currentState!.validate()) {
-                      setState(() => _currentStep++);
-                      //}
-                    },
-                    icon: Icon(Icons.navigate_next),
-                    iconAlignment: .end,
-                    label: const Text('Próximo'),
+                ],
+                if (currentStep < 5) ...[
+                  if (currentStep == 0) Expanded(child: SizedBox.shrink()),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: controller.proximo,
+                      icon: Icon(Icons.navigate_next),
+                      iconAlignment: .end,
+                      label: const Text('Próximo'),
+                    ),
                   ),
-                ),
-              ),
-            if (_currentStep == 5)
-              Expanded(
-                child: SizedBox(
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _submitForm();
-                      }
-                    },
-                    iconAlignment: .end,
-                    icon: Icon(Icons.check_circle),
-                    label: const Text('Enviar'),
+                ],
+                if (currentStep == 5) ...[
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          _submitForm();
+                        }
+                      },
+                      iconAlignment: .end,
+                      icon: Icon(Icons.check_circle),
+                      label: const Text('Enviar'),
+                    ),
                   ),
-                ),
-              ),
-          ],
-        ),
+                ],
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildCurrentStepContent() {
-    switch (_currentStep) {
+    switch (controller.currentStep) {
       case 0:
         return educacaoPage();
       case 1:
@@ -945,7 +956,7 @@ class FormularioPageState extends State<FormularioPage> {
   }
 
   void _submitForm() {
-    if (_formKey.currentState!.validate()) {
+    if (formKey.currentState!.validate()) {
       Messages.showSuccess('Formulário enviado com sucesso!');
 
       showSummaryDialog(); // Mostrar resumo dos dados

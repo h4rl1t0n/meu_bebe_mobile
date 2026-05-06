@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/ui/theme/styles/colors_app.dart';
-import '../../../../core/ui/theme/styles/text_styles.dart';
+import '../../../core/ui/theme/styles/colors_app.dart';
+import '../../../core/ui/theme/styles/text_styles.dart';
 
 class ItemTabPage extends StatefulWidget {
   final String title;

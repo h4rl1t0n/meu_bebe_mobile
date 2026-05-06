@@ -60,7 +60,7 @@ class _InicializarAppPageState extends State<InicializarAppPage> with SingleTick
                   child: ScaleTransition(
                     scale: animation,
                     child: Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(25),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.95),
                         shape: BoxShape.circle,
@@ -72,7 +72,7 @@ class _InicializarAppPageState extends State<InicializarAppPage> with SingleTick
                           ),
                         ],
                       ),
-                      child: Image.asset('assets/images/maternity.png', width: 120, height: 120, fit: BoxFit.contain),
+                      child: Image.asset('assets/images/maternity.png', width: 100, height: 100, fit: BoxFit.contain),
                     ),
                   ),
                 ),
