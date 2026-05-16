@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/current_pregnancy_data.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
 
 class CurrentGestationCard extends StatelessWidget {
-  const CurrentGestationCard({super.key, required this.current});
+  const CurrentGestationCard({super.key, required this.current, this.onEdit});
 
   final CurrentPregnancyData? current;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
     return BaseCard(
       child: Column(
         children: [
-          Text('Gestação atual', style: context.textStyles.titleSmallStyle),
+          Row(
+            children: [
+              Icon(Icons.pregnant_woman, size: 20, color: context.colors.text),
+              const SizedBox(width: 8),
+              Text('Gestação atual', style: context.textStyles.titleSmallStyle),
+            ],
+          ),
           const SizedBox(height: 16),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -43,7 +51,7 @@ class CurrentGestationCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 48,
-            child: ElevatedButton(onPressed: () {}, child: const Text('Editar')),
+            child: ElevatedButton.icon(onPressed: onEdit, icon: const Icon(Icons.edit, size: 18), label: const Text('Editar')),
           ),
         ],
       ),

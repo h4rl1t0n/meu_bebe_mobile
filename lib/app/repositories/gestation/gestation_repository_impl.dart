@@ -4,12 +4,14 @@ import 'package:sqflite/sqflite.dart';
 import '../../core/fp/failure.dart';
 import '../../database/database.dart';
 import '../../model/pregnant_data.dart';
+import 'gestation_repository.dart';
 
-class GestationRepositoryImpl {
+class GestationRepositoryImpl implements GestationRepository {
   static final GestationRepositoryImpl _instance = GestationRepositoryImpl._internal();
   GestationRepositoryImpl._internal();
   factory GestationRepositoryImpl() => _instance;
 
+  @override
   Future<Result<PregnantData?, Failure>> getPregnant() async {
     try {
       final db = await DB.instance.database;
@@ -26,6 +28,7 @@ class GestationRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<PregnantData, Failure>> savePregnant({required PregnantData pregnant}) async {
     try {
       final db = await DB.instance.database;
@@ -44,6 +47,7 @@ class GestationRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<PregnantData, Failure>> updatePregnant({required PregnantData pregnant}) async {
     return savePregnant(pregnant: pregnant);
   }

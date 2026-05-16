@@ -1,4 +1,6 @@
 class PregnantData {
+  static const _sentinel = Object();
+
   final int id;
   final String name;
   final String? birthDate;
@@ -52,24 +54,24 @@ class PregnantData {
   PregnantData copyWith({
     int? id,
     String? name,
-    String? birthDate,
-    String? cpf,
-    String? socialName,
-    String? nationalHealthCard,
-    String? prenatalPlace,
-    String? professionalName,
-    String? prenatalPlaceContact,
+    Object? birthDate = _sentinel,
+    Object? cpf = _sentinel,
+    Object? socialName = _sentinel,
+    Object? nationalHealthCard = _sentinel,
+    Object? prenatalPlace = _sentinel,
+    Object? professionalName = _sentinel,
+    Object? prenatalPlaceContact = _sentinel,
   }) {
     return PregnantData(
       id: id ?? this.id,
       name: name ?? this.name,
-      birthDate: birthDate ?? this.birthDate,
-      cpf: cpf ?? this.cpf,
-      socialName: socialName ?? this.socialName,
-      nationalHealthCard: nationalHealthCard ?? this.nationalHealthCard,
-      prenatalPlace: prenatalPlace ?? this.prenatalPlace,
-      professionalName: professionalName ?? this.professionalName,
-      prenatalPlaceContact: prenatalPlaceContact ?? this.prenatalPlaceContact,
+      birthDate: identical(birthDate, _sentinel) ? this.birthDate : birthDate as String?,
+      cpf: identical(cpf, _sentinel) ? this.cpf : cpf as String?,
+      socialName: identical(socialName, _sentinel) ? this.socialName : socialName as String?,
+      nationalHealthCard: identical(nationalHealthCard, _sentinel) ? this.nationalHealthCard : nationalHealthCard as String?,
+      prenatalPlace: identical(prenatalPlace, _sentinel) ? this.prenatalPlace : prenatalPlace as String?,
+      professionalName: identical(professionalName, _sentinel) ? this.professionalName : professionalName as String?,
+      prenatalPlaceContact: identical(prenatalPlaceContact, _sentinel) ? this.prenatalPlaceContact : prenatalPlaceContact as String?,
     );
   }
 
@@ -106,4 +108,3 @@ class PregnantData {
         prenatalPlaceContact.hashCode;
   }
 }
-

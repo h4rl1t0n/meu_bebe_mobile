@@ -60,7 +60,7 @@ class _MedicationPageState extends State<MedicationPage> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: () => openAddMedicationDilaog(),
+                onPressed: () => openAddMedicationDialog(),
                 child: const Text('Adicionar medicamento'),
               ),
             ),
@@ -91,7 +91,7 @@ class _MedicationPageState extends State<MedicationPage> {
     ),
   );
 
-  void openAddMedicationDilaog() {
+  void openAddMedicationDialog() {
     showDialog(
       context: context,
       builder: (context) => Form(

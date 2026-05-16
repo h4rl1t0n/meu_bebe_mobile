@@ -3,20 +3,48 @@ import 'dart:developer';
 import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
+import '../../../../../../model/birth.dart';
+import '../../../../../../model/birth_moment.dart';
 import '../../../../../../model/current_pregnancy_data.dart';
 import '../../../../../../model/expectation.dart';
+import '../../../../../../model/observations.dart';
+import '../../../../../../model/pain_relief.dart';
 import '../../../../../../model/pregnant_data.dart';
 import '../../../../../../model/previous_pregnancy.dart';
-import '../../../../../../repositories/current_gestation/current_gestation_repository_impl.dart';
-import '../../../../../../repositories/expectations/expectations_repository_impl.dart';
-import '../../../../../../repositories/gestation/gestation_repository_impl.dart';
-import '../../../../../../repositories/history/history_repository_impl.dart';
+import '../../../../../../repositories/birth/birth_repository.dart';
+import '../../../../../../repositories/birth_moment/birth_moment_repository.dart';
+import '../../../../../../repositories/current_gestation/current_gestation_repository.dart';
+import '../../../../../../repositories/expectations/expectations_repository.dart';
+import '../../../../../../repositories/gestation/gestation_repository.dart';
+import '../../../../../../repositories/history/history_repository.dart';
+import '../../../../../../repositories/observations/observations_repository.dart';
+import '../../../../../../repositories/pain_relief/pain_relief_repository.dart';
 
 part 'childbirth_resume_controller.g.dart';
 
 class ChildbirthResumeController = ChildbirthResumeControllerBase with _$ChildbirthResumeController;
 
 abstract class ChildbirthResumeControllerBase with Store {
+  final GestationRepository gestationRepository;
+  final HistoryRepository historyRepository;
+  final CurrentGestationRepository currentGestationRepository;
+  final ExpectationsRepository expectationsRepository;
+  final BirthMomentRepository birthMomentRepository;
+  final BirthRepository birthRepository;
+  final PainReliefRepository painReliefRepository;
+  final ObservationsRepository observationsRepository;
+
+  ChildbirthResumeControllerBase({
+    required this.gestationRepository,
+    required this.historyRepository,
+    required this.currentGestationRepository,
+    required this.expectationsRepository,
+    required this.birthMomentRepository,
+    required this.birthRepository,
+    required this.painReliefRepository,
+    required this.observationsRepository,
+  });
+
   @observable
   PregnantData? pregnantData;
 
@@ -30,6 +58,18 @@ abstract class ChildbirthResumeControllerBase with Store {
   Expectation? expectationsData;
 
   @observable
+  BirthMoment? birthMomentData;
+
+  @observable
+  Birth? birthData;
+
+  @observable
+  PainRelief? painReliefData;
+
+  @observable
+  Observations? observationsData;
+
+  @observable
   bool initialized = false;
 
   @observable
@@ -41,21 +81,26 @@ abstract class ChildbirthResumeControllerBase with Store {
   @action
   Future<void> initialize() async {
     if (!initialized) {
-      await getPregnant();
-      await getHistory();
-      await getCurrentGestation();
-      await getExpectations();
+      await Future.wait([
+        getPregnant(),
+        getHistory(),
+        getCurrentGestation(),
+        getExpectations(),
+        getBirthMoment(),
+        getBirth(),
+        getPainRelief(),
+        getObservations(),
+      ]);
+      initialized = true;
     }
   }
 
   @action
   Future<void> getPregnant() async {
-    final repository = GestationRepositoryImpl();
-    final result = await repository.getPregnant();
-
+    final result = await gestationRepository.getPregnant();
     switch (result) {
       case Error():
-        log('Error');
+        log('Error getting pregnant data');
         pregnantData = const PregnantData(id: 0, name: '', birthDate: '', cpf: '');
       case Success():
         pregnantData = result.success;
@@ -64,18 +109,11 @@ abstract class ChildbirthResumeControllerBase with Store {
 
   @action
   Future<void> getHistory() async {
-    final repository = HistoryRepositoryImpl();
-    final result = await repository.getHistory();
-
+    final result = await historyRepository.getHistory();
     switch (result) {
       case Error():
-        log('Error');
-        historyData = const PreviousPregnancy(
-          id: 0,
-          abortionsNumber: null,
-          givenBirthNumber: null,
-          pregnancyNumber: null,
-        );
+        log('Error getting history');
+        historyData = const PreviousPregnancy(id: 0);
       case Success():
         historyData = result.success;
     }
@@ -83,12 +121,10 @@ abstract class ChildbirthResumeControllerBase with Store {
 
   @action
   Future<void> getCurrentGestation() async {
-    final repository = CurrentGestationRepositoryImpl();
-    final result = await repository.getGestation();
-
+    final result = await currentGestationRepository.getGestation();
     switch (result) {
       case Error():
-        log('Error');
+        log('Error getting current gestation');
         currentPregnancyData = const CurrentPregnancyData(id: 0);
       case Success():
         currentPregnancyData = result.success;
@@ -97,24 +133,56 @@ abstract class ChildbirthResumeControllerBase with Store {
 
   @action
   Future<void> getExpectations() async {
-    final repository = ExpectationsRepositoryImpl();
-    final result = await repository.getExpectations();
-
+    final result = await expectationsRepository.getExpectations();
     switch (result) {
       case Error():
-        log('Error');
-        expectationsData = const Expectation(
-          id: 0,
-          companion: Alternatives.yes,
-          shaveIntimateHair: Alternatives.yes,
-          bowelWashOrSuppository: Alternatives.yes,
-          lowLightEnvironment: Alternatives.yes,
-          listenToMusic: Alternatives.yes,
-          drinkLiquids: Alternatives.yes,
-          recordPhotosOrVideos: Alternatives.yes,
-        );
+        log('Error getting expectations');
       case Success():
         expectationsData = result.success;
+    }
+  }
+
+  @action
+  Future<void> getBirthMoment() async {
+    final result = await birthMomentRepository.getBirthMoment();
+    switch (result) {
+      case Error():
+        log('Error getting birth moment');
+      case Success():
+        birthMomentData = result.success;
+    }
+  }
+
+  @action
+  Future<void> getBirth() async {
+    final result = await birthRepository.getBirth();
+    switch (result) {
+      case Error():
+        log('Error getting birth data');
+      case Success():
+        birthData = result.success;
+    }
+  }
+
+  @action
+  Future<void> getPainRelief() async {
+    final result = await painReliefRepository.getPainRelief();
+    switch (result) {
+      case Error():
+        log('Error getting pain relief');
+      case Success():
+        painReliefData = result.success;
+    }
+  }
+
+  @action
+  Future<void> getObservations() async {
+    final result = await observationsRepository.getObservations();
+    switch (result) {
+      case Error():
+        log('Error getting observations');
+      case Success():
+        observationsData = result.success;
     }
   }
 }

@@ -1,31 +1,39 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/expectation.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
 
 class ExpectationsCard extends StatelessWidget {
-  const ExpectationsCard({super.key, required this.expectations});
+  const ExpectationsCard({super.key, required this.expectations, this.onEdit});
 
   final Expectation? expectations;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
     return BaseCard(
       child: Column(
         children: [
-          Text('Expectativas gerais', style: context.textStyles.titleSmallStyle),
+          Row(
+            children: [
+              Icon(Icons.list_alt, size: 20, color: context.colors.text),
+              const SizedBox(width: 8),
+              Text('Expectativas gerais', style: context.textStyles.titleSmallStyle),
+            ],
+          ),
           const SizedBox(height: 16),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              CustomItemTile(flex: 1, title: 'Acompanhante', content: _getData(expectations!.companion)),
+              CustomItemTile(flex: 1, title: 'Acompanhante', content: _getData(expectations?.companion)),
               const SizedBox(width: 10),
               CustomItemTile(
                 flex: 1,
                 title: 'Raspagem de pelos íntimos',
-                content: _getData(expectations!.shaveIntimateHair),
+                content: _getData(expectations?.shaveIntimateHair),
               ),
             ],
           ),
@@ -36,13 +44,13 @@ class ExpectationsCard extends StatelessWidget {
               CustomItemTile(
                 flex: 1,
                 title: 'Lavagem instestinal',
-                content: _getData(expectations!.bowelWashOrSuppository),
+                content: _getData(expectations?.bowelWashOrSuppository),
               ),
               const SizedBox(width: 10),
               CustomItemTile(
                 flex: 1,
                 title: 'Pouca luminosidade',
-                content: _getData(expectations!.lowLightEnvironment),
+                content: _getData(expectations?.lowLightEnvironment),
               ),
             ],
           ),
@@ -50,14 +58,14 @@ class ExpectationsCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              CustomItemTile(flex: 1, title: 'Música', content: _getData(expectations!.listenToMusic)),
+              CustomItemTile(flex: 1, title: 'Música', content: _getData(expectations?.listenToMusic)),
               const SizedBox(width: 10),
-              CustomItemTile(flex: 1, title: 'Beber líquidos', content: _getData(expectations!.drinkLiquids)),
+              CustomItemTile(flex: 1, title: 'Beber líquidos', content: _getData(expectations?.drinkLiquids)),
               const SizedBox(width: 10),
               CustomItemTile(
                 flex: 1,
                 title: 'Fotos e Filmagens',
-                content: _getData(expectations!.recordPhotosOrVideos),
+                content: _getData(expectations?.recordPhotosOrVideos),
               ),
             ],
           ),
@@ -65,21 +73,19 @@ class ExpectationsCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 48,
-            child: ElevatedButton(onPressed: () {}, child: const Text('Editar')),
+            child: ElevatedButton.icon(onPressed: onEdit, icon: const Icon(Icons.edit, size: 18), label: const Text('Editar')),
           ),
         ],
       ),
     );
   }
 
-  String _getData(Alternatives alternative) {
-    switch (alternative) {
-      case Alternatives.yes:
-        return 'Sim';
-      case Alternatives.no:
-        return 'Não';
-      case Alternatives.dontKnow:
-        return 'Não sei';
-    }
+  String _getData(Alternatives? alternative) {
+    return switch (alternative) {
+      Alternatives.yes => 'Sim',
+      Alternatives.no => 'Não',
+      Alternatives.dontKnow => 'Não sei',
+      null => 'Não definido',
+    };
   }
 }

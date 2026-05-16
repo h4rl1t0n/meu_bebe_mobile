@@ -9,7 +9,7 @@ import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/exam.dart';
 import '../appointments_exams_controller.dart';
-import '../text_controllers/exams_text_controller.dart';
+import '../text_controllers/form_text_controller.dart';
 import 'card_with_date.dart';
 
 class ExamsPage extends StatefulWidget {
@@ -21,7 +21,7 @@ class ExamsPage extends StatefulWidget {
   State<ExamsPage> createState() => _ExamsPageState();
 }
 
-class _ExamsPageState extends State<ExamsPage> with ExamsTextController {
+class _ExamsPageState extends State<ExamsPage> with FormTextController {
   AppointmentsExamsController get _controller => widget.controller;
   final formKey = GlobalKey<FormState>();
 

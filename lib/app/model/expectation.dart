@@ -1,6 +1,10 @@
+import '../core/extensions/enum_extensions.dart';
+
 enum Alternatives { yes, no, dontKnow }
 
 class Expectation {
+  static const _sentinel = Object();
+
   final int id;
   final Alternatives companion;
   final Alternatives shaveIntimateHair;
@@ -40,13 +44,13 @@ class Expectation {
   factory Expectation.fromMap(Map<String, dynamic> map) {
     return Expectation(
       id: map['id'] ?? 0,
-      companion: Alternatives.values[map['companion'] ?? 1],
-      shaveIntimateHair: Alternatives.values[map['shave_intimate_hair'] ?? 1],
-      bowelWashOrSuppository: Alternatives.values[map['bowel_wash_or_suppository'] ?? 1],
-      lowLightEnvironment: Alternatives.values[map['low_light_environment'] ?? 1],
-      listenToMusic: Alternatives.values[map['listen_to_music'] ?? 1],
-      drinkLiquids: Alternatives.values[map['drink_liquids'] ?? 1],
-      recordPhotosOrVideos: Alternatives.values[map['record_photos_or_videos'] ?? 1],
+      companion: Alternatives.values.safeGet(map['companion'], Alternatives.no),
+      shaveIntimateHair: Alternatives.values.safeGet(map['shave_intimate_hair'], Alternatives.no),
+      bowelWashOrSuppository: Alternatives.values.safeGet(map['bowel_wash_or_suppository'], Alternatives.no),
+      lowLightEnvironment: Alternatives.values.safeGet(map['low_light_environment'], Alternatives.no),
+      listenToMusic: Alternatives.values.safeGet(map['listen_to_music'], Alternatives.no),
+      drinkLiquids: Alternatives.values.safeGet(map['drink_liquids'], Alternatives.no),
+      recordPhotosOrVideos: Alternatives.values.safeGet(map['record_photos_or_videos'], Alternatives.no),
       createdAt: map['created_at'],
     );
   }
@@ -60,7 +64,7 @@ class Expectation {
     Alternatives? listenToMusic,
     Alternatives? drinkLiquids,
     Alternatives? recordPhotosOrVideos,
-    String? createdAt,
+    Object? createdAt = _sentinel,
   }) {
     return Expectation(
       id: id ?? this.id,
@@ -71,7 +75,7 @@ class Expectation {
       listenToMusic: listenToMusic ?? this.listenToMusic,
       drinkLiquids: drinkLiquids ?? this.drinkLiquids,
       recordPhotosOrVideos: recordPhotosOrVideos ?? this.recordPhotosOrVideos,
-      createdAt: createdAt ?? this.createdAt,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -108,4 +112,3 @@ class Expectation {
         createdAt.hashCode;
   }
 }
-

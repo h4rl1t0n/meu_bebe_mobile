@@ -1,4 +1,6 @@
 class Exam {
+  static const _sentinel = Object();
+
   final int id;
   final String title;
   final String examDate;
@@ -38,14 +40,14 @@ class Exam {
     String? title,
     String? examDate,
     String? description,
-    String? createdAt,
+    Object? createdAt = _sentinel,
   }) {
     return Exam(
       id: id ?? this.id,
       title: title ?? this.title,
       examDate: examDate ?? this.examDate,
       description: description ?? this.description,
-      createdAt: createdAt ?? this.createdAt,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -74,4 +76,3 @@ class Exam {
         createdAt.hashCode;
   }
 }
-

@@ -1,4 +1,6 @@
 class Observations {
+  static const _sentinel = Object();
+
   final int id;
   final String observations;
   final String? createdAt;
@@ -28,12 +30,12 @@ class Observations {
   Observations copyWith({
     int? id,
     String? observations,
-    String? createdAt,
+    Object? createdAt = _sentinel,
   }) {
     return Observations(
       id: id ?? this.id,
       observations: observations ?? this.observations,
-      createdAt: createdAt ?? this.createdAt,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -56,4 +58,3 @@ class Observations {
     return id.hashCode ^ observations.hashCode ^ createdAt.hashCode;
   }
 }
-

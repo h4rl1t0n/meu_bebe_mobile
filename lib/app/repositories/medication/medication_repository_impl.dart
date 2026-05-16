@@ -4,12 +4,14 @@ import 'package:sqflite/sqflite.dart';
 import '../../core/fp/failure.dart';
 import '../../database/database.dart';
 import '../../model/medication.dart';
+import 'medication_repository.dart';
 
-class MedicationRepositoryImpl {
+class MedicationRepositoryImpl implements MedicationRepository {
   static final MedicationRepositoryImpl _instance = MedicationRepositoryImpl._internal();
   MedicationRepositoryImpl._internal();
   factory MedicationRepositoryImpl() => _instance;
 
+  @override
   Future<Result<List<Medication>, Failure>> getMedications() async {
     try {
       final db = await DB.instance.database;
@@ -22,6 +24,7 @@ class MedicationRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<Medication, Failure>> saveMedication({required Medication medication}) async {
     try {
       final db = await DB.instance.database;
@@ -40,6 +43,7 @@ class MedicationRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<bool, Failure>> deleteMedication({required int id}) async {
     try {
       final db = await DB.instance.database;

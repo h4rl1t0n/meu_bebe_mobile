@@ -1,3 +1,5 @@
+import '../core/extensions/enum_extensions.dart';
+
 enum BirthWay { vaginal, cesarean, dontKnow }
 
 enum Anesthesia { yes, no, dontKnow }
@@ -16,6 +18,8 @@ enum Positions {
 }
 
 class BirthMoment {
+  static const _sentinel = Object();
+
   final int id;
   final BirthWay birthWay;
   final Anesthesia anesthesia;
@@ -49,11 +53,11 @@ class BirthMoment {
   factory BirthMoment.fromMap(Map<String, dynamic> map) {
     return BirthMoment(
       id: map['id'] ?? 0,
-      birthWay: BirthWay.values[map['birth_way'] ?? 0],
-      anesthesia: Anesthesia.values[map['anesthesia'] ?? 0],
-      vaginalCut: VaginalCut.values[map['vaginal_cut'] ?? 0],
-      preferredPosition: map['preferred_position'] != null 
-          ? Positions.values[map['preferred_position']] 
+      birthWay: BirthWay.values.safeGet(map['birth_way'], BirthWay.vaginal),
+      anesthesia: Anesthesia.values.safeGet(map['anesthesia'], Anesthesia.yes),
+      vaginalCut: VaginalCut.values.safeGet(map['vaginal_cut'], VaginalCut.yes),
+      preferredPosition: map['preferred_position'] != null
+          ? Positions.values.safeGet(map['preferred_position'], Positions.lyingDown)
           : null,
       otherPosition: map['other_position'],
       createdAt: map['created_at'],
@@ -65,18 +69,18 @@ class BirthMoment {
     BirthWay? birthWay,
     Anesthesia? anesthesia,
     VaginalCut? vaginalCut,
-    Positions? preferredPosition,
-    String? otherPosition,
-    String? createdAt,
+    Object? preferredPosition = _sentinel,
+    Object? otherPosition = _sentinel,
+    Object? createdAt = _sentinel,
   }) {
     return BirthMoment(
       id: id ?? this.id,
       birthWay: birthWay ?? this.birthWay,
       anesthesia: anesthesia ?? this.anesthesia,
       vaginalCut: vaginalCut ?? this.vaginalCut,
-      preferredPosition: preferredPosition ?? this.preferredPosition,
-      otherPosition: otherPosition ?? this.otherPosition,
-      createdAt: createdAt ?? this.createdAt,
+      preferredPosition: identical(preferredPosition, _sentinel) ? this.preferredPosition : preferredPosition as Positions?,
+      otherPosition: identical(otherPosition, _sentinel) ? this.otherPosition : otherPosition as String?,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -109,4 +113,3 @@ class BirthMoment {
         createdAt.hashCode;
   }
 }
-

@@ -1,13 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
+import '../../../../../../model/birth_moment.dart';
 import '../../../../widgets/base_card.dart';
-import '../expectations/expectations_controller.dart';
+import 'birth_moment_controller.dart';
 import 'birth_moment_form_controller.dart';
 
 class BirthMomentPage extends StatefulWidget {
@@ -19,13 +18,18 @@ class BirthMomentPage extends StatefulWidget {
 
 class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormController {
   final formKey = GlobalKey<FormState>();
-  final _controller = Modular.get<ExpectationsController>();
-
-  List<int> selectedIndex = [];
+  final _controller = Modular.get<BirthMomentController>();
 
   @override
   void initState() {
     super.initState();
+    _controller.initialize().then((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          initializeForm(_controller.birthMoment);
+        }
+      });
+    });
   }
 
   @override
@@ -42,45 +46,68 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
       builder: (_) {
         if (_controller.saved) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pop(context);
+            Modular.to.pop();
           });
         }
         return Scaffold(
-          appBar: AppBar(
-            title: Text('Expectativas para o Parto', style: textStyles.titleSmallStyle),
-            centerTitle: true,
-          ),
+          appBar: AppBar(title: Text('Momento do Parto', style: textStyles.titleSmallStyle), centerTitle: true),
           body: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
             child: SingleChildScrollView(
               child: BaseCard(
                 child: Form(
                   key: formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Você gostaria de ...', style: textStyles.titleSmallStyle),
-                      SizedBox(height: 16),
-                      Text('Ter um acompanhante?', style: textStyles.textStyle),
-                      // _customTabBar(companionEC),
-                      SizedBox(height: 10),
-                      Text('Raspar os pelos íntimos?', style: textStyles.textStyle),
-                      // _customTabBar(shaveIntimateHairEC),
-                      SizedBox(height: 10),
-                      Text('Fazer lavagem intestinal?', style: textStyles.textStyle),
-                      // _customTabBar(bowelWashOrSuppositoryEC),
-                      SizedBox(height: 10),
-                      Text('Ter um ambiente com pouca luminosidade?', style: textStyles.textStyle),
-                      // _customTabBar(lowLightEnvironmentEC),
-                      SizedBox(height: 10),
-                      Text('Ouvir música?', style: textStyles.textStyle),
-                      // _customTabBar(listenToMusicEC),
-                      SizedBox(height: 10),
-                      Text('Beber líquidos', style: textStyles.textStyle),
-                      // _customTabBar(drinkLiquidsEC),
-                      SizedBox(height: 10),
-                      Text('Registar com fotos ou filmagens?', style: textStyles.textStyle),
-                      // _customTabBar(recordPhotosOrVideosEC),
+                      Text('Como você prefere ...', style: textStyles.titleSmallStyle),
                       const SizedBox(height: 16),
+                      Text('Via de parto?', style: textStyles.textStyle),
+                      const SizedBox(height: 8),
+                      _buildTabBar(birthWayEC, const ['Vaginal', 'Cesárea', 'Não sei']),
+                      const SizedBox(height: 16),
+                      Text('Anestesia?', style: textStyles.textStyle),
+                      const SizedBox(height: 8),
+                      _buildTabBar(anesthesiaEC, const ['Sim', 'Não', 'Não sei']),
+                      const SizedBox(height: 16),
+                      Text('Corte vaginal (episiotomia)?', style: textStyles.textStyle),
+                      const SizedBox(height: 8),
+                      _buildTabBar(vaginalCutEC, const ['Sim', 'Não', 'Não sei']),
+                      const SizedBox(height: 16),
+                      Text('Posição preferida para o parto?', style: textStyles.textStyle),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _buildPositionTab('Deitada', 0),
+                          _buildPositionTab('Sentada', 1),
+                          _buildPositionTab('Agachada', 2),
+                          _buildPositionTab('De lado', 3),
+                          _buildPositionTab('De joelhos', 4),
+                          _buildPositionTab('Em pé', 5),
+                          _buildPositionTab('Não sei', 6),
+                          _buildPositionTab('Outra', 7),
+                        ],
+                      ),
+                      Observer(
+                        builder: (_) {
+                          if (preferredPositionEC.text == '7') {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: TextFormField(
+                                controller: otherPositionEC,
+                                decoration: const InputDecoration(
+                                  label: Text('Descreva a posição'),
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                      const SizedBox(height: 24),
                       _saveButton(),
                     ],
                   ),
@@ -93,44 +120,48 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
     );
   }
 
-  Widget customTabBar(TextEditingController controllerEC) {
-    log('Controlador: ${controllerEC.text}');
+  Widget _buildTabBar(TextEditingController controller, List<String> labels) {
     return Row(
-      children: [_tab('Sim', 0, controllerEC), _tab('Não', 1, controllerEC), _tab('Não sei', 2, controllerEC)],
+      children: List.generate(labels.length, (index) {
+        return Expanded(
+          child: InkWell(
+            onTap: () => setState(() => controller.text = index.toString()),
+            child: Container(
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: _getBorderRadius(index, labels.length),
+                border: Border.all(color: context.colors.darkText),
+                color: controller.text == index.toString() ? context.colors.secondary : null,
+              ),
+              child: Text(labels[index], style: const TextStyle(fontSize: 12), textAlign: TextAlign.center),
+            ),
+          ),
+        );
+      }),
     );
   }
 
-  Widget _tab(String content, int index, TextEditingController controllerEC) {
-    return Expanded(
-      child: InkWell(
-        child: Container(
-          height: 40,
-          decoration: BoxDecoration(
-            borderRadius: _getBorderRadius(index),
-            border: Border.all(color: context.colors.darkText),
-            color: controllerEC.text == index.toString() ? context.colors.secondary : null,
-          ),
-          child: Center(child: Text(content)),
+  Widget _buildPositionTab(String label, int index) {
+    return InkWell(
+      onTap: () => setState(() => preferredPositionEC.text = index.toString()),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: context.colors.darkText),
+          color: preferredPositionEC.text == index.toString() ? context.colors.secondary : null,
         ),
-        onTap: () {
-          setState(() {
-            controllerEC.text = index.toString();
-          });
-        },
+        child: Text(label, style: const TextStyle(fontSize: 12)),
       ),
     );
   }
 
-  BorderRadiusGeometry? _getBorderRadius(int index) {
-    switch (index) {
-      case 0:
-        return const BorderRadius.only(topLeft: Radius.circular(16), bottomLeft: Radius.circular(16));
-      case 1:
-        return null;
-      case 2:
-        return const BorderRadius.only(topRight: Radius.circular(16), bottomRight: Radius.circular(16));
+  BorderRadiusGeometry? _getBorderRadius(int index, int total) {
+    if (index == 0) return const BorderRadius.only(topLeft: Radius.circular(16), bottomLeft: Radius.circular(16));
+    if (index == total - 1) {
+      return const BorderRadius.only(topRight: Radius.circular(16), bottomRight: Radius.circular(16));
     }
-
     return null;
   }
 
@@ -138,33 +169,24 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
     return SizedBox(
       width: double.infinity,
       height: 48,
-      child: ElevatedButton(
+      child: ElevatedButton.icon(
         onPressed: () {
           FocusScope.of(context).unfocus();
-          final valid = formKey.currentState?.validate() ?? false;
-          if (valid) {
-            log('Tá aqui');
-            // _controller.saveExpectations(
-            //   Expectation(
-            //     id: 1,
-            //     companion: Alternatives.values[int.parse(companionEC.text)],
-            //     shaveIntimateHair:
-            //         Alternatives.values[int.parse(shaveIntimateHairEC.text)],
-            //     bowelWashOrSuppository: Alternatives
-            //         .values[int.parse(bowelWashOrSuppositoryEC.text)],
-            //     lowLightEnvironment:
-            //         Alternatives.values[int.parse(lowLightEnvironmentEC.text)],
-            //     listenToMusic:
-            //         Alternatives.values[int.parse(listenToMusicEC.text)],
-            //     drinkLiquids:
-            //         Alternatives.values[int.parse(drinkLiquidsEC.text)],
-            //     recordPhotosOrVideos:
-            //         Alternatives.values[int.parse(recordPhotosOrVideosEC.text)],
-            //   ),
-            // );
-          }
+          _controller.saveBirthMoment(
+            BirthMoment(
+              id: _controller.birthMoment?.id ?? 0,
+              birthWay: BirthWay.values[int.parse(birthWayEC.text)],
+              anesthesia: Anesthesia.values[int.parse(anesthesiaEC.text)],
+              vaginalCut: VaginalCut.values[int.parse(vaginalCutEC.text)],
+              preferredPosition: preferredPositionEC.text.isNotEmpty
+                  ? Positions.values[int.parse(preferredPositionEC.text)]
+                  : null,
+              otherPosition: otherPositionEC.text.isNotEmpty ? otherPositionEC.text : null,
+            ),
+          );
         },
-        child: const Text('Salvar'),
+        icon: const Icon(Icons.save, size: 18),
+        label: const Text('Salvar'),
       ),
     );
   }

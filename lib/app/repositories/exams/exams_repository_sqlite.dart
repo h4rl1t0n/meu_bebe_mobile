@@ -4,12 +4,14 @@ import 'package:sqflite/sqflite.dart';
 import '../../core/fp/failure.dart';
 import '../../database/database.dart';
 import '../../model/exam.dart';
+import 'exams_repository.dart';
 
-class ExamsRepositoryImpl {
+class ExamsRepositoryImpl implements ExamsRepository {
   static final ExamsRepositoryImpl _instance = ExamsRepositoryImpl._internal();
   ExamsRepositoryImpl._internal();
   factory ExamsRepositoryImpl() => _instance;
 
+  @override
   Future<Result<List<Exam>, Failure>> getExams() async {
     try {
       final db = await DB.instance.database;
@@ -21,6 +23,7 @@ class ExamsRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<Exam, Failure>> saveExam({required Exam exam}) async {
     try {
       final db = await DB.instance.database;
@@ -39,6 +42,7 @@ class ExamsRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<bool, Failure>> deleteExam({required int id}) async {
     try {
       final db = await DB.instance.database;

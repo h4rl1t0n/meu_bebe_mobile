@@ -6,15 +6,10 @@ import '../../../../core/extensions/size_extension.dart';
 import '../../../../core/ui/theme/styles/colors_app.dart';
 import 'widgets/home_card.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final double spacing = 10;
+  static const _spacing = 10.0;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +22,7 @@ class _HomePageState extends State<HomePage> {
       child: ListView(
         children: [
           Row(
-            spacing: spacing,
+            spacing: _spacing,
             children: [
               Flexible(
                 child: HomeCard(
@@ -49,9 +44,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          SizedBox(height: spacing),
+          SizedBox(height: _spacing),
           Row(
-            spacing: spacing,
+            spacing: _spacing,
             children: [
               Flexible(
                 child: HomeCard(

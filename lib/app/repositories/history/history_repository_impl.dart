@@ -4,12 +4,14 @@ import 'package:sqflite/sqflite.dart';
 import '../../core/fp/failure.dart';
 import '../../database/database.dart';
 import '../../model/previous_pregnancy.dart';
+import 'history_repository.dart';
 
-class HistoryRepositoryImpl {
+class HistoryRepositoryImpl implements HistoryRepository {
   static final HistoryRepositoryImpl _instance = HistoryRepositoryImpl._internal();
   HistoryRepositoryImpl._internal();
   factory HistoryRepositoryImpl() => _instance;
 
+  @override
   Future<Result<PreviousPregnancy?, Failure>> getHistory() async {
     try {
       final db = await DB.instance.database;
@@ -26,6 +28,7 @@ class HistoryRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<PreviousPregnancy, Failure>> saveHistory({required PreviousPregnancy history}) async {
     try {
       final db = await DB.instance.database;
@@ -44,6 +47,7 @@ class HistoryRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<PreviousPregnancy, Failure>> updateHistory({required PreviousPregnancy history}) async {
     return saveHistory(history: history);
   }

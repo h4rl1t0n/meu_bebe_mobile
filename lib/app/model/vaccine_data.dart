@@ -1,4 +1,6 @@
 class VaccineData {
+  static const _sentinel = Object();
+
   final int id;
   final String name;
   final bool used;
@@ -33,13 +35,13 @@ class VaccineData {
     int? id,
     String? name,
     bool? used,
-    String? createdAt,
+    Object? createdAt = _sentinel,
   }) {
     return VaccineData(
       id: id ?? this.id,
       name: name ?? this.name,
       used: used ?? this.used,
-      createdAt: createdAt ?? this.createdAt,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -63,4 +65,3 @@ class VaccineData {
     return id.hashCode ^ name.hashCode ^ used.hashCode ^ createdAt.hashCode;
   }
 }
-

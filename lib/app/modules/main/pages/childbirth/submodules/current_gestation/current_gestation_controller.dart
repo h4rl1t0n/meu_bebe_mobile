@@ -3,14 +3,14 @@ import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../model/current_pregnancy_data.dart';
-import '../../../../../../repositories/current_gestation/current_gestation_repository_impl.dart';
+import '../../../../../../repositories/current_gestation/current_gestation_repository.dart';
 
 part 'current_gestation_controller.g.dart';
 
 class CurrentGestationController = CurrentGestationControllerBase with _$CurrentGestationController;
 
 abstract class CurrentGestationControllerBase with Store {
-  final CurrentGestationRepositoryImpl repository;
+  final CurrentGestationRepository repository;
 
   @observable
   bool saved = false;

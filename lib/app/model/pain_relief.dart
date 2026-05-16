@@ -1,6 +1,10 @@
+import '../core/extensions/enum_extensions.dart';
+
 enum NeedPainRelief { yes, no, dontKnow }
 
 class PainRelief {
+  static const _sentinel = Object();
+
   final int id;
   final NeedPainRelief painRelief;
   final bool massage;
@@ -46,7 +50,7 @@ class PainRelief {
   factory PainRelief.fromMap(Map<String, dynamic> map) {
     return PainRelief(
       id: map['id'] ?? 0,
-      painRelief: NeedPainRelief.values[map['pain_relief'] ?? 0],
+      painRelief: NeedPainRelief.values.safeGet(map['pain_relief'], NeedPainRelief.no),
       massage: (map['massage'] ?? 0) == 1,
       ballExercises: (map['ball_exercises'] ?? 0) == 1,
       breathRelaxExercises: (map['breath_relax_exercises'] ?? 0) == 1,
@@ -70,7 +74,7 @@ class PainRelief {
     bool? acupuncture,
     bool? acupressure,
     bool? otherMethod,
-    String? createdAt,
+    Object? createdAt = _sentinel,
   }) {
     return PainRelief(
       id: id ?? this.id,
@@ -83,7 +87,7 @@ class PainRelief {
       acupuncture: acupuncture ?? this.acupuncture,
       acupressure: acupressure ?? this.acupressure,
       otherMethod: otherMethod ?? this.otherMethod,
-      createdAt: createdAt ?? this.createdAt,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -124,4 +128,3 @@ class PainRelief {
         createdAt.hashCode;
   }
 }
-

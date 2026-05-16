@@ -2,23 +2,30 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
+import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/pregnant_data.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
 
 class IdentificationCard extends StatelessWidget {
-  const IdentificationCard({super.key, required this.pregnantData, required this.edited});
+  const IdentificationCard({super.key, required this.pregnantData, this.onEdit});
 
   final PregnantData? pregnantData;
-  final VoidCallback edited;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
     return BaseCard(
       child: Column(
         children: [
-          Text('Identificação', style: context.textStyles.titleSmallStyle),
+          Row(
+            children: [
+              Icon(Icons.person_outline, size: 20, color: context.colors.text),
+              const SizedBox(width: 8),
+              Text('Identificação', style: context.textStyles.titleSmallStyle),
+            ],
+          ),
           const SizedBox(height: 16),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -75,14 +82,10 @@ class IdentificationCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 48,
-            child: ElevatedButton(
-              onPressed: () {
-                //   Navigator.pushNamed(
-                //   context,
-                //   '/update-childbirth/identification',
-                // ).then((value) => edited());
-              },
-              child: const Text('Editar'),
+            child: ElevatedButton.icon(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit, size: 18),
+              label: const Text('Editar'),
             ),
           ),
         ],

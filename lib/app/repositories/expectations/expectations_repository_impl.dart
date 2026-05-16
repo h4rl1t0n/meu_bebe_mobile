@@ -4,12 +4,14 @@ import 'package:sqflite/sqflite.dart';
 import '../../core/fp/failure.dart';
 import '../../database/database.dart';
 import '../../model/expectation.dart';
+import 'expectations_repository.dart';
 
-class ExpectationsRepositoryImpl {
+class ExpectationsRepositoryImpl implements ExpectationsRepository {
   static final ExpectationsRepositoryImpl _instance = ExpectationsRepositoryImpl._internal();
   ExpectationsRepositoryImpl._internal();
   factory ExpectationsRepositoryImpl() => _instance;
 
+  @override
   Future<Result<Expectation?, Failure>> getExpectations() async {
     try {
       final db = await DB.instance.database;
@@ -26,6 +28,7 @@ class ExpectationsRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<Expectation, Failure>> saveExpectations({required Expectation expectation}) async {
     try {
       final db = await DB.instance.database;
@@ -44,6 +47,7 @@ class ExpectationsRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<Expectation, Failure>> updateExpectations({required Expectation expectation}) async {
     return saveExpectations(expectation: expectation);
   }

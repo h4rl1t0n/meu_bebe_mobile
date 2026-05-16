@@ -4,16 +4,16 @@ import 'package:multiple_result/multiple_result.dart';
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../model/appointment.dart';
 import '../../../../../../model/exam.dart';
-import '../../../../../../repositories/appointments/appointments_repository_sqlite.dart';
-import '../../../../../../repositories/exams/exams_repository_sqlite.dart';
+import '../../../../../../repositories/appointments/appointments_repository.dart';
+import '../../../../../../repositories/exams/exams_repository.dart';
 
 part 'appointments_exams_controller.g.dart';
 
 class AppointmentsExamsController = AppointmentsExamsControllerBase with _$AppointmentsExamsController;
 
 abstract class AppointmentsExamsControllerBase with Store {
-  final AppointmentsRepositoryImpl appointmentsRepository;
-  final ExamsRepositoryImpl examsRepository;
+  final AppointmentsRepository appointmentsRepository;
+  final ExamsRepository examsRepository;
 
   @observable
   bool updated = false;

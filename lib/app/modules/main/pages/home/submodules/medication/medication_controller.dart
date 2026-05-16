@@ -3,14 +3,14 @@ import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../model/medication.dart';
-import '../../../../../../repositories/medication/medication_repository_impl.dart';
+import '../../../../../../repositories/medication/medication_repository.dart';
 
 part 'medication_controller.g.dart';
 
 class MedicationController = MedicationControllerBase with _$MedicationController;
 
 abstract class MedicationControllerBase with Store {
-  final MedicationRepositoryImpl repository;
+  final MedicationRepository repository;
 
   @observable
   var medications = ObservableList<Medication>();

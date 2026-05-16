@@ -3,14 +3,14 @@ import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../model/expectation.dart';
-import '../../../../../../repositories/expectations/expectations_repository_impl.dart';
+import '../../../../../../repositories/expectations/expectations_repository.dart';
 
 part 'expectations_controller.g.dart';
 
 class ExpectationsController = ExpectationsControllerBase with _$ExpectationsController;
 
 abstract class ExpectationsControllerBase with Store {
-  final ExpectationsRepositoryImpl repository;
+  final ExpectationsRepository repository;
 
   @observable
   bool saved = false;

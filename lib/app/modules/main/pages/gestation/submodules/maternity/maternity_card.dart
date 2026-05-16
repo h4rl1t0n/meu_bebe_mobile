@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/custom_item_tile.dart';
 
 class MaternityCard extends StatelessWidget {
-  const MaternityCard({super.key});
+  const MaternityCard({super.key, required this.prenatalPlace, this.onEdit});
+
+  final String? prenatalPlace;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -12,28 +16,28 @@ class MaternityCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Row(
-            children: [
-              CustomItemTile(
-                flex: 1,
-                title: 'Maternidade de referência',
-                content: 'Hospital e Maternidade Luíza',
-              ),
-            ],
+          Text('Maternidade', style: context.textStyles.titleSmallStyle),
+          const SizedBox(height: 16),
+          Row(
+            children: [CustomItemTile(flex: 1, title: 'Maternidade de referencia', content: _getData(prenatalPlace))],
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             height: 48,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: const Text('Alterar'),
+            child: ElevatedButton.icon(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit, size: 18),
+              label: const Text('Alterar'),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _getData(String? raw) {
+    if (raw == null || raw.isEmpty) return 'Nao informado';
+    return raw;
   }
 }

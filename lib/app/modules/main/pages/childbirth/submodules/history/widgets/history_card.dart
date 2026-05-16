@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/previous_pregnancy.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
 
 class HistoryCard extends StatelessWidget {
-  const HistoryCard({super.key, required this.history, required this.edited});
+  const HistoryCard({super.key, required this.history, this.onEdit});
 
   final PreviousPregnancy? history;
-  final VoidCallback edited;
+  final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
     return BaseCard(
       child: Column(
         children: [
-          Text('Minha história', style: context.textStyles.titleSmallStyle),
+          Row(
+            children: [
+              Icon(Icons.history, size: 20, color: context.colors.text),
+              const SizedBox(width: 8),
+              Text('Minha história', style: context.textStyles.titleSmallStyle),
+            ],
+          ),
           const SizedBox(height: 16),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -37,15 +44,10 @@ class HistoryCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 48,
-            child: ElevatedButton(
-              onPressed: () {
-                // Navigator.pop(context);
-                // Navigator.pushNamed(context, '/update-childbirth/history')
-                //     .then((_) {
-                //   // Navigator.pushNamed(context, '/resume/');
-                // });
-              },
-              child: const Text('Editar'),
+            child: ElevatedButton.icon(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit, size: 18),
+              label: const Text('Editar'),
             ),
           ),
         ],

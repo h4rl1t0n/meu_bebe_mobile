@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../core/helpers/messages.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/item_tile_with_list.dart';
 
@@ -21,7 +22,12 @@ class PrenatalAppointmentCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 48,
-            child: ElevatedButton(onPressed: () {}, child: const Text('Adicionar consulta')),
+            child: ElevatedButton(
+              onPressed: () {
+                Messages.showInfo('Ainda não implementado');
+              },
+              child: const Text('Adicionar consulta'),
+            ),
           ),
         ],
       ),

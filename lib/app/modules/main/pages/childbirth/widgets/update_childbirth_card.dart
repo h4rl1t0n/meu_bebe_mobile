@@ -41,14 +41,14 @@ class UpdateChildbirthCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Row(
-            children: [_buildButton('Parto', () {}), const SizedBox(width: 10), _buildButton('Alívio da dor', () {})],
+            children: [_buildButton('Parto', () => Modular.to.pushNamed(routeMomentoParto)), const SizedBox(width: 10), _buildButton('Alívio da dor', () => Modular.to.pushNamed(routeAlivioDor))],
           ),
           const SizedBox(height: 10),
           Row(
             children: [
-              _buildButton('Nascimento', () {}),
+              _buildButton('Nascimento', () => Modular.to.pushNamed(routeNascimento)),
               const SizedBox(width: 10),
-              _buildButton('Observações', () {}),
+              _buildButton('Observações', () => Modular.to.pushNamed(routeObservacoes)),
             ],
           ),
         ],

@@ -4,12 +4,14 @@ import 'package:sqflite/sqflite.dart';
 import '../../core/fp/failure.dart';
 import '../../database/database.dart';
 import '../../model/appointment.dart';
+import 'appointments_repository.dart';
 
-class AppointmentsRepositoryImpl {
+class AppointmentsRepositoryImpl implements AppointmentsRepository {
   static final AppointmentsRepositoryImpl _instance = AppointmentsRepositoryImpl._internal();
   AppointmentsRepositoryImpl._internal();
   factory AppointmentsRepositoryImpl() => _instance;
 
+  @override
   Future<Result<List<Appointment>, Failure>> getAppointments() async {
     try {
       final db = await DB.instance.database;
@@ -22,6 +24,7 @@ class AppointmentsRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<Appointment, Failure>> saveAppointment({required Appointment appointment}) async {
     try {
       final db = await DB.instance.database;
@@ -40,6 +43,7 @@ class AppointmentsRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<bool, Failure>> deleteAppointment({required int id}) async {
     try {
       final db = await DB.instance.database;

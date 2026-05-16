@@ -3,14 +3,14 @@ import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../model/pregnant_data.dart';
-import '../../../../../../repositories/gestation/gestation_repository_impl.dart';
+import '../../../../../../repositories/gestation/gestation_repository.dart';
 
 part 'identification_controller.g.dart';
 
 class IdentificationController = IdentificationControllerBase with _$IdentificationController;
 
 abstract class IdentificationControllerBase with Store {
-  final GestationRepositoryImpl repository;
+  final GestationRepository repository;
 
   IdentificationControllerBase(this.repository);
 

@@ -4,14 +4,14 @@ import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../model/previous_pregnancy.dart';
-import '../../../../../../repositories/history/history_repository_impl.dart';
+import '../../../../../../repositories/history/history_repository.dart';
 
 part 'history_controller.g.dart';
 
 class HistoryController = HistoryControllerBase with _$HistoryController;
 
 abstract class HistoryControllerBase with Store {
-  final HistoryRepositoryImpl repository;
+  final HistoryRepository repository;
 
   @observable
   bool saved = false;

@@ -1,9 +1,6 @@
-// ignore_for_file: unreachable_switch_default
-
 import 'package:mobx/mobx.dart';
+import 'package:multiple_result/multiple_result.dart';
 
-import '../../core/exceptions/failure.dart';
-import '../../core/fp/either.dart';
 import '../../core/helpers/messages.dart';
 import '../../services/user_login_service.dart';
 
@@ -30,12 +27,10 @@ abstract class LoginControllerBase with Store {
     final loginResult = await loginService.execute(email, password);
 
     switch (loginResult) {
-      case Left(value: Failure(:final message)):
-        Messages.showError(message);
-      case Right(value: _):
+      case Error(error: final failure):
+        Messages.showError(failure.message);
+      case Success():
         logged = true;
-      default:
-        Messages.showError('Erro ao realizar login');
     }
   }
 

@@ -116,8 +116,8 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
           height: 40,
           decoration: BoxDecoration(
             borderRadius: _getBorderRadius(index),
-            border: Border.all(color: ColorsApp.instance.darkText),
-            color: controllerEC.text == index.toString() ? ColorsApp.instance.secondary : null,
+            border: Border.all(color: context.colors.darkText),
+            color: controllerEC.text == index.toString() ? context.colors.secondary : null,
           ),
           child: Center(child: Text(content)),
         ),

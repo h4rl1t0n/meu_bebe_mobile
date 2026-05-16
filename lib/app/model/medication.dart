@@ -1,4 +1,6 @@
 class Medication {
+  static const _sentinel = Object();
+
   final int id;
   final String name;
   final String dose;
@@ -38,14 +40,14 @@ class Medication {
     String? name,
     String? dose,
     String? medicationTime,
-    String? createdAt,
+    Object? createdAt = _sentinel,
   }) {
     return Medication(
       id: id ?? this.id,
       name: name ?? this.name,
       dose: dose ?? this.dose,
       medicationTime: medicationTime ?? this.medicationTime,
-      createdAt: createdAt ?? this.createdAt,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -74,4 +76,3 @@ class Medication {
         createdAt.hashCode;
   }
 }
-

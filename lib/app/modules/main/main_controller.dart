@@ -2,14 +2,14 @@ import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
 import '../../core/helpers/messages.dart';
-import '../../repositories/gestation/gestation_repository_impl.dart';
+import '../../repositories/gestation/gestation_repository.dart';
 
 part 'main_controller.g.dart';
 
 class MainController = MainControllerBase with _$MainController;
 
 abstract class MainControllerBase with Store {
-  final GestationRepositoryImpl gestationRepository;
+  final GestationRepository gestationRepository;
 
   @observable
   String name = '';

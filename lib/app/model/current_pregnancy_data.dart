@@ -1,4 +1,6 @@
 class CurrentPregnancyData {
+  static const _sentinel = Object();
+
   final int id;
   final String? lastMenstrualPeriod;
   final String? firstUltrasound;
@@ -31,15 +33,15 @@ class CurrentPregnancyData {
 
   CurrentPregnancyData copyWith({
     int? id,
-    String? lastMenstrualPeriod,
-    String? firstUltrasound,
-    String? createdAt,
+    Object? lastMenstrualPeriod = _sentinel,
+    Object? firstUltrasound = _sentinel,
+    Object? createdAt = _sentinel,
   }) {
     return CurrentPregnancyData(
       id: id ?? this.id,
-      lastMenstrualPeriod: lastMenstrualPeriod ?? this.lastMenstrualPeriod,
-      firstUltrasound: firstUltrasound ?? this.firstUltrasound,
-      createdAt: createdAt ?? this.createdAt,
+      lastMenstrualPeriod: identical(lastMenstrualPeriod, _sentinel) ? this.lastMenstrualPeriod : lastMenstrualPeriod as String?,
+      firstUltrasound: identical(firstUltrasound, _sentinel) ? this.firstUltrasound : firstUltrasound as String?,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -66,4 +68,3 @@ class CurrentPregnancyData {
         createdAt.hashCode;
   }
 }
-

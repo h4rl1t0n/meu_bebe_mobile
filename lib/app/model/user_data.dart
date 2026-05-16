@@ -1,4 +1,6 @@
 class UserData {
+  static const _sentinel = Object();
+
   final int id;
   final String name;
   final String? email;
@@ -32,14 +34,14 @@ class UserData {
   UserData copyWith({
     int? id,
     String? name,
-    String? email,
-    String? phone,
+    Object? email = _sentinel,
+    Object? phone = _sentinel,
   }) {
     return UserData(
       id: id ?? this.id,
       name: name ?? this.name,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
+      email: identical(email, _sentinel) ? this.email : email as String?,
+      phone: identical(phone, _sentinel) ? this.phone : phone as String?,
     );
   }
 
@@ -63,4 +65,3 @@ class UserData {
     return id.hashCode ^ name.hashCode ^ email.hashCode ^ phone.hashCode;
   }
 }
-

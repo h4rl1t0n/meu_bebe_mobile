@@ -1,3 +1,5 @@
+import '../core/extensions/enum_extensions.dart';
+
 enum WhoCutUmbilicalCord { professional, companion, me, dontKnow }
 
 enum SkinBabyContact { yes, no, dontKnow }
@@ -7,6 +9,8 @@ enum BreastfeedFirstHour { yes, no, dontKnow }
 enum FirstBath { professional, companion, me, dontKnow }
 
 class Birth {
+  static const _sentinel = Object();
+
   final int id;
   final WhoCutUmbilicalCord whoCut;
   final bool collectStemCells;
@@ -43,12 +47,12 @@ class Birth {
   factory Birth.fromMap(Map<String, dynamic> map) {
     return Birth(
       id: map['id'] ?? 0,
-      whoCut: WhoCutUmbilicalCord.values[map['who_cut'] ?? 0],
+      whoCut: WhoCutUmbilicalCord.values.safeGet(map['who_cut'], WhoCutUmbilicalCord.professional),
       collectStemCells: (map['collect_stem_cells'] ?? 0) == 1,
-      skinBabyContact: SkinBabyContact.values[map['skin_baby_contact'] ?? 0],
-      breastfeedFirstHour: BreastfeedFirstHour.values[map['breastfeed_first_hour'] ?? 0],
+      skinBabyContact: SkinBabyContact.values.safeGet(map['skin_baby_contact'], SkinBabyContact.yes),
+      breastfeedFirstHour: BreastfeedFirstHour.values.safeGet(map['breastfeed_first_hour'], BreastfeedFirstHour.yes),
       breastfeedRestrictions: (map['breastfeed_restrictions'] ?? 0) == 1,
-      firstBath: FirstBath.values[map['first_bath'] ?? 0],
+      firstBath: FirstBath.values.safeGet(map['first_bath'], FirstBath.professional),
       createdAt: map['created_at'],
     );
   }
@@ -61,7 +65,7 @@ class Birth {
     BreastfeedFirstHour? breastfeedFirstHour,
     bool? breastfeedRestrictions,
     FirstBath? firstBath,
-    String? createdAt,
+    Object? createdAt = _sentinel,
   }) {
     return Birth(
       id: id ?? this.id,
@@ -71,7 +75,7 @@ class Birth {
       breastfeedFirstHour: breastfeedFirstHour ?? this.breastfeedFirstHour,
       breastfeedRestrictions: breastfeedRestrictions ?? this.breastfeedRestrictions,
       firstBath: firstBath ?? this.firstBath,
-      createdAt: createdAt ?? this.createdAt,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -106,4 +110,3 @@ class Birth {
         createdAt.hashCode;
   }
 }
-

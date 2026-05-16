@@ -4,12 +4,14 @@ import 'package:sqflite/sqflite.dart';
 import '../../core/fp/failure.dart';
 import '../../database/database.dart';
 import '../../model/user_data.dart';
+import 'profile_repository.dart';
 
-class ProfileRepositoryImpl {
+class ProfileRepositoryImpl implements ProfileRepository {
   static final ProfileRepositoryImpl _instance = ProfileRepositoryImpl._internal();
   ProfileRepositoryImpl._internal();
   factory ProfileRepositoryImpl() => _instance;
 
+  @override
   Future<Result<UserData?, Failure>> getUser() async {
     try {
       final db = await DB.instance.database;
@@ -26,6 +28,7 @@ class ProfileRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<UserData, Failure>> saveUser({required UserData user}) async {
     try {
       final db = await DB.instance.database;
@@ -79,6 +82,7 @@ class ProfileRepositoryImpl {
     }
   }
 
+  @override
   Future<Result<UserData, Failure>> updateUser({required UserData user}) async {
     return saveUser(user: user);
   }

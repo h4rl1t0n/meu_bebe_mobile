@@ -5,14 +5,14 @@ import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../model/vaccine_data.dart';
-import '../../../../../../repositories/vaccines/vaccines_repository_impl.dart';
+import '../../../../../../repositories/vaccines/vaccines_repository.dart';
 
 part 'vaccines_controller.g.dart';
 
 class VaccinesController = VaccinesControllerBase with _$VaccinesController;
 
 abstract class VaccinesControllerBase with Store {
-  final VaccinesRepositoryImpl repository;
+  final VaccinesRepository repository;
 
   @observable
   var vaccines = ObservableList<VaccineData>();
@@ -38,7 +38,7 @@ abstract class VaccinesControllerBase with Store {
         if (result.success.isEmpty) return _setVaccines();
 
         vaccines.clear();
-        vaccines.addAll(vaccines);
+        vaccines.addAll(result.success);
         _sortVaccines();
         return;
       case Error():
@@ -93,72 +93,4 @@ abstract class VaccinesControllerBase with Store {
     vaccines.sort((a, b) => a.id.compareTo(b.id));
   }
 
-  @observable
-  bool _checkHepatitis1 = false;
-
-  @computed
-  bool get checkHepatitis1 => _checkHepatitis1;
-
-  @observable
-  bool _checkHepatitis2 = false;
-
-  @computed
-  bool get checkHepatitis2 => _checkHepatitis2;
-
-  @observable
-  bool _checkHepatitis3 = false;
-
-  @computed
-  bool get checkHepatitis3 => _checkHepatitis3;
-
-  @observable
-  bool _checkDT1 = false;
-
-  @computed
-  bool get checkDT1 => _checkDT1;
-
-  @observable
-  bool _checkDT2 = false;
-
-  @computed
-  bool get checkDT2 => _checkDT2;
-
-  @observable
-  bool _checkDT3 = false;
-
-  @computed
-  bool get checkDT3 => _checkDT3;
-
-  @observable
-  bool _checkDTpa = false;
-
-  @computed
-  bool get checkDTpa => _checkDTpa;
-
-  @action
-  void setCheck(bool checked, int index) {
-    switch (index) {
-      case 0:
-        _checkHepatitis1 = checked;
-        break;
-      case 1:
-        _checkHepatitis2 = checked;
-        break;
-      case 2:
-        _checkHepatitis3 = checked;
-        break;
-      case 3:
-        _checkDT1 = checked;
-        break;
-      case 4:
-        _checkDT2 = checked;
-        break;
-      case 5:
-        _checkDT3 = checked;
-        break;
-      case 6:
-        _checkDTpa = checked;
-        break;
-    }
-  }
 }

@@ -18,16 +18,23 @@ mixin BirthMomentFormController on State<BirthMomentPage> {
     otherPositionEC.dispose();
   }
 
-  void initializeForm(BirthMoment birthMoment) {
-    birthWayEC.text = birthMoment.birthWay.index.toString();
-    anesthesiaEC.text = birthMoment.anesthesia.index.toString();
-    vaginalCutEC.text = birthMoment.vaginalCut.index.toString();
-    birthMoment.preferredPosition == null
-        ? preferredPositionEC.clear()
-        : preferredPositionEC.text = birthMoment.preferredPosition!.index
-              .toString();
-    birthMoment.otherPosition == null
-        ? otherPositionEC.clear()
-        : otherPositionEC.text = birthMoment.otherPosition!;
+  void initializeForm(BirthMoment? birthMoment) {
+    if (birthMoment != null) {
+      birthWayEC.text = birthMoment.birthWay.index.toString();
+      anesthesiaEC.text = birthMoment.anesthesia.index.toString();
+      vaginalCutEC.text = birthMoment.vaginalCut.index.toString();
+      birthMoment.preferredPosition == null
+          ? preferredPositionEC.clear()
+          : preferredPositionEC.text = birthMoment.preferredPosition!.index.toString();
+      birthMoment.otherPosition == null
+          ? otherPositionEC.clear()
+          : otherPositionEC.text = birthMoment.otherPosition!;
+    } else {
+      birthWayEC.text = '0';
+      anesthesiaEC.text = '0';
+      vaginalCutEC.text = '0';
+      preferredPositionEC.clear();
+      otherPositionEC.clear();
+    }
   }
 }

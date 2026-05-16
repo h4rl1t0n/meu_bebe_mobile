@@ -7,6 +7,14 @@ import '../../../../core/ui/theme/styles/colors_app.dart';
 import '../../main_controller.dart';
 import 'widgets/tile_button.dart';
 
+String _avatarInitials(String name) {
+  final trimmed = name.trim();
+  if (trimmed.isEmpty) return '';
+  final parts = trimmed.split(' ');
+  if (parts.length == 1) return parts.first[0];
+  return parts.first[0] + parts.last[0];
+}
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -42,12 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           return Observer(
             builder: (context) {
-              final name = controller.name.trim();
-              final names = controller.name.trim().split(' ');
-              final firstLetter = names.isNotEmpty
-                  ? (names.length == 1 ? names.first[0] : names.first[0] + names.last[0])
-                  : '';
-              final displayName = name.isNotEmpty ? name.toUpperCase() : 'SEM NOME';
+              final displayName = controller.name.trim().isNotEmpty ? controller.name.trim().toUpperCase() : 'SEM NOME';
 
               return SingleChildScrollView(
                 child: Column(
@@ -90,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               radius: 50,
                               backgroundColor: colors.darkText,
                               child: Text(
-                                firstLetter,
+                                _avatarInitials(controller.name),
                                 style: TextStyle(
                                   fontSize: 50,
                                   color: context.colors.primary,
@@ -144,21 +147,21 @@ class _ProfilePageState extends State<ProfilePage> {
                               icon: Icons.notifications_none_outlined,
                               iconColor: colors.darkText,
                               text: 'Notificações',
-                              onTap: () {},
+                              onTap: () => Modular.to.pushNamed(routeNotificacoes),
                             ),
                             Divider(height: 1, color: Colors.grey.shade100),
                             TileButton(
                               icon: Icons.settings_outlined,
                               iconColor: colors.darkText,
                               text: 'Configurações',
-                              onTap: () {},
+                              onTap: () => Modular.to.pushNamed(routeConfiguracoes),
                             ),
                             Divider(height: 1, color: Colors.grey.shade100),
                             TileButton(
                               icon: Icons.info_outline,
                               iconColor: colors.darkText,
                               text: 'Sobre o app',
-                              onTap: () {},
+                              onTap: () => Modular.to.pushNamed(routeSobreApp),
                             ),
                             Divider(height: 1, color: Colors.grey.shade100),
                             TileButton(

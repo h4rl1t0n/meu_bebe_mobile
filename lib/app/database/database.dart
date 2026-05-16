@@ -5,10 +5,13 @@ class DB {
   DB._();
   static final DB instance = DB._();
   static Database? _database;
+  static Future<Database>? _databaseFuture;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDatabase('meu_bebe.db');
+    if (_databaseFuture != null) return _databaseFuture!;
+    _databaseFuture = _initDatabase('meu_bebe.db');
+    _database = await _databaseFuture;
     return _database!;
   }
 
@@ -16,13 +19,25 @@ class DB {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    final db = await openDatabase(path, version: 1, onCreate: _createDB);
+    final db = await openDatabase(
+      path,
+      version: 1,
+      onCreate: _createDB,
+      onUpgrade: _upgradeDB,
+    );
     await db.execute('PRAGMA foreign_keys = ON');
     return db;
   }
 
-  Future _createDB(Database db, int version) async {
-    await db.execute('PRAGMA foreign_keys = ON');
+  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    // Migrações futuras serão adicionadas aqui conforme o schema evolui.
+    // Exemplo:
+    // if (oldVersion < 2) {
+    //   await db.execute('ALTER TABLE pregnant ADD COLUMN new_column TEXT');
+    // }
+  }
+
+  Future<void> _createDB(Database db, int version) async {
     await _createPregnantTable(db);
     await _createUserTable(db);
     await _createAppointmentTable(db);

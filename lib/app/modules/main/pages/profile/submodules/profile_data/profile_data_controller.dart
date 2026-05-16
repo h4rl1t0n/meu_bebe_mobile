@@ -7,16 +7,16 @@ import 'package:multiple_result/multiple_result.dart';
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../model/pregnant_data.dart';
 import '../../../../../../model/user_data.dart';
-import '../../../../../../repositories/gestation/gestation_repository_impl.dart';
-import '../../../../../../repositories/profile/profile_repository_impl.dart';
+import '../../../../../../repositories/gestation/gestation_repository.dart';
+import '../../../../../../repositories/profile/profile_repository.dart';
 
 part 'profile_data_controller.g.dart';
 
 class ProfileDataController = ProfileDataControllerBase with _$ProfileDataController;
 
 abstract class ProfileDataControllerBase with Store {
-  final GestationRepositoryImpl gestationRepository;
-  final ProfileRepositoryImpl profileRepository;
+  final GestationRepository gestationRepository;
+  final ProfileRepository profileRepository;
 
   ProfileDataControllerBase(this.gestationRepository, this.profileRepository);
 

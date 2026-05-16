@@ -1,7 +1,7 @@
-import '../core/exceptions/failure.dart';
-import '../core/fp/either.dart';
-import '../core/fp/unit.dart';
+import 'package:multiple_result/multiple_result.dart';
+
+import '../core/fp/failure.dart';
 
 abstract interface class UserLoginService {
-  Future<Either<Failure, Unit>> execute(String email, String password);
+  Future<Result<Unit, Failure>> execute(String email, String password);
 }

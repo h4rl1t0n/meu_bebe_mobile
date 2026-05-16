@@ -1,33 +1,30 @@
-// ignore_for_file: unreachable_switch_default
-
+import 'package:multiple_result/multiple_result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/constants/local_storage_constants.dart';
 import '../core/exceptions/auth_exception.dart';
-import '../core/exceptions/failure.dart';
-import '../core/fp/either.dart';
-import '../core/fp/unit.dart';
-import '../repositories/user/user_repository_impl.dart';
+import '../core/fp/failure.dart';
+import '../repositories/user/user_repository.dart';
 import 'user_login_service.dart';
 
 class UserLoginServiceImpl implements UserLoginService {
-  final UserRepositoryImpl userRepository;
+  final UserRepository userRepository;
 
   UserLoginServiceImpl({required this.userRepository});
 
   @override
-  Future<Either<Failure, Unit>> execute(String email, String password) async {
+  Future<Result<Unit, Failure>> execute(String email, String password) async {
     final loginResult = await userRepository.login(email, password);
 
     switch (loginResult) {
-      case Left(value: AuthError()):
-        return Left(Failure(message: 'Erro ao realizar login'));
-      case Left(value: AuthUnauthorizedException()):
-        return Left(Failure(message: 'Login ou senha inválidos'));
-      case Right(value: final accessToken):
+      case Error(error: AuthError()):
+        return Error(Failure(message: 'Erro ao realizar login'));
+      case Error(error: AuthUnauthorizedException()):
+        return Error(Failure(message: 'Login ou senha inválidos'));
+      case Success(success: final accessToken):
         final sp = await SharedPreferences.getInstance();
-        sp.setString(LocalStorageConstants.accessToken, accessToken);
-        return Right(unit);
+        await sp.setString(LocalStorageConstants.accessToken, accessToken);
+        return Success(unit);
     }
   }
 }

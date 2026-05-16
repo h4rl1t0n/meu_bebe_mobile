@@ -1,4 +1,6 @@
 class PreviousPregnancy {
+  static const _sentinel = Object();
+
   final int id;
   final int? pregnancyNumber;
   final int? givenBirthNumber;
@@ -35,17 +37,17 @@ class PreviousPregnancy {
 
   PreviousPregnancy copyWith({
     int? id,
-    int? pregnancyNumber,
-    int? givenBirthNumber,
-    int? abortionsNumber,
-    String? createdAt,
+    Object? pregnancyNumber = _sentinel,
+    Object? givenBirthNumber = _sentinel,
+    Object? abortionsNumber = _sentinel,
+    Object? createdAt = _sentinel,
   }) {
     return PreviousPregnancy(
       id: id ?? this.id,
-      pregnancyNumber: pregnancyNumber ?? this.pregnancyNumber,
-      givenBirthNumber: givenBirthNumber ?? this.givenBirthNumber,
-      abortionsNumber: abortionsNumber ?? this.abortionsNumber,
-      createdAt: createdAt ?? this.createdAt,
+      pregnancyNumber: identical(pregnancyNumber, _sentinel) ? this.pregnancyNumber : pregnancyNumber as int?,
+      givenBirthNumber: identical(givenBirthNumber, _sentinel) ? this.givenBirthNumber : givenBirthNumber as int?,
+      abortionsNumber: identical(abortionsNumber, _sentinel) ? this.abortionsNumber : abortionsNumber as int?,
+      createdAt: identical(createdAt, _sentinel) ? this.createdAt : createdAt as String?,
     );
   }
 
@@ -74,4 +76,3 @@ class PreviousPregnancy {
         createdAt.hashCode;
   }
 }
-

@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:multiple_result/multiple_result.dart';
 
 import '../../core/exceptions/auth_exception.dart';
-import '../../core/fp/either.dart';
 import 'user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
@@ -13,18 +13,19 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl({required this.client});
 
   @override
-  Future<Either<AuthException, String>> login(String email, String password) async {
+  Future<Result<String, AuthException>> login(String email, String password) async {
     try {
       final Response(data: {'access_token': accessToken}) = await client.post(
         '/auth',
         data: {'email': email, 'password': password},
       );
-      return Right(accessToken);
+      return Success(accessToken);
     } on DioException catch (e, s) {
       log('Erro ao realizar login', error: e, stackTrace: s);
       return switch (e) {
-        DioException(response: Response(statusCode: HttpStatus.forbidden)) => Left(AuthUnauthorizedException()),
-        _ => Left(AuthError(message: 'Erro ao realizar login')),
+        DioException(response: Response(statusCode: HttpStatus.forbidden)) =>
+          Error(AuthUnauthorizedException()),
+        _ => Error(AuthError(message: 'Erro ao realizar login')),
       };
     }
   }

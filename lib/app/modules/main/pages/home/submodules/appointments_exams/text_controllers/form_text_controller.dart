@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/exams_page.dart';
-
-mixin ExamsTextController on State<ExamsPage> {
+mixin FormTextController<T extends StatefulWidget> on State<T> {
   late final TextEditingController nameEC;
   late final TextEditingController dateEC;
   late final TextEditingController descriptionEC;

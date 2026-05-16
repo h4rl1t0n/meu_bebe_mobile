@@ -1,7 +1,7 @@
+import 'package:multiple_result/multiple_result.dart';
+
 import '../../core/exceptions/auth_exception.dart';
-import '../../core/fp/either.dart';
 
 abstract class UserRepository {
-  Future<Either<AuthException, String>> login(String email, String password);
+  Future<Result<String, AuthException>> login(String email, String password);
 }
-
