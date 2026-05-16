@@ -6,12 +6,12 @@ import '../../core/helpers/messages.dart';
 import '../../core/ui/widgets/stepper_header/stepper_header.dart';
 import 'controllers/formulario_controller.dart';
 import 'models/formulario_data.dart';
-import 'tabs/alimentacao/alimentacao_tab.dart';
-import 'tabs/educacao/educacao_tab.dart';
-import 'tabs/habitacao/habitacao_tab.dart';
-import 'tabs/saneamento/saneamento_tab.dart';
-import 'tabs/saude/saude_tab.dart';
-import 'tabs/trabalho/trabalho_tab.dart';
+import 'submodules/alimentacao/alimentacao_tab.dart';
+import 'submodules/educacao/educacao_tab.dart';
+import 'submodules/habitacao/habitacao_tab.dart';
+import 'submodules/saneamento/saneamento_tab.dart';
+import 'submodules/saude/saude_tab.dart';
+import 'submodules/trabalho/trabalho_tab.dart';
 
 class FormularioPage extends StatefulWidget {
   const FormularioPage({super.key});

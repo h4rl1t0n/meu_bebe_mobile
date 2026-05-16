@@ -2,12 +2,12 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import 'controllers/formulario_controller.dart';
 import 'formulario_page.dart';
-import 'tabs/educacao/educacao_controller.dart';
-import 'tabs/trabalho/trabalho_controller.dart';
-import 'tabs/saneamento/saneamento_controller.dart';
-import 'tabs/saude/saude_controller.dart';
-import 'tabs/habitacao/habitacao_controller.dart';
-import 'tabs/alimentacao/alimentacao_controller.dart';
+import 'submodules/educacao/educacao_controller.dart';
+import 'submodules/trabalho/trabalho_controller.dart';
+import 'submodules/saneamento/saneamento_controller.dart';
+import 'submodules/saude/saude_controller.dart';
+import 'submodules/habitacao/habitacao_controller.dart';
+import 'submodules/alimentacao/alimentacao_controller.dart';
 
 class FormularioModule extends Module {
   @override
