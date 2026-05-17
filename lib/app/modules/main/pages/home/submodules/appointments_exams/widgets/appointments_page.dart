@@ -6,6 +6,7 @@ import 'package:validatorless/validatorless.dart';
 
 import '../../../../../../../core/extensions/size_extension.dart';
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/appointment.dart';
 import '../appointments_exams_controller.dart';
@@ -44,7 +45,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> with FormTextContro
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
       child: Observer(
         builder: (_) => Visibility(
           visible: !_controller.updated,
@@ -55,7 +56,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> with FormTextContro
                 height: 48,
                 child: ElevatedButton(onPressed: () => addAppointmentDialog(), child: const Text('Adicionar consulta')),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               _controller.appointments.isNotEmpty
                   ? Expanded(
                       child: ListView(
@@ -125,7 +126,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> with FormTextContro
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildTextField(nameEC, 'Nome da consulta', validator: Validatorless.required('Nome obrigatório')),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 _buildTextField(
                   dateEC,
                   'Data da consulta',
@@ -133,7 +134,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> with FormTextContro
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly, DataInputFormatter()],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 _buildTextField(descriptionEC, 'Descrição', validator: Validatorless.required('Descrição obrigatória')),
               ],
             ),

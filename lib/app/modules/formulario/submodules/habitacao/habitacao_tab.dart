@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../core/ui/theme/styles/design_tokens.dart';
+import '../../../../core/ui/theme/styles/text_styles.dart';
 import '../../widgets/item_tab_page.dart';
 import 'habitacao_controller.dart';
 import 'habitacao_validator.dart';
@@ -25,107 +27,100 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
         builder: (_) => ItemTabPage(
           title: 'Habitação',
           children: [
-          DropdownButtonFormField<String>(
-            decoration: const InputDecoration(
-              labelText: 'Tipo de moradia',
-              border: OutlineInputBorder(),
-              hintText: 'Selecione o tipo de residência',
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Tipo de moradia',
+                border: OutlineInputBorder(),
+                hintText: 'Selecione o tipo de residência',
+              ),
+              validator: HabitacaoValidator.tipoMoradia,
+              initialValue: controller.tipoMoradia.isNotEmpty ? controller.tipoMoradia : null,
+              items: const [
+                DropdownMenuItem(value: 'Casa de alvenaria', child: Text('Casa de alvenaria')),
+                DropdownMenuItem(value: 'Casa de madeira', child: Text('Casa de madeira')),
+                DropdownMenuItem(value: 'Apartamento', child: Text('Apartamento')),
+                DropdownMenuItem(value: 'Cômodo único', child: Text('Cômodo único')),
+                DropdownMenuItem(value: 'Outro', child: Text('Outro tipo')),
+              ],
+              onChanged: (v) => controller.setTipoMoradia(v ?? ''),
             ),
-            validator: HabitacaoValidator.tipoMoradia,
-            initialValue: controller.tipoMoradia.isNotEmpty ? controller.tipoMoradia : null,
-            items: const [
-              DropdownMenuItem(value: 'Casa de alvenaria', child: Text('Casa de alvenaria')),
-              DropdownMenuItem(value: 'Casa de madeira', child: Text('Casa de madeira')),
-              DropdownMenuItem(value: 'Apartamento', child: Text('Apartamento')),
-              DropdownMenuItem(value: 'Cômodo único', child: Text('Cômodo único')),
-              DropdownMenuItem(value: 'Outro', child: Text('Outro tipo')),
-            ],
-            onChanged: (v) => controller.setTipoMoradia(v ?? ''),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Nº de pessoas na casa',
-                    border: OutlineInputBorder(),
+            SizedBox(height: Spacing.lg),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    decoration: const InputDecoration(labelText: 'Nº de pessoas na casa', border: OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    validator: HabitacaoValidator.numeroPessoas,
+                    onChanged: (v) => controller.setNumeroPessoas(int.tryParse(v) ?? 0),
                   ),
-                  keyboardType: TextInputType.number,
-                  validator: HabitacaoValidator.numeroPessoas,
-                  onChanged: (v) => controller.setNumeroPessoas(int.tryParse(v) ?? 0),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Nº de cômodos',
-                    border: OutlineInputBorder(),
+                SizedBox(width: Spacing.lg),
+                Expanded(
+                  child: TextFormField(
+                    decoration: const InputDecoration(labelText: 'Nº de cômodos', border: OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) => controller.setNumeroComodos(int.tryParse(v) ?? 0),
                   ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (v) => controller.setNumeroComodos(int.tryParse(v) ?? 0),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Quais destes itens sua casa possui?',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-              const SizedBox(height: 8),
-              CheckboxListTile(
-                title: const Text('Água encanada'),
-                value: controller.temAguaEncanada,
-                onChanged: (v) => controller.setTemAguaEncanada(v ?? false),
-              ),
-              CheckboxListTile(
-                title: const Text('Banheiro dentro da casa'),
-                value: controller.temBanheiro,
-                onChanged: (v) => controller.setTemBanheiro(v ?? false),
-              ),
-              CheckboxListTile(
-                title: const Text('Cozinha separada'),
-                value: controller.temCozinhaSeparada,
-                onChanged: (v) => controller.setTemCozinhaSeparada(v ?? false),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            decoration: const InputDecoration(
-              labelText: 'Como avalia a segurança da sua casa?',
-              border: OutlineInputBorder(),
+              ],
             ),
-            validator: HabitacaoValidator.segurancaEstrutural,
-            initialValue: controller.segurancaEstrutural.isNotEmpty ? controller.segurancaEstrutural : null,
-            items: const [
-              DropdownMenuItem(value: 'Muito segura', child: Text('Muito segura')),
-              DropdownMenuItem(value: 'Segura', child: Text('Segura')),
-              DropdownMenuItem(value: 'Regular', child: Text('Regular')),
-              DropdownMenuItem(value: 'Insegura', child: Text('Insegura')),
-              DropdownMenuItem(value: 'Muito insegura', child: Text('Muito insegura')),
-            ],
-            onChanged: (v) => controller.setSegurancaEstrutural(v ?? ''),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Quais melhorias gostaria de fazer na sua moradia?',
-              border: OutlineInputBorder(),
-              hintText: 'Ex: Reformar banheiro, melhorar ventilação...',
+            SizedBox(height: Spacing.lg),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Quais destes itens sua casa possui?', style: context.textStyles.subTitleSmallStyle),
+                SizedBox(height: Spacing.sm),
+                CheckboxListTile(
+                  title: const Text('Água encanada'),
+                  value: controller.temAguaEncanada,
+                  onChanged: (v) => controller.setTemAguaEncanada(v ?? false),
+                ),
+                CheckboxListTile(
+                  title: const Text('Banheiro dentro da casa'),
+                  value: controller.temBanheiro,
+                  onChanged: (v) => controller.setTemBanheiro(v ?? false),
+                ),
+                CheckboxListTile(
+                  title: const Text('Cozinha separada'),
+                  value: controller.temCozinhaSeparada,
+                  onChanged: (v) => controller.setTemCozinhaSeparada(v ?? false),
+                ),
+              ],
             ),
-            maxLines: 2,
-            onChanged: controller.setMelhoriasDesejadas,
-          ),
-          const SizedBox(height: 16),
-          SwitchListTile(
-            title: const Text('Tem fácil acesso a serviços de saúde a partir da sua residência?'),
-            value: controller.facilAcessoSaude,
-            onChanged: controller.setFacilAcessoSaude,
-          ),
+            SizedBox(height: Spacing.lg),
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                labelText: 'Como avalia a segurança da sua casa?',
+                border: OutlineInputBorder(),
+              ),
+              validator: HabitacaoValidator.segurancaEstrutural,
+              initialValue: controller.segurancaEstrutural.isNotEmpty ? controller.segurancaEstrutural : null,
+              items: const [
+                DropdownMenuItem(value: 'Muito segura', child: Text('Muito segura')),
+                DropdownMenuItem(value: 'Segura', child: Text('Segura')),
+                DropdownMenuItem(value: 'Regular', child: Text('Regular')),
+                DropdownMenuItem(value: 'Insegura', child: Text('Insegura')),
+                DropdownMenuItem(value: 'Muito insegura', child: Text('Muito insegura')),
+              ],
+              onChanged: (v) => controller.setSegurancaEstrutural(v ?? ''),
+            ),
+            SizedBox(height: Spacing.lg),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Quais melhorias gostaria de fazer na sua moradia?',
+                border: OutlineInputBorder(),
+                hintText: 'Ex: Reformar banheiro, melhorar ventilação...',
+              ),
+              maxLines: 2,
+              onChanged: controller.setMelhoriasDesejadas,
+            ),
+            SizedBox(height: Spacing.lg),
+            SwitchListTile(
+              title: const Text('Tem fácil acesso a serviços de saúde a partir da sua residência?'),
+              value: controller.facilAcessoSaude,
+              onChanged: controller.setFacilAcessoSaude,
+            ),
           ],
         ),
       ),

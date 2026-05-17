@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/birth.dart';
 import '../../../../widgets/base_card.dart';
@@ -58,42 +59,42 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
         return Scaffold(
           appBar: AppBar(title: Text('Nascimento', style: textStyles.titleSmallStyle), centerTitle: true),
           body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
             child: SingleChildScrollView(
               child: BaseCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Expectativas para o nascimento', style: textStyles.titleSmallStyle),
-                    const SizedBox(height: 16),
+                    SizedBox(height: Spacing.lg),
                     Text('Quem cortará o cordão umbilical?', style: textStyles.textStyle),
-                    const SizedBox(height: 8),
+                    SizedBox(height: Spacing.sm),
                     _buildTabBar(whoCutEC, const ['Profissional', 'Acompanhante', 'Eu', 'Não sei']),
-                    const SizedBox(height: 16),
+                    SizedBox(height: Spacing.lg),
                     _buildSwitchTile(
                       'Coleta de células-tronco?',
                       collectStemCells,
                       (v) => setState(() => collectStemCells = v),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: Spacing.lg),
                     Text('Contato pele a pele?', style: textStyles.textStyle),
-                    const SizedBox(height: 8),
+                    SizedBox(height: Spacing.sm),
                     _buildTabBar(skinBabyContactEC, const ['Sim', 'Não', 'Não sei']),
-                    const SizedBox(height: 16),
+                    SizedBox(height: Spacing.lg),
                     Text('Amamentação na primeira hora?', style: textStyles.textStyle),
-                    const SizedBox(height: 8),
+                    SizedBox(height: Spacing.sm),
                     _buildTabBar(breastfeedFirstHourEC, const ['Sim', 'Não', 'Não sei']),
-                    const SizedBox(height: 16),
+                    SizedBox(height: Spacing.lg),
                     _buildSwitchTile(
                       'Restrições à amamentação?',
                       breastfeedRestrictions,
                       (v) => setState(() => breastfeedRestrictions = v),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: Spacing.lg),
                     Text('Primeiro banho do bebê por?', style: textStyles.textStyle),
-                    const SizedBox(height: 8),
+                    SizedBox(height: Spacing.sm),
                     _buildTabBar(firstBathEC, const ['Profissional', 'Acompanhante', 'Eu', 'Não sei']),
-                    const SizedBox(height: 24),
+                    SizedBox(height: Spacing.xxl),
                     _saveButton(),
                   ],
                 ),
@@ -115,11 +116,12 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                borderRadius: _getBorderRadius(index, labels.length),
+                borderRadius: RadiusTokens.mdAll,
                 border: Border.all(color: context.colors.darkText),
-                color: controller.text == index.toString() ? context.colors.secondary : null,
+                color: controller.text == index.toString() ? context.colors.secondary : context.colors.surface,
+                boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
               ),
-              child: Text(labels[index], style: const TextStyle(fontSize: 11), textAlign: TextAlign.center),
+              child: Text(labels[index], style: context.textStyles.caption, textAlign: TextAlign.center),
             ),
           ),
         );
@@ -136,14 +138,6 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
       contentPadding: EdgeInsets.zero,
       dense: true,
     );
-  }
-
-  BorderRadiusGeometry? _getBorderRadius(int index, int total) {
-    if (index == 0) return const BorderRadius.only(topLeft: Radius.circular(16), bottomLeft: Radius.circular(16));
-    if (index == total - 1) {
-      return const BorderRadius.only(topRight: Radius.circular(16), bottomRight: Radius.circular(16));
-    }
-    return null;
   }
 
   SizedBox _saveButton() {

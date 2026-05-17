@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../profile_data_controller.dart';
+import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 
 class CustomTextField extends StatefulWidget {
   final ProfileDataController controller;
@@ -34,7 +35,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     final colors = context.colors;
 
     return TextFormField(
-      style: TextStyle(color: colors.darkText),
+      style: context.textStyles.textStyle.copyWith(color: colors.darkText),
       controller: widget.textController,
       validator: widget.validator,
       decoration: InputDecoration(fillColor: colors.primary, label: Text(widget.label)),

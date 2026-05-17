@@ -5,6 +5,7 @@ import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/current_pregnancy_data.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class CurrentGestationCard extends StatelessWidget {
   const CurrentGestationCard({super.key, required this.current, this.onEdit});
@@ -20,34 +21,34 @@ class CurrentGestationCard extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.pregnant_woman, size: 20, color: context.colors.text),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               Text('Gestação atual', style: context.textStyles.titleSmallStyle),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 1, title: 'Última menstruação', content: _getData(current?.lastMenstrualPeriod)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Data do ultrassom', content: _getData(current?.firstUltrasound)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 1, title: 'Idade Gestacional aproximada', content: _getGestationalAge()),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Data provável do parto', content: _getChildbirthDate()),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           const Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [CustomItemTile(flex: 1, title: 'Sobre a minha gravidez atual', content: '')],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,

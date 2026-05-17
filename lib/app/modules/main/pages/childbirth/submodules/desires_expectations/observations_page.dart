@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/observations.dart';
 import '../../../../widgets/base_card.dart';
@@ -54,7 +55,7 @@ class _ObservationsPageState extends State<ObservationsPage> with ObservationsFo
             centerTitle: true,
           ),
           body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
             child: SingleChildScrollView(
               child: BaseCard(
                 child: Column(

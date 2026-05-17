@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../widgets/base_card.dart';
 
@@ -53,7 +54,7 @@ class MedicineCard extends StatelessWidget {
                     Text(dose, style: textStyles.textStyle),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(medicineTime, style: textStyles.textStyle),
@@ -62,7 +63,7 @@ class MedicineCard extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: Spacing.sm),
       ],
     );
   }

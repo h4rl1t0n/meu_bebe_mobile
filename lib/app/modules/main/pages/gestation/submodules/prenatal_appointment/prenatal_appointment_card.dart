@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/helpers/messages.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../model/appointment.dart';
 import '../../../../../../repositories/appointments/appointments_repository.dart';
 import '../../../../widgets/base_card.dart';
@@ -42,13 +43,13 @@ class _PrenatalAppointmentCardState extends State<PrenatalAppointmentCard> {
                 controller: titleCtrl,
                 decoration: const InputDecoration(labelText: 'Titulo', border: OutlineInputBorder()),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               TextField(
                 controller: dateCtrl,
                 decoration: const InputDecoration(labelText: 'Data', border: OutlineInputBorder()),
                 keyboardType: TextInputType.datetime,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               TextField(
                 controller: descCtrl,
                 decoration: const InputDecoration(labelText: 'Descricao', border: OutlineInputBorder()),
@@ -92,7 +93,7 @@ class _PrenatalAppointmentCardState extends State<PrenatalAppointmentCard> {
           Row(
             children: [ItemTileWithList(title: 'Consultas de pre-natal', list: widget.list)],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           SizedBox(
             width: double.infinity,
             height: 48,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/ui/theme/styles/colors_app.dart';
+import '../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../core/ui/theme/styles/text_styles.dart';
 
 class CustomItemTile extends StatelessWidget {
@@ -22,14 +23,14 @@ class CustomItemTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: textStyles.subTitleStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w600)),
+          Text(title, style: textStyles.bodyMedium),
           Container(
             width: double.infinity,
             height: 40,
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(color: colors.secondary, borderRadius: BorderRadius.circular(7)),
-            child: Text(content, style: textStyles.textStyle.copyWith(fontWeight: FontWeight.w500)),
+            padding: EdgeInsets.all(Spacing.xs),
+            decoration: BoxDecoration(color: colors.secondary, borderRadius: RadiusTokens.smAll),
+            child: Text(content, style: textStyles.bodyMedium),
           ),
         ],
       ),

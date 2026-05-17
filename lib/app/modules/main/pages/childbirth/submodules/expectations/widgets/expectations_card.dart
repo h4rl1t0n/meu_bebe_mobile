@@ -5,6 +5,7 @@ import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/expectation.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class ExpectationsCard extends StatelessWidget {
   const ExpectationsCard({super.key, required this.expectations, this.onEdit});
@@ -20,16 +21,16 @@ class ExpectationsCard extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.list_alt, size: 20, color: context.colors.text),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               Text('Expectativas gerais', style: context.textStyles.titleSmallStyle),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 1, title: 'Acompanhante', content: _getData(expectations?.companion)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(
                 flex: 1,
                 title: 'Raspagem de pelos íntimos',
@@ -37,7 +38,7 @@ class ExpectationsCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -46,7 +47,7 @@ class ExpectationsCard extends StatelessWidget {
                 title: 'Lavagem instestinal',
                 content: _getData(expectations?.bowelWashOrSuppository),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(
                 flex: 1,
                 title: 'Pouca luminosidade',
@@ -54,14 +55,14 @@ class ExpectationsCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 1, title: 'Música', content: _getData(expectations?.listenToMusic)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Beber líquidos', content: _getData(expectations?.drinkLiquids)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(
                 flex: 1,
                 title: 'Fotos e Filmagens',
@@ -69,7 +70,7 @@ class ExpectationsCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,

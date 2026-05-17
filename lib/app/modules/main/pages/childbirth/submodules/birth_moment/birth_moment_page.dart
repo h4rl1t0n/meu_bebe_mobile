@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/birth_moment.dart';
 import '../../../../widgets/base_card.dart';
@@ -59,7 +60,7 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
         return Scaffold(
           appBar: AppBar(title: Text('Momento do Parto', style: textStyles.titleSmallStyle), centerTitle: true),
           body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
             child: SingleChildScrollView(
               child: BaseCard(
                 child: Form(
@@ -68,21 +69,21 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Como você prefere ...', style: textStyles.titleSmallStyle),
-                      const SizedBox(height: 16),
+                      SizedBox(height: Spacing.lg),
                       Text('Via de parto?', style: textStyles.textStyle),
-                      const SizedBox(height: 8),
+                      SizedBox(height: Spacing.sm),
                       _buildTabBar(birthWayEC, const ['Vaginal', 'Cesárea', 'Não sei']),
-                      const SizedBox(height: 16),
+                      SizedBox(height: Spacing.lg),
                       Text('Anestesia?', style: textStyles.textStyle),
-                      const SizedBox(height: 8),
+                      SizedBox(height: Spacing.sm),
                       _buildTabBar(anesthesiaEC, const ['Sim', 'Não', 'Não sei']),
-                      const SizedBox(height: 16),
+                      SizedBox(height: Spacing.lg),
                       Text('Corte vaginal (episiotomia)?', style: textStyles.textStyle),
-                      const SizedBox(height: 8),
+                      SizedBox(height: Spacing.sm),
                       _buildTabBar(vaginalCutEC, const ['Sim', 'Não', 'Não sei']),
-                      const SizedBox(height: 16),
+                      SizedBox(height: Spacing.lg),
                       Text('Posição preferida para o parto?', style: textStyles.textStyle),
-                      const SizedBox(height: 8),
+                      SizedBox(height: Spacing.sm),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -101,7 +102,7 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
                         builder: (_) {
                           if (preferredPositionEC.text == '7') {
                             return Padding(
-                              padding: const EdgeInsets.only(top: 12),
+                              padding: EdgeInsets.only(top: Spacing.md),
                               child: TextFormField(
                                 controller: otherPositionEC,
                                 decoration: const InputDecoration(
@@ -114,7 +115,7 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
                           return const SizedBox.shrink();
                         },
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: Spacing.xxl),
                       _saveButton(),
                     ],
                   ),
@@ -137,11 +138,12 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                borderRadius: _getBorderRadius(index, labels.length),
+                borderRadius: RadiusTokens.mdAll,
                 border: Border.all(color: context.colors.darkText),
-                color: controller.text == index.toString() ? context.colors.secondary : null,
+                color: controller.text == index.toString() ? context.colors.secondary : context.colors.surface,
+                boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
               ),
-              child: Text(labels[index], style: const TextStyle(fontSize: 12), textAlign: TextAlign.center),
+              child: Text(labels[index], style: context.textStyles.caption, textAlign: TextAlign.center),
             ),
           ),
         );
@@ -153,23 +155,15 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
     return InkWell(
       onTap: () => setState(() => preferredPositionEC.text = index.toString()),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: RadiusTokens.lgAll,
           border: Border.all(color: context.colors.darkText),
-          color: preferredPositionEC.text == index.toString() ? context.colors.secondary : null,
+          color: preferredPositionEC.text == index.toString() ? context.colors.secondary : context.colors.surface,
         ),
-        child: Text(label, style: const TextStyle(fontSize: 12)),
+        child: Text(label, style: context.textStyles.caption),
       ),
     );
-  }
-
-  BorderRadiusGeometry? _getBorderRadius(int index, int total) {
-    if (index == 0) return const BorderRadius.only(topLeft: Radius.circular(16), bottomLeft: Radius.circular(16));
-    if (index == total - 1) {
-      return const BorderRadius.only(topRight: Radius.circular(16), bottomRight: Radius.circular(16));
-    }
-    return null;
   }
 
   SizedBox _saveButton() {

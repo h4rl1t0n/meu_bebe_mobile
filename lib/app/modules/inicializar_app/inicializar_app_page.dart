@@ -3,6 +3,8 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../app_module.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
+import '../../core/ui/theme/styles/design_tokens.dart';
+import '../../core/ui/theme/styles/text_styles.dart';
 
 class InicializarAppPage extends StatefulWidget {
   const InicializarAppPage({super.key});
@@ -60,13 +62,13 @@ class _InicializarAppPageState extends State<InicializarAppPage> with SingleTick
                   child: ScaleTransition(
                     scale: animation,
                     child: Container(
-                      padding: const EdgeInsets.all(25),
+                      padding: EdgeInsets.all(Spacing.xxl),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.95),
+                        color: colors.surface.withValues(alpha: 0.95),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
+                            color: colors.onSurface.withValues(alpha: 0.15),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -77,7 +79,7 @@ class _InicializarAppPageState extends State<InicializarAppPage> with SingleTick
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: Spacing.xl),
 
                 SizedBox(
                   width: 30,
@@ -88,20 +90,17 @@ class _InicializarAppPageState extends State<InicializarAppPage> with SingleTick
                   ),
                 ),
 
-                const SizedBox(height: 18),
+                SizedBox(height: Spacing.lg),
 
                 Text(
                   'Preparando tudo para você...',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18, color: colors.darkText),
+                  style: context.textStyles.subTitleStyle,
                 ),
 
-                const SizedBox(height: 6),
+                SizedBox(height: Spacing.xs),
 
-                Text(
-                  'Carregando informações do bebê',
-                  style: TextStyle(fontSize: 14, color: colors.darkText.withValues(alpha: 0.85)),
-                ),
+                Text('Carregando informações do bebê', style: context.textStyles.bodySmall),
               ],
             ),
           ),

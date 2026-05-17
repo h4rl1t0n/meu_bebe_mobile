@@ -3,13 +3,13 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../app_module.dart';
 import '../../../../core/extensions/size_extension.dart';
+import '../../../../core/ui/theme/styles/app_styles.dart';
 import '../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../core/ui/theme/styles/design_tokens.dart';
 import 'widgets/home_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  static const _spacing = 10.0;
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +18,11 @@ class HomePage extends StatelessWidget {
     return Container(
       width: context.screenWidth,
       color: colors.secondary,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: context.appStyles.pagePadding,
       child: ListView(
         children: [
           Row(
-            spacing: _spacing,
+            spacing: Spacing.sm,
             children: [
               Flexible(
                 child: HomeCard(
@@ -44,9 +44,9 @@ class HomePage extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: _spacing),
+          SizedBox(height: Spacing.sm),
           Row(
-            spacing: _spacing,
+            spacing: Spacing.sm,
             children: [
               Flexible(
                 child: HomeCard(

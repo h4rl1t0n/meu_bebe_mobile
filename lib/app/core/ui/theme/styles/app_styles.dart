@@ -31,32 +31,18 @@ class AppStyles {
 
   // ── Containers ──
 
-  BoxDecoration get surfaceDecoration => BoxDecoration(
-    color: _c.surface,
-    borderRadius: RadiusTokens.lgAll,
-  );
+  BoxDecoration get surfaceDecoration => BoxDecoration(color: _c.surface, borderRadius: RadiusTokens.lgAll);
 
-  BoxDecoration get surfaceVariantDecoration => BoxDecoration(
-    color: _c.surfaceVariant,
-    borderRadius: RadiusTokens.mdAll,
-  );
+  BoxDecoration get surfaceVariantDecoration =>
+      BoxDecoration(color: _c.surfaceVariant, borderRadius: RadiusTokens.mdAll);
 
-  BoxDecoration get primaryTintDecoration => BoxDecoration(
-    color: _c.primary100,
-    borderRadius: RadiusTokens.mdAll,
-  );
+  BoxDecoration get primaryTintDecoration => BoxDecoration(color: _c.primary100, borderRadius: RadiusTokens.mdAll);
 
   // ── Section ──
 
-  EdgeInsets get sectionPadding => const EdgeInsets.symmetric(
-    horizontal: Spacing.pageH,
-    vertical: Spacing.md,
-  );
+  EdgeInsets get sectionPadding => const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.md);
 
-  EdgeInsets get pagePadding => const EdgeInsets.symmetric(
-    horizontal: Spacing.pageH,
-    vertical: Spacing.pageV,
-  );
+  EdgeInsets get pagePadding => const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV);
 
   // ── Button styles (for use with styleFrom overrides) ──
 
@@ -66,10 +52,7 @@ class AppStyles {
     foregroundColor: Colors.white,
     disabledBackgroundColor: _c.gray300,
     disabledForegroundColor: _c.gray500,
-    padding: const EdgeInsets.symmetric(
-      vertical: Spacing.md + 2,
-      horizontal: Spacing.xxl,
-    ),
+    padding: const EdgeInsets.symmetric(vertical: Spacing.md + 2, horizontal: Spacing.xxl),
     shape: RoundedRectangleBorder(borderRadius: RadiusTokens.mdAll),
     minimumSize: const Size(0, Spacing.buttonHeight),
   );
@@ -78,10 +61,7 @@ class AppStyles {
     backgroundColor: Colors.transparent,
     foregroundColor: _c.primary500,
     side: BorderSide(color: _c.primary500),
-    padding: const EdgeInsets.symmetric(
-      vertical: Spacing.md + 2,
-      horizontal: Spacing.xxl,
-    ),
+    padding: const EdgeInsets.symmetric(vertical: Spacing.md + 2, horizontal: Spacing.xxl),
     shape: RoundedRectangleBorder(borderRadius: RadiusTokens.mdAll),
     minimumSize: const Size(0, Spacing.buttonHeight),
   );
@@ -90,20 +70,14 @@ class AppStyles {
     elevation: ElevationTokens.subtle,
     backgroundColor: _c.error,
     foregroundColor: Colors.white,
-    padding: const EdgeInsets.symmetric(
-      vertical: Spacing.md + 2,
-      horizontal: Spacing.xxl,
-    ),
+    padding: const EdgeInsets.symmetric(vertical: Spacing.md + 2, horizontal: Spacing.xxl),
     shape: RoundedRectangleBorder(borderRadius: RadiusTokens.mdAll),
     minimumSize: const Size(0, Spacing.buttonHeight),
   );
 
   ButtonStyle get textButton => TextButton.styleFrom(
     foregroundColor: _c.primary500,
-    padding: const EdgeInsets.symmetric(
-      vertical: Spacing.sm + 2,
-      horizontal: Spacing.lg,
-    ),
+    padding: const EdgeInsets.symmetric(vertical: Spacing.sm + 2, horizontal: Spacing.lg),
     shape: RoundedRectangleBorder(borderRadius: RadiusTokens.smAll),
   );
 

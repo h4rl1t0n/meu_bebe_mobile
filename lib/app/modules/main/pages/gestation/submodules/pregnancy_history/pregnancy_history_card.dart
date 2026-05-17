@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../app_module.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/item_tile_with_list.dart';
 
@@ -21,7 +22,7 @@ class PregnancyHistoryCard extends StatelessWidget {
               Expanded(child: ItemTileWithList(title: 'Historico de gestacoes', list: list)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           SizedBox(
             width: double.infinity,
             height: 48,

@@ -3,6 +3,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/helpers/messages.dart';
+import '../../core/ui/theme/styles/colors_app.dart';
+import '../../core/ui/theme/styles/design_tokens.dart';
+import '../../core/ui/theme/styles/text_styles.dart';
 import '../../core/ui/widgets/stepper_header/stepper_header.dart';
 import 'controllers/formulario_controller.dart';
 import 'models/formulario_data.dart';
@@ -45,7 +48,7 @@ class _FormularioPageState extends State<FormularioPage> {
         ),
       ),
       body: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(Spacing.sm),
         decoration: const BoxDecoration(
           image: DecorationImage(opacity: .05, fit: BoxFit.contain, image: AssetImage('assets/images/mother.png')),
         ),
@@ -133,11 +136,11 @@ class _FormularioPageState extends State<FormularioPage> {
         builder: (_, scrollCtrl) => Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(Spacing.lg),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Resumo do Formulário', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  Text('Resumo do Formulário', style: context.textStyles.titleSmallStyle),
                   IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(ctx)),
                 ],
               ),
@@ -153,17 +156,17 @@ class _FormularioPageState extends State<FormularioPage> {
                   final items = Map<String, String>.from(section)..remove('categoria');
 
                   return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    margin: EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.xs),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(Spacing.lg),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             categoria,
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFFB8336A)),
+                            style: context.textStyles.subTitleStyle.copyWith(color: context.colors.primary500),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: Spacing.sm),
                           ...items.entries.map((e) => _buildSummaryItem(e.key, e.value)),
                         ],
                       ),
@@ -173,7 +176,7 @@ class _FormularioPageState extends State<FormularioPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(Spacing.lg),
               child: SizedBox(
                 width: double.infinity,
                 child: StatefulBuilder(
@@ -192,11 +195,7 @@ class _FormularioPageState extends State<FormularioPage> {
                               }
                             },
                       icon: controller.loading
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
+                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                           : const Icon(Icons.check_circle),
                       label: Text(controller.loading ? 'Enviando...' : 'Confirmar e Enviar'),
                     );
@@ -215,12 +214,9 @@ class _FormularioPageState extends State<FormularioPage> {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: RichText(
         text: TextSpan(
-          style: const TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Cabin'),
+          style: context.textStyles.textStyle.copyWith(color: context.colors.onSurface),
           children: [
-            TextSpan(
-              text: '$label: ',
-              style: const TextStyle(fontWeight: FontWeight.w700),
-            ),
+            TextSpan(text: '$label: ', style: context.textStyles.buttonTextStyle),
             TextSpan(text: value.isNotEmpty ? value : 'Não informado'),
           ],
         ),

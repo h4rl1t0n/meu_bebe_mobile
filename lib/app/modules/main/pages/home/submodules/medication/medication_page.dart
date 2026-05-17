@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import 'medication_controller.dart';
 import 'widgets/medication_dialog.dart';
@@ -50,7 +51,7 @@ class _MedicationPageState extends State<MedicationPage> {
   }
 
   Widget get _buildBody => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+    padding: const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
     child: Observer(
       builder: (_) => Visibility(
         visible: !controller.updated,
@@ -64,7 +65,7 @@ class _MedicationPageState extends State<MedicationPage> {
                 child: const Text('Adicionar medicamento'),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: Spacing.lg),
             controller.medications.isNotEmpty
                 ? Expanded(
                     child: ListView(

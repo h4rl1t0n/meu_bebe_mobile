@@ -7,6 +7,7 @@ import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/pregnant_data.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class IdentificationCard extends StatelessWidget {
   const IdentificationCard({super.key, required this.pregnantData, this.onEdit});
@@ -22,25 +23,25 @@ class IdentificationCard extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.person_outline, size: 20, color: context.colors.text),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               Text('Identificação', style: context.textStyles.titleSmallStyle),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [CustomItemTile(flex: 1, title: 'Nome da gestante', content: getData(pregnantData?.name))],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 3, title: 'Prefere ser chamada', content: getData(pregnantData?.socialName)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Idade', content: _getAge()),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -51,23 +52,23 @@ class IdentificationCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 1, title: 'Local do pré-natal', content: getData(pregnantData?.prenatalPlace)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 1, title: 'Profissional', content: getData(pregnantData?.professionalName)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Telefone', content: getData(pregnantData?.prenatalPlaceContact)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           // const Row(
           //   crossAxisAlignment: CrossAxisAlignment.end,
           //   children: [
@@ -78,7 +79,7 @@ class IdentificationCard extends StatelessWidget {
           //     ),
           //   ],
           // ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,

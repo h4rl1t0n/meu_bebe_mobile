@@ -5,6 +5,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:validatorless/validatorless.dart';
 
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../widgets/base_card.dart';
 import 'identification_controller.dart';
@@ -56,7 +57,7 @@ class _IdentificationPageState extends State<IdentificationPage> with Identifica
 
   Widget get _buildBody {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
       child: SingleChildScrollView(
         child: BaseCard(
           child: Form(
@@ -64,16 +65,16 @@ class _IdentificationPageState extends State<IdentificationPage> with Identifica
             child: Column(
               children: [
                 Text('Dados da Gestante', style: context.textStyles.titleSmallStyle),
-                SizedBox(height: 10),
+                SizedBox(height: Spacing.sm),
                 _buildTextField(
                   nameEC,
                   'Nome',
                   validator: Validatorless.required('Nome obrigatório'),
                   captalization: TextCapitalization.words,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 _buildTextField(socialNameEC, 'Nome social', captalization: TextCapitalization.words),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 _buildTextField(
                   birthdayEC,
                   'Data de nascimento',
@@ -81,7 +82,7 @@ class _IdentificationPageState extends State<IdentificationPage> with Identifica
                   keyboardType: TextInputType.datetime,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly, DataInputFormatter()],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 _buildTextField(
                   cpfEC,
                   'CPF',
@@ -89,24 +90,24 @@ class _IdentificationPageState extends State<IdentificationPage> with Identifica
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly, CpfInputFormatter()],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 _buildTextField(
                   nationalHealthCardEC,
                   'Número do Cartão Nacional de Saúde',
                   keyboardType: TextInputType.number,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 _buildTextField(prenatalPlaceEC, 'Local que realiza o pré-natal'),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 _buildTextField(profissionalEC, 'Nome do profissional', captalization: TextCapitalization.words),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 _buildTextField(
                   prenatalPlaceContactEC,
                   'Contato do local',
                   keyboardType: TextInputType.phone,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly, TelefoneInputFormatter()],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: Spacing.lg),
                 _saveButton(),
               ],
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../core/ui/theme/styles/text_styles.dart';
 
 class HomeCard extends StatelessWidget {
@@ -19,11 +20,11 @@ class HomeCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(Spacing.md),
         width: double.infinity,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(color: colors.surface, borderRadius: RadiusTokens.lgAll, boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)]),
         child: Column(
-          spacing: 10,
+          spacing: Spacing.sm,
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../widgets/base_card.dart';
 
@@ -52,7 +53,7 @@ class CardWithDate extends StatelessWidget {
                     Text(date, style: context.textStyles.textStyle),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: Spacing.sm),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(description, style: context.textStyles.textStyle),
@@ -61,7 +62,7 @@ class CardWithDate extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: Spacing.sm),
       ],
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../../../../app_module.dart';
 import '../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../widgets/base_card.dart';
+import '../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class UpdateChildbirthCard extends StatelessWidget {
   const UpdateChildbirthCard({super.key});
@@ -15,39 +16,39 @@ class UpdateChildbirthCard extends StatelessWidget {
         spacing: 10,
         children: [
           Text('Atualize seu plano de parto', style: context.textStyles.titleSmallStyle),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             children: [
               _buildButton('Identificação', () {
                 Modular.to.pushNamed(routeIndetificacao);
               }),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               _buildButton('História', () {
                 Modular.to.pushNamed(routeHistoria);
               }),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             children: [
               _buildButton('Gravidez atual', () {
                 Modular.to.pushNamed(routeGravidezAtual);
               }),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               _buildButton('Expectativas', () {
                 Modular.to.pushNamed(routeExpectativa);
               }),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
-            children: [_buildButton('Parto', () => Modular.to.pushNamed(routeMomentoParto)), const SizedBox(width: 10), _buildButton('Alívio da dor', () => Modular.to.pushNamed(routeAlivioDor))],
+            children: [_buildButton('Parto', () => Modular.to.pushNamed(routeMomentoParto)), const SizedBox(width: Spacing.sm), _buildButton('Alívio da dor', () => Modular.to.pushNamed(routeAlivioDor))],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             children: [
               _buildButton('Nascimento', () => Modular.to.pushNamed(routeNascimento)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               _buildButton('Observações', () => Modular.to.pushNamed(routeObservacoes)),
             ],
           ),

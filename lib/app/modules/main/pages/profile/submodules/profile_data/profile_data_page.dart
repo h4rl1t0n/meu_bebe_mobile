@@ -9,6 +9,7 @@ import 'package:validatorless/validatorless.dart';
 
 import '../../../../../../core/extensions/size_extension.dart';
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/pregnant_data.dart';
 import '../../../../../../model/user_data.dart';
@@ -90,30 +91,30 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
 
   Widget _form() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
       child: SingleChildScrollView(
         child: Form(
           key: formKey,
           child: Column(
             children: [
               _nameField(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               _socialNameField(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               _birthDateField(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               _cpfField(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               _emailField(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               _cnsField(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               _prenatalPlaceField(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               _maritalStatusField(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               _educationField(),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               _incomeField(),
             ],
           ),
@@ -228,9 +229,9 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+        style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: RadiusTokens.mdAll)),
         onPressed: onPressed,
-        child: Text(label),
+        child: Text(label, style: context.textStyles.buttonTextStyle),
       ),
     );
   }

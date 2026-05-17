@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/previous_pregnancy.dart';
 import '../../../../widgets/base_card.dart';
@@ -55,7 +56,7 @@ class _HistoryPageState extends State<HistoryPage> with HistoryFormController {
 
   Widget get _buildBody {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
       child: SingleChildScrollView(
         child: BaseCard(
           child: Form(

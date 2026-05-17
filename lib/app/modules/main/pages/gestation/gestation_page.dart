@@ -5,6 +5,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../../../app_module.dart';
 import '../../../../core/extensions/size_extension.dart';
 import '../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../core/ui/theme/styles/design_tokens.dart';
 import 'gestation_controller.dart';
 import 'submodules/baby_data/baby_data_card.dart';
 import 'submodules/maternity/maternity_card.dart';
@@ -33,7 +34,7 @@ class _GestationPageState extends State<GestationPage> {
     return Container(
       width: context.screenWidth,
       color: context.colors.secondary,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
       child: Observer(
         builder: (_) {
           if (_controller.isLoading) {
@@ -41,7 +42,7 @@ class _GestationPageState extends State<GestationPage> {
           }
 
           return ListView(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: EdgeInsets.only(bottom: Spacing.sm),
             children: [
               PregnantCard(
                 pregnantData: _controller.pregnantData,
@@ -50,18 +51,18 @@ class _GestationPageState extends State<GestationPage> {
                   Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.initialize());
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: Spacing.sm),
               MaternityCard(
                 prenatalPlace: _controller.pregnantData?.prenatalPlace,
                 onEdit: () {
                   Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.initialize());
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: Spacing.sm),
               PrenatalAppointmentCard(list: _controller.appointments),
-              SizedBox(height: 10),
+              SizedBox(height: Spacing.sm),
               BabyDataCard(list: _controller.exams),
-              SizedBox(height: 10),
+              SizedBox(height: Spacing.sm),
               PregnancyHistoryCard(list: _controller.historyItems),
             ],
           );

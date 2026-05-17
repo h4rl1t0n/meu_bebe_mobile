@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../app_module.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../birth_expectations/birth_expectations_card.dart';
 import '../birth_moment/birth_moment_card.dart';
@@ -56,7 +57,7 @@ class _ChildbirthResumePageState extends State<ChildbirthResumePage> {
               visible: !_controller.updated,
               replacement: const Center(child: CircularProgressIndicator()),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
@@ -65,38 +66,38 @@ class _ChildbirthResumePageState extends State<ChildbirthResumePage> {
                         onEdit: () =>
                             Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.setUpdated(true)),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       HistoryCard(
                         history: _controller.historyData,
                         onEdit: () => Modular.to.pushNamed(routeHistoria).then((_) => _controller.setUpdated(true)),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       CurrentGestationCard(
                         current: _controller.currentPregnancyData,
                         onEdit: () =>
                             Modular.to.pushNamed(routeGravidezAtual).then((_) => _controller.setUpdated(true)),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       ExpectationsCard(
                         expectations: _controller.expectationsData,
                         onEdit: () => Modular.to.pushNamed(routeExpectativa).then((_) => _controller.setUpdated(true)),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       BirthMomentCard(
                         birthMoment: _controller.birthMomentData,
                         onEdit: () => Modular.to.pushNamed(routeMomentoParto).then((_) => _controller.setUpdated(true)),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       PainReliefCard(
                         painRelief: _controller.painReliefData,
                         onEdit: () => Modular.to.pushNamed(routeAlivioDor).then((_) => _controller.setUpdated(true)),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       BirthExpectationsCard(
                         birth: _controller.birthData,
                         onEdit: () => Modular.to.pushNamed(routeNascimento).then((_) => _controller.setUpdated(true)),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       DesiresExpectationsCard(
                         observations: _controller.observationsData,
                         onEdit: () => Modular.to.pushNamed(routeObservacoes).then((_) => _controller.setUpdated(true)),

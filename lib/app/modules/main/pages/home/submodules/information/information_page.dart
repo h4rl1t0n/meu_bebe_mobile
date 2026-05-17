@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import 'widgets/information_card.dart';
 
@@ -13,7 +14,7 @@ class InformationPage extends StatelessWidget {
       backgroundColor: context.colors.secondary,
       appBar: AppBar(title: const Text('Mais Informacoes'), centerTitle: true),
       body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
         child: Column(
           spacing: 10,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -105,7 +106,7 @@ class InformationPage extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(title, style: context.textStyles.titleSmallStyle),
-        content: SingleChildScrollView(child: Text(content, style: const TextStyle(fontSize: 15, height: 1.5))),
+        content: SingleChildScrollView(child: Text(content, style: context.textStyles.textStyle)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Fechar')),
         ],

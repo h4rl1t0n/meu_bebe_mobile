@@ -10,6 +10,7 @@ import '../../../../../model/birth_moment.dart';
 import '../../../widgets/base_card.dart';
 import '../../../widgets/custom_item_tile.dart';
 import '../submodules/childbirth_resume/childbirth_resume_controller.dart';
+import '../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class ChildbirthResumeCard extends StatefulWidget {
   const ChildbirthResumeCard({super.key});
@@ -110,34 +111,34 @@ Primeiro banho: ${_bathLabel(data.birthData)}
           child: Column(
             children: [
               Text('Resumo do plano de parto', style: context.textStyles.titleSmallStyle),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   CustomItemTile(flex: 1, title: 'Via de parto', content: _birthWayLabel(brMoment)),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: Spacing.sm),
                   CustomItemTile(flex: 1, title: 'Posição', content: _positionLabel(brMoment)),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: Spacing.sm),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   CustomItemTile(flex: 1, title: 'Anestesia', content: _anesthesiaLabel(brMoment)),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: Spacing.sm),
                   CustomItemTile(flex: 1, title: 'Acompanhante', content: _companionLabel(brMoment)),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: Spacing.sm),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   CustomItemTile(flex: 1, title: 'Corte cordão', content: _cordLabel(brData)),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: Spacing.sm),
                   CustomItemTile(flex: 1, title: '1° banho', content: _bathLabel(brData)),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Spacing.lg),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -152,7 +153,7 @@ Primeiro banho: ${_bathLabel(data.birthData)}
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: Spacing.sm),
                   Expanded(
                     child: SizedBox(
                       height: 48,

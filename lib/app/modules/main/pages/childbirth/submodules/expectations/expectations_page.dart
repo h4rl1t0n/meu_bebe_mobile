@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/expectation.dart';
 import '../../../../widgets/base_card.dart';
@@ -62,7 +63,7 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
             centerTitle: true,
           ),
           body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
             child: SingleChildScrollView(
               child: BaseCard(
                 child: Form(
@@ -70,28 +71,28 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
                   child: Column(
                     children: [
                       Text('Você gostaria de ...', style: textStyles.titleSmallStyle),
-                      SizedBox(height: 16),
+                      SizedBox(height: Spacing.lg),
                       Text('Ter um acompanhante?', style: textStyles.textStyle),
                       _customTabBar(companionEC),
-                      SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       Text('Raspar os pelos íntimos?', style: textStyles.textStyle),
                       _customTabBar(shaveIntimateHairEC),
-                      SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       Text('Fazer lavagem intestinal?', style: textStyles.textStyle),
                       _customTabBar(bowelWashOrSuppositoryEC),
-                      SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       Text('Ter um ambiente com pouca luminosidade?', style: textStyles.textStyle),
                       _customTabBar(lowLightEnvironmentEC),
-                      SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       Text('Ouvir música?', style: textStyles.textStyle),
                       _customTabBar(listenToMusicEC),
-                      SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       Text('Beber líquidos', style: textStyles.textStyle),
                       _customTabBar(drinkLiquidsEC),
-                      SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
                       Text('Registar com fotos ou filmagens?', style: textStyles.textStyle),
                       _customTabBar(recordPhotosOrVideosEC),
-                      SizedBox(height: 16),
+                      SizedBox(height: Spacing.lg),
                       _saveButton(),
                     ],
                   ),
@@ -116,9 +117,10 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
         child: Container(
           height: 40,
           decoration: BoxDecoration(
-            borderRadius: _getBorderRadius(index),
+            borderRadius: RadiusTokens.mdAll,
             border: Border.all(color: context.colors.darkText),
-            color: controllerEC.text == index.toString() ? context.colors.secondary : null,
+            color: controllerEC.text == index.toString() ? context.colors.secondary : context.colors.surface,
+            boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
           ),
           child: Center(child: Text(content)),
         ),
@@ -129,18 +131,6 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
         },
       ),
     );
-  }
-
-  BorderRadiusGeometry? _getBorderRadius(int index) {
-    switch (index) {
-      case 0:
-        return const BorderRadius.only(topLeft: Radius.circular(16), bottomLeft: Radius.circular(16));
-      case 1:
-        return null;
-      case 2:
-        return const BorderRadius.only(topRight: Radius.circular(16), bottomRight: Radius.circular(16));
-    }
-    return null;
   }
 
   SizedBox _saveButton() {

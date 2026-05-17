@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/custom_item_tile.dart';
@@ -17,11 +18,11 @@ class MaternityCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('Maternidade', style: context.textStyles.titleSmallStyle),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             children: [CustomItemTile(flex: 1, title: 'Maternidade de referencia', content: _getData(prenatalPlace))],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,

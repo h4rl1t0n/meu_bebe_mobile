@@ -5,6 +5,7 @@ import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/birth_moment.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/custom_item_tile.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class BirthMomentCard extends StatelessWidget {
   const BirthMomentCard({super.key, required this.birthMoment, this.onEdit});
@@ -20,34 +21,34 @@ class BirthMomentCard extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.child_care, size: 20, color: context.colors.text),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               Text('Expectativas para o momento do parto', style: context.textStyles.titleSmallStyle),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 1, title: 'Via de parto', content: _birthWayToString(birthMoment?.birthWay)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Corte vaginal', content: _vaginalCutToString(birthMoment?.vaginalCut)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 1, title: 'Anestesia', content: _anesthesiaToString(birthMoment?.anesthesia)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Posição', content: _positionToString()),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           const Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [CustomItemTile(flex: 1, title: 'Medidas para aliviar a dor', content: 'Ver em Alívio da dor')],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,

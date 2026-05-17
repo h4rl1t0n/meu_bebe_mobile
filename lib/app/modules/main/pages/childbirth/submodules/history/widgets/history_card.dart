@@ -5,6 +5,7 @@ import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/previous_pregnancy.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class HistoryCard extends StatelessWidget {
   const HistoryCard({super.key, required this.history, this.onEdit});
@@ -20,27 +21,27 @@ class HistoryCard extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.history, size: 20, color: context.colors.text),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               Text('Minha história', style: context.textStyles.titleSmallStyle),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomItemTile(flex: 1, title: 'Gestações', content: getData(history?.pregnancyNumber.toString())),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Partos', content: getData(history?.givenBirthNumber.toString())),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Abortos', content: getData(history?.abortionsNumber.toString())),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           const Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [CustomItemTile(flex: 1, title: 'História das gestações anteriores', content: '')],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 
 class InformationCard extends StatelessWidget {
@@ -20,13 +21,13 @@ class InformationCard extends StatelessWidget {
         InkWell(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(Spacing.md),
             width: double.infinity,
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
+            decoration: BoxDecoration(color: colors.surface, borderRadius: RadiusTokens.mdAll, boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)]),
             child: Column(
               mainAxisAlignment: .center,
               crossAxisAlignment: .center,
-              spacing: 15,
+              spacing: Spacing.lg,
               children: [
                 Icon(icon, size: 40, color: colors.darkText),
                 Text(title, style: textStyles.subTitleStyle),

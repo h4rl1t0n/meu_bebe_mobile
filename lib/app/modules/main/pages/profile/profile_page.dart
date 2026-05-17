@@ -4,6 +4,8 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../app_module.dart';
 import '../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../core/ui/theme/styles/design_tokens.dart';
+import '../../../../core/ui/theme/styles/text_styles.dart';
 import '../../main_controller.dart';
 import 'widgets/tile_button.dart';
 
@@ -79,11 +81,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.white,
-                              border: Border.all(color: Colors.white, width: 4),
+                              color: colors.surface,
+                              border: Border.all(color: colors.surface, width: 4),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
+                                  color: colors.onSurface.withValues(alpha: 0.08),
                                   blurRadius: 15,
                                   offset: const Offset(0, 8),
                                 ),
@@ -94,11 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               backgroundColor: colors.darkText,
                               child: Text(
                                 _avatarInitials(controller.name),
-                                style: TextStyle(
-                                  fontSize: 50,
-                                  color: context.colors.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: TextStyle(fontSize: 50, color: colors.primary, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
@@ -108,30 +106,19 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 50), // Espaço para compensar o avatar
                     /// NOME DO USUÁRIO
-                    Text(
-                      displayName,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 24, color: context.colors.darkText, fontWeight: FontWeight.w900),
-                    ),
+                    Text(displayName, textAlign: TextAlign.center, style: context.textStyles.titleSmallStyle),
 
-                    const SizedBox(height: 32),
+                    SizedBox(height: Spacing.xxxl),
 
                     /// MENU DE OPÇÕES (CARD)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: EdgeInsets.symmetric(horizontal: Spacing.md),
                       child: Container(
-                        padding: EdgeInsets.all(12),
+                        padding: EdgeInsets.all(Spacing.md),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04), // Sombra bem mais suave
-                              blurRadius: 20,
-                              spreadRadius: 0,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
+                          color: colors.surface,
+                          borderRadius: RadiusTokens.xxlAll,
+                          boxShadow: [ElevationTokens.raisedShadow(colors.onSurface)],
                         ),
                         child: Column(
                           spacing: 5,
@@ -142,31 +129,31 @@ class _ProfilePageState extends State<ProfilePage> {
                               text: 'Meus Dados',
                               onTap: _abrirDadosPerfil,
                             ),
-                            Divider(height: 1, color: Colors.grey.shade100),
+                            Divider(height: 1, color: colors.divider),
                             TileButton(
                               icon: Icons.notifications_none_outlined,
                               iconColor: colors.darkText,
                               text: 'Notificações',
                               onTap: () => Modular.to.pushNamed(routeNotificacoes),
                             ),
-                            Divider(height: 1, color: Colors.grey.shade100),
+                            Divider(height: 1, color: colors.divider),
                             TileButton(
                               icon: Icons.settings_outlined,
                               iconColor: colors.darkText,
                               text: 'Configurações',
                               onTap: () => Modular.to.pushNamed(routeConfiguracoes),
                             ),
-                            Divider(height: 1, color: Colors.grey.shade100),
+                            Divider(height: 1, color: colors.divider),
                             TileButton(
                               icon: Icons.info_outline,
                               iconColor: colors.darkText,
                               text: 'Sobre o app',
                               onTap: () => Modular.to.pushNamed(routeSobreApp),
                             ),
-                            Divider(height: 1, color: Colors.grey.shade100),
+                            Divider(height: 1, color: colors.divider),
                             TileButton(
                               icon: Icons.logout_rounded,
-                              iconColor: Colors.red,
+                              iconColor: colors.error,
                               text: 'Sair',
                               onTap: () {
                                 Modular.to.navigate(routeLogin);

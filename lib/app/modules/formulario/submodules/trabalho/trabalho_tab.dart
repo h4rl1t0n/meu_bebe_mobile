@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../core/ui/theme/styles/design_tokens.dart';
+import '../../../../core/ui/theme/styles/text_styles.dart';
 import '../../widgets/item_tab_page.dart';
 import 'trabalho_controller.dart';
 
@@ -30,13 +32,13 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
               onChanged: controller.setEmpregado,
             ),
             if (controller.empregado) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: Spacing.lg),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Qual o tipo do seu emprego?',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style: context.textStyles.subTitleSmallStyle,
                   ),
                   RadioGroup<String>(
                     groupValue: controller.tipoEmprego,
@@ -51,7 +53,7 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: Spacing.lg),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(
                   labelText: 'Qual sua faixa de renda mensal?',
@@ -67,7 +69,7 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
                 ],
                 onChanged: (v) => controller.setFaixaRenda(v ?? ''),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: Spacing.lg),
               SwitchListTile(
                 title: const Text('Seu trabalho permite ir às consultas de pré-natal?'),
                 value: controller.permitePreNatal,
@@ -84,8 +86,8 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
                 value: controller.temPausas,
                 onChanged: controller.setTemPausas,
               ),
-              const SizedBox(height: 16),
-              const Text('Quais benefícios você recebe?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+              SizedBox(height: Spacing.lg),
+              Text('Quais benefícios você recebe?', style: context.textStyles.subTitleSmallStyle),
               CheckboxListTile(
                 title: const Text('Auxílio-maternidade'),
                 value: controller.recebeAuxilioMaternidade,
@@ -103,7 +105,7 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
               ),
             ],
             if (!controller.empregado) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: Spacing.lg),
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: 'Por que não está trabalhando atualmente?',
@@ -113,7 +115,7 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
                 maxLines: 2,
                 onChanged: controller.setMotivoDesemprego,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: Spacing.lg),
               SwitchListTile(
                 title: const Text('Já solicitou ou recebe algum benefício social?'),
                 subtitle: const Text('Ex: Auxílio Brasil, Bolsa Família, etc.'),
@@ -121,7 +123,7 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
                 onChanged: controller.setRecebeBeneficioSocial,
               ),
             ],
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Como a gestação afetou sua situação de trabalho?',

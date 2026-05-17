@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../widgets/base_card.dart';
 import 'vaccine_info_dialog.dart';
@@ -40,7 +41,7 @@ class VaccineCard extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: Spacing.sm),
       ],
     );
   }

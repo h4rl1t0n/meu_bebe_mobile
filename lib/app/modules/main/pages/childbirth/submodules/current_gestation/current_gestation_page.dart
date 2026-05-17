@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/current_pregnancy_data.dart';
 import '../../../../widgets/base_card.dart';
@@ -56,7 +57,7 @@ class _CurrentGestationPageState extends State<CurrentGestationPage> with Curren
 
   Widget get _buildBody {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
       child: SingleChildScrollView(
         child: BaseCard(
           child: Form(
@@ -64,23 +65,23 @@ class _CurrentGestationPageState extends State<CurrentGestationPage> with Curren
             child: Column(
               children: [
                 Text('Sobre a minha gravidez', style: context.textStyles.titleSmallStyle),
-                const SizedBox(height: 16),
+                SizedBox(height: Spacing.lg),
                 _buildTextField(
                   lastMenstrualPeriodEC,
                   'Data da última menstruação',
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly, DataInputFormatter()],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: Spacing.lg),
                 Text('Em relação ao 1° ultrassom', style: context.textStyles.titleSmallStyle),
-                const SizedBox(height: 16),
+                SizedBox(height: Spacing.lg),
                 _buildTextField(
                   firstUltrasoundEC,
                   'Data do primeiro ultrassom',
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly, DataInputFormatter()],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: Spacing.lg),
                 _saveButton(),
               ],
             ),

@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/pain_relief.dart';
 import '../../../../widgets/base_card.dart';
@@ -58,14 +59,14 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
         return Scaffold(
           appBar: AppBar(title: Text('Alívio da Dor', style: textStyles.titleSmallStyle), centerTitle: true),
           body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
             child: SingleChildScrollView(
               child: BaseCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Deseja medidas para alívio da dor?', style: textStyles.titleSmallStyle),
-                    const SizedBox(height: 12),
+                    SizedBox(height: Spacing.md),
                     _buildTabBar(painReliefEC, const ['Sim', 'Não', 'Não sei']),
                     Observer(
                       builder: (_) {
@@ -73,9 +74,9 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 20),
+                              SizedBox(height: Spacing.xl),
                               Text('Quais métodos você prefere?', style: textStyles.titleSmallStyle),
-                              const SizedBox(height: 8),
+                              SizedBox(height: Spacing.sm),
                               _buildCheckbox('Massagem', massage, (v) => setState(() => massage = v ?? false)),
                               _buildCheckbox(
                                 'Exercícios com bola',
@@ -118,7 +119,7 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
                         return const SizedBox.shrink();
                       },
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: Spacing.xxl),
                     _saveButton(),
                   ],
                 ),
@@ -140,9 +141,10 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                borderRadius: _getBorderRadius(index, labels.length),
+                borderRadius: RadiusTokens.mdAll,
                 border: Border.all(color: context.colors.darkText),
-                color: controller.text == index.toString() ? context.colors.secondary : null,
+                color: controller.text == index.toString() ? context.colors.secondary : context.colors.surface,
+                boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
               ),
               child: Text(labels[index], textAlign: TextAlign.center),
             ),
@@ -150,14 +152,6 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
         );
       }),
     );
-  }
-
-  BorderRadiusGeometry? _getBorderRadius(int index, int total) {
-    if (index == 0) return const BorderRadius.only(topLeft: Radius.circular(16), bottomLeft: Radius.circular(16));
-    if (index == total - 1) {
-      return const BorderRadius.only(topRight: Radius.circular(16), bottomRight: Radius.circular(16));
-    }
-    return null;
   }
 
   Widget _buildCheckbox(String label, bool value, ValueChanged<bool?> onChanged) {

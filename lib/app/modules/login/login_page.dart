@@ -7,6 +7,7 @@ import 'package:validatorless/validatorless.dart';
 
 import '../../app_module.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
+import '../../core/ui/theme/styles/design_tokens.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
 import 'login_controller.dart';
 
@@ -59,15 +60,13 @@ class LoginPageState extends State<LoginPage> {
           backgroundColor: colors.secondary,
           body: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(Spacing.lg),
               child: Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(Spacing.xl),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(28),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 20, offset: const Offset(0, 10)),
-                  ],
+                  color: colors.surface,
+                  borderRadius: RadiusTokens.xxlAll,
+                  boxShadow: [ElevationTokens.raisedShadow(colors.onSurface)],
                 ),
                 child: Form(
                   key: formKey,
@@ -77,25 +76,25 @@ class LoginPageState extends State<LoginPage> {
                       Column(
                         children: [
                           Image.asset('assets/images/mother.png', height: 120),
-                          const SizedBox(height: 10),
+                          SizedBox(height: Spacing.sm),
                           Text(
                             'Bem-vinda',
                             style: textStyles.titleStyle.copyWith(fontSize: 26),
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: Spacing.xs),
                           Text(
                             'Cuide dos momentos do seu bebê',
-                            style: TextStyle(color: colors.darkText.withValues(alpha: 0.7), fontSize: 14),
+                            style: context.textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: 30),
+                      SizedBox(height: Spacing.xxxl),
 
                       TextFormField(
                         controller: emailTEC,
-                        style: TextStyle(color: colors.darkText),
+                        style: context.textStyles.textStyle.copyWith(color: colors.darkText),
                         onTapOutside: (_) => FocusScope.of(context).unfocus(),
                         validator: Validatorless.multiple([
                           Validatorless.required('E-mail obrigatório'),
@@ -104,14 +103,14 @@ class LoginPageState extends State<LoginPage> {
                         decoration: inputDecoration(label: 'E-mail', icon: Icons.email_outlined),
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: Spacing.xl),
 
                       TextFormField(
                         controller: passwordTEC,
                         obscureText: controller.obscurePassword,
                         onTapOutside: (_) => FocusScope.of(context).unfocus(),
                         validator: Validatorless.required('Senha obrigatória'),
-                        style: TextStyle(color: colors.darkText),
+                        style: context.textStyles.textStyle.copyWith(color: colors.darkText),
                         decoration: inputDecoration(
                           label: 'Senha',
                           icon: Icons.lock_outline,
@@ -130,17 +129,17 @@ class LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                      const SizedBox(height: 10),
+                      SizedBox(height: Spacing.sm),
 
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: controller.forgotMyPassword,
-                          child: const Text('Esqueceu a senha?', style: TextStyle(fontSize: 16)),
+                          child: Text('Esqueceu a senha?', style: context.textStyles.textStyle),
                         ),
                       ),
 
-                      const SizedBox(height: 15),
+                      SizedBox(height: Spacing.lg),
 
                       SizedBox(
                         height: 50,
@@ -151,12 +150,12 @@ class LoginPageState extends State<LoginPage> {
                                   ? const SizedBox(
                                       width: 18,
                                       height: 18,
-                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                      child: CircularProgressIndicator(strokeWidth: 2),
                                     )
                                   : const Icon(Icons.login),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: colors.darkText,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                shape: RoundedRectangleBorder(borderRadius: RadiusTokens.mdAll),
                               ),
                               onPressed: controller.loading
                                   ? null
@@ -167,36 +166,39 @@ class LoginPageState extends State<LoginPage> {
                                         //controller.login(emailTEC.text, passwordTEC.text);
                                       }
                                     },
-                              label: const Text('Entrar', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                              label: Text(
+                                'Entrar',
+                                style: context.textStyles.buttonLargeStyle.copyWith(color: Colors.white),
+                              ),
                             );
                           },
                         ),
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: Spacing.xl),
 
                       Row(
                         children: [
                           const Expanded(child: Divider()),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text('ou', style: TextStyle(color: colors.darkText.withValues(alpha: 0.6))),
+                            padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
+                            child: Text(
+                              'ou',
+                              style: context.textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
+                            ),
                           ),
                           const Expanded(child: Divider()),
                         ],
                       ),
 
-                      const SizedBox(height: 15),
+                      SizedBox(height: Spacing.lg),
 
                       TextButton.icon(
                         onPressed: () {
                           Modular.to.pushNamed(routeForm);
                         },
                         icon: const Icon(Icons.person_add_alt_1, size: 22),
-                        label: const Text(
-                          'Criar nova conta',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                        ),
+                        label: Text('Criar nova conta', style: context.textStyles.bodyMedium),
                       ),
                     ],
                   ),

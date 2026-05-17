@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
@@ -25,7 +26,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
       backgroundColor: colors.secondary,
       appBar: AppBar(title: const Text('Configuracoes'), centerTitle: true),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Spacing.lg),
         children: [
           _sectionTitle('Notificacoes', textStyles),
           _switchTile('Notificacoes ativas', _notificacoesAtivas, (v) => setState(() => _notificacoesAtivas = v)),
@@ -44,7 +45,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           ),
           ListTile(
             title: const Text('Excluir conta'),
-            leading: const Icon(Icons.delete_outline, color: Colors.red),
+            leading: Icon(Icons.delete_outline, color: colors.error),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               showDialog(
@@ -56,8 +57,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                     TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(ctx),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                      child: const Text('Excluir', style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(backgroundColor: colors.error),
+                      child: Text('Excluir', style: context.textStyles.buttonTextStyle.copyWith(color: Colors.white)),
                     ),
                   ],
                 ),
@@ -71,7 +72,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
 
   Widget _sectionTitle(String title, TextStyles textStyles) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 8),
+      padding: const EdgeInsets.only(top: Spacing.lg, bottom: Spacing.sm),
       child: Text(title, style: textStyles.titleSmallStyle),
     );
   }

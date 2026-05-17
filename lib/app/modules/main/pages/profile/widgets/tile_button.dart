@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/ui/theme/styles/design_tokens.dart';
+import '../../../../../core/ui/theme/styles/colors_app.dart';
+
 class TileButton extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -13,30 +16,31 @@ class TileButton extends StatelessWidget {
     required this.icon,
     required this.text,
     required this.onTap,
-    this.backgroundColor = Colors.white,
+    this.backgroundColor,
     this.iconColor,
     this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: Spacing.lg),
           child: Row(
             children: [
-              Icon(icon, size: 25, color: iconColor ?? Colors.black87),
+              Icon(icon, size: 25, color: iconColor ?? colors.onSurface),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   text,
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: textColor ?? Colors.black87),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: textColor ?? colors.onSurface),
                 ),
               ),
-              Icon(Icons.chevron_right, color: (textColor ?? Colors.black87).withValues(alpha: 0.6)),
+              Icon(Icons.chevron_right, color: (textColor ?? colors.onSurface).withValues(alpha: 0.6)),
             ],
           ),
         ),

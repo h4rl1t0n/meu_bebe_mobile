@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/ui/theme/styles/colors_app.dart';
+import '../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../core/ui/theme/styles/text_styles.dart';
 
 class ItemTabPage extends StatefulWidget {
@@ -25,7 +26,7 @@ class _ItemTabPageState extends State<ItemTabPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4, vertical: 15),
+          padding: EdgeInsets.symmetric(horizontal: Spacing.xs, vertical: Spacing.lg),
           child: Text(title, style: textStyles.titleStyle.copyWith(fontSize: 28, color: colors.darkText)),
         ),
         Expanded(child: ListView(shrinkWrap: true, children: children)),

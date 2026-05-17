@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../core/ui/theme/styles/design_tokens.dart';
+import '../../../../core/ui/theme/styles/text_styles.dart';
 import '../../widgets/item_tab_page.dart';
 import 'alimentacao_controller.dart';
 import 'alimentacao_validator.dart';
@@ -28,10 +30,7 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Quantas refeições completas você faz por dia?',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
+                Text('Quantas refeições completas você faz por dia?', style: context.textStyles.subTitleSmallStyle),
                 RadioGroup<int>(
                   groupValue: controller.refeicoesPorDia,
                   onChanged: (v) => controller.setRefeicoesPorDia(v ?? 0),
@@ -45,17 +44,14 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             SwitchListTile(
               title: const Text('Nos últimos 3 meses, deixou de comer por falta de dinheiro?'),
               value: controller.insegurancaAlimentar,
               onChanged: controller.setInsegurancaAlimentar,
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Quais alimentos você consome regularmente?',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
+            SizedBox(height: Spacing.lg),
+            Text('Quais alimentos você consome regularmente?', style: context.textStyles.subTitleSmallStyle),
             CheckboxListTile(
               title: const Text('Frutas e verduras'),
               value: controller.consomeFrutasVerduras,
@@ -76,7 +72,7 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
               value: controller.consomeFeijao,
               onChanged: (v) => controller.setConsomeFeijao(v ?? false),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(
                 labelText: 'De onde vem os alimentos que você consome?',
@@ -93,7 +89,7 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
               ],
               onChanged: (v) => controller.setFonteAlimentos(v ?? ''),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             SwitchListTile(
               title: const Text('Sua alimentação mudou durante a gestação?'),
               subtitle: const Text('Seja por orientação médica ou outros motivos'),
@@ -105,13 +101,13 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
               value: controller.usaSuplementos,
               onChanged: controller.setUsaSuplementos,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Como você avalia sua alimentação durante a gestação?',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: context.textStyles.subTitleSmallStyle,
                 ),
                 RadioGroup<String>(
                   groupValue: controller.avaliacaoAlimentacao,

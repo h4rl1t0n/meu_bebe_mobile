@@ -5,6 +5,7 @@ import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../../model/pain_relief.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class PainReliefCard extends StatelessWidget {
   const PainReliefCard({super.key, required this.painRelief, this.onEdit});
@@ -20,11 +21,11 @@ class PainReliefCard extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.healing, size: 20, color: context.colors.text),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               Text('Medidas para alívio da dor', style: context.textStyles.titleSmallStyle),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -36,13 +37,13 @@ class PainReliefCard extends StatelessWidget {
             ],
           ),
           if (_activeMethods.isNotEmpty) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: Spacing.sm),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [CustomItemTile(flex: 1, title: 'Métodos escolhidos', content: _activeMethods)],
             ),
           ],
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/current_pregnancy_data.dart';
 import '../../../../../../model/pregnant_data.dart';
@@ -20,7 +21,7 @@ class PregnantCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('Identificacao', style: context.textStyles.titleSmallStyle),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             spacing: 10,
             children: [
@@ -28,7 +29,7 @@ class PregnantCard extends StatelessWidget {
               CustomItemTile(flex: 1, title: 'Idade', content: _getAge()),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             spacing: 10,
             children: [
@@ -36,7 +37,7 @@ class PregnantCard extends StatelessWidget {
               CustomItemTile(flex: 1, title: 'Data do parto', content: _getChildbirthDate()),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             children: [
               CustomItemTile(
@@ -46,15 +47,15 @@ class PregnantCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           Row(
             children: [
               CustomItemTile(flex: 1, title: 'Nome do profissional', content: _getData(pregnantData?.professionalName)),
-              const SizedBox(width: 10),
+              const SizedBox(width: Spacing.sm),
               CustomItemTile(flex: 1, title: 'Contato do local', content: _getData(pregnantData?.prenatalPlaceContact)),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,

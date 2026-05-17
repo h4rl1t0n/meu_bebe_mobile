@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import 'vaccines_controller.dart';
 import 'widgets/vaccine_card.dart';
@@ -37,7 +38,7 @@ class _VaccinesPageState extends State<VaccinesPage> {
           return Scaffold(
             appBar: AppBar(title: Text('Minhas Vacinas', style: textStyles.titleSmallStyle), centerTitle: true),
             body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
               child: Observer(
                 builder: (context) {
                   if (controller.vaccines.isEmpty) {
@@ -48,12 +49,12 @@ class _VaccinesPageState extends State<VaccinesPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Spacing.lg),
                         Align(
                           alignment: Alignment.center,
                           child: Text('Qualquer tempo', style: textStyles.titleSmallStyle),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: Spacing.sm),
                         Column(
                           children: controller.vaccines
                               .where((vaccine) => vaccine.id < controller.vaccines.length - 1)
@@ -68,7 +69,7 @@ class _VaccinesPageState extends State<VaccinesPage> {
                               )
                               .toList(),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: Spacing.xxxl),
                         Align(
                           alignment: Alignment.center,
                           child: Text(
@@ -77,7 +78,7 @@ class _VaccinesPageState extends State<VaccinesPage> {
                             style: textStyles.titleSmallStyle,
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: Spacing.sm),
                         if (controller.vaccines.isNotEmpty)
                           VaccineCard(
                             used: controller.vaccines.last.used,

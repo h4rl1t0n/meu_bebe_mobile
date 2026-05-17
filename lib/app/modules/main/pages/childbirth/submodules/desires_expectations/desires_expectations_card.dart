@@ -5,6 +5,7 @@ import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/observations.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/custom_item_tile.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class DesiresExpectationsCard extends StatelessWidget {
   const DesiresExpectationsCard({super.key, required this.observations, this.onEdit});
@@ -22,16 +23,16 @@ class DesiresExpectationsCard extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.favorite_border, size: 20, color: context.colors.text),
-              const SizedBox(width: 8),
+              const SizedBox(width: Spacing.sm),
               Text('Outros desejos e expectativas', style: context.textStyles.titleSmallStyle),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [CustomItemTile(flex: 1, title: '', content: text)],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,

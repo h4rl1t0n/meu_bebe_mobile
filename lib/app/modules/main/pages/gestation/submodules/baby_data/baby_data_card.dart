@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/helpers/messages.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../repositories/exams/exams_repository.dart';
 import '../../../../../../model/exam.dart';
 import '../../../../widgets/base_card.dart';
@@ -42,13 +43,13 @@ class _BabyDataCardState extends State<BabyDataCard> {
                 controller: titleCtrl,
                 decoration: const InputDecoration(labelText: 'Titulo do exame', border: OutlineInputBorder()),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               TextField(
                 controller: dateCtrl,
                 decoration: const InputDecoration(labelText: 'Data', border: OutlineInputBorder()),
                 keyboardType: TextInputType.datetime,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Spacing.md),
               TextField(
                 controller: descCtrl,
                 decoration: const InputDecoration(labelText: 'Descricao', border: OutlineInputBorder()),
@@ -92,7 +93,7 @@ class _BabyDataCardState extends State<BabyDataCard> {
           Row(
             children: [ItemTileWithList(title: 'Dados sobre o nascimento', list: widget.list)],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: Spacing.sm),
           SizedBox(
             width: double.infinity,
             height: 48,

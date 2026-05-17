@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../widgets/item_tab_page.dart';
 import 'educacao_controller.dart';
 import 'educacao_validator.dart';
@@ -30,7 +31,7 @@ class _EducacaoTabState extends State<EducacaoTab> {
               value: controller.estuda,
               onChanged: controller.setEstuda,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Qual seu grau de escolaridade?',
@@ -40,13 +41,13 @@ class _EducacaoTabState extends State<EducacaoTab> {
               validator: EducacaoValidator.escolaridade,
               onChanged: controller.setEscolaridade,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             SwitchListTile(
               title: const Text('Já teve que interromper os estudos por causa da gestação?'),
               value: controller.interrompeuEstudos,
               onChanged: controller.setInterrompeuEstudos,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Que dificuldades enfrenta no acesso à educação?',
@@ -56,13 +57,13 @@ class _EducacaoTabState extends State<EducacaoTab> {
               maxLines: 3,
               onChanged: controller.setDificuldadesEscolares,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             SwitchListTile(
               title: const Text('Você consegue entender bem as orientações dos profissionais de saúde?'),
               value: controller.entendeOrientacoes,
               onChanged: controller.setEntendeOrientacoes,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Faz ou fez algum curso extracurricular?',
@@ -71,7 +72,7 @@ class _EducacaoTabState extends State<EducacaoTab> {
               ),
               onChanged: controller.setCursosExtracurriculares,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Spacing.lg),
             TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Quais são suas expectativas/projetos educacionais?',

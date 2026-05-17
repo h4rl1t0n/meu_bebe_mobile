@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 
 class NotificacoesPage extends StatefulWidget {
@@ -46,13 +47,13 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.notifications_none_outlined, size: 80, color: colors.darkText.withValues(alpha: 0.3)),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Spacing.lg),
                   Text('Nenhuma notificacao', style: textStyles.titleSmallStyle),
                 ],
               ),
             )
           : ListView.separated(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(Spacing.lg),
               itemCount: _notifications.length,
               separatorBuilder: (_, _) => const Divider(),
               itemBuilder: (_, index) {
@@ -62,9 +63,9 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
                     backgroundColor: colors.primary,
                     child: Icon(notif.icon, color: colors.darkText),
                   ),
-                  title: Text(notif.title, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  title: Text(notif.title, style: textStyles.bodyMedium),
                   subtitle: Text(notif.subtitle),
-                  trailing: Text(notif.time, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                  trailing: Text(notif.time, style: textStyles.caption),
                 );
               },
             ),
