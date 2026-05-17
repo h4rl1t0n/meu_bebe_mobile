@@ -19,7 +19,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final controller = Modular.get<MainController>();
 
-  List<Tab> get _tabs => [
+  List<Tab> get tabs => [
     const Tab(icon: Icon(CupertinoIcons.house_fill, size: 26), text: 'Home'),
     const Tab(icon: Icon(CupertinoIcons.heart_fill, size: 26), text: 'Gestação'),
     const Tab(icon: Icon(CupertinoIcons.doc_text_fill, size: 26), text: 'Parto'),
@@ -27,30 +27,31 @@ class _MainPageState extends State<MainPage> {
   ];
 
   List<String> get nomes {
-    return _tabs.map((tab) => tab.text ?? '').toList();
+    return tabs.map((tab) => tab.text ?? '').toList();
   }
 
   @override
   void initState() {
     super.initState();
+    controller.initialize();
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: _tabs.length,
+      length: tabs.length,
       child: Scaffold(
-        appBar: AppBar(title: Observer(builder: (context) => Text(controller.tabName))),
+        appBar: AppBar(title: Observer(builder: (_) => Text(controller.tabName))),
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
           children: const [HomePage(), GestationPage(), ChildbirthPage(), ProfilePage()],
         ),
         bottomNavigationBar: SafeArea(
           child: TabBar(
+            tabs: tabs,
             onTap: (value) {
               controller.setTabName(nomes[value]);
             },
-            tabs: _tabs,
           ),
         ),
       ),

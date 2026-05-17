@@ -20,6 +20,9 @@ abstract class IdentificationControllerBase with Store {
   @computed
   bool get saved => _saved;
 
+  @action
+  void setSaved(bool value) => _saved = value;
+
   @observable
   PregnantData? _model;
 

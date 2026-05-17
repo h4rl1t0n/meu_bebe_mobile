@@ -1,6 +1,8 @@
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
+import '../../app_module.dart';
 import '../../core/helpers/messages.dart';
 import '../../services/user_login_service.dart';
 
@@ -17,6 +19,9 @@ abstract class LoginControllerBase with Store {
   @observable
   bool logged = false;
 
+  @observable
+  bool loading = false;
+
   @action
   void passwordToggle() => obscurePassword = !obscurePassword;
 
@@ -24,26 +29,26 @@ abstract class LoginControllerBase with Store {
 
   @action
   Future<void> login(String email, String password) async {
+    loading = true;
     final loginResult = await loginService.execute(email, password);
+    loading = false;
 
     switch (loginResult) {
       case Error(error: final failure):
         Messages.showError(failure.message);
       case Success():
         logged = true;
+        Modular.to.pushReplacementNamed(routeTab);
     }
   }
 
-  @action
-  void debug() {
-    logged = true;
-  }
-
   void forgotMyPassword() {
-    Messages.showInfo('Ainda não implementado');
+    Messages.showInfo(
+      'Entre em contato com o suporte pelo e-mail\nsuporte@meubebe.app para recuperar sua senha.',
+    );
   }
 
   void createAccount() {
-    Messages.showInfo('Ainda não implementado');
+    Modular.to.pushNamed(routeForm);
   }
 }

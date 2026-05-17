@@ -77,6 +77,17 @@ abstract class FormularioControllerBase with Store {
     loading = value;
   }
 
+  @action
+  Future<bool> enviarFormulario() async {
+    loading = true;
+    try {
+      await Future.delayed(const Duration(milliseconds: 500));
+      return true;
+    } finally {
+      loading = false;
+    }
+  }
+
   bool isCurrentStepValid() => _isCurrentStepValid();
 
   bool _isCurrentStepValid() {

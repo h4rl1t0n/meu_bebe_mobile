@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
@@ -75,14 +74,15 @@ abstract class ProfileDataControllerBase with Store {
   }
 
   Future<bool> saveProfile(PregnantData pregnant, UserData user) async {
+    loading = true;
     final results = await Future.wait([_saveGestation(pregnant), _saveUser(user)]);
+    loading = false;
 
     final gestationSuccess = results[0];
     final userSuccess = results[1];
 
     if (gestationSuccess && userSuccess) {
       Messages.showSuccess('Dados salvos');
-      Modular.to.pop();
       return true;
     }
 

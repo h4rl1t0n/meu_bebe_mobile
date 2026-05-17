@@ -40,29 +40,30 @@ class _GestationPageState extends State<GestationPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return SingleChildScrollView(
+          return ListView(
             padding: const EdgeInsets.only(bottom: 10),
-            child: Column(
-              spacing: 16,
-              children: [
-                PregnantCard(
-                  pregnantData: _controller.pregnantData,
-                  currentPregnancy: _controller.currentPregnancyData,
-                  onEdit: () {
-                    Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.initialize());
-                  },
-                ),
-                MaternityCard(
-                  prenatalPlace: _controller.pregnantData?.prenatalPlace,
-                  onEdit: () {
-                    Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.initialize());
-                  },
-                ),
-                const PrenatalAppointmentCard(list: []),
-                const BabyDataCard(list: []),
-                const PregnancyHistoryCard(list: []),
-              ],
-            ),
+            children: [
+              PregnantCard(
+                pregnantData: _controller.pregnantData,
+                currentPregnancy: _controller.currentPregnancyData,
+                onEdit: () {
+                  Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.initialize());
+                },
+              ),
+              SizedBox(height: 10),
+              MaternityCard(
+                prenatalPlace: _controller.pregnantData?.prenatalPlace,
+                onEdit: () {
+                  Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.initialize());
+                },
+              ),
+              SizedBox(height: 10),
+              PrenatalAppointmentCard(list: _controller.appointments),
+              SizedBox(height: 10),
+              BabyDataCard(list: _controller.exams),
+              SizedBox(height: 10),
+              PregnancyHistoryCard(list: _controller.historyItems),
+            ],
           );
         },
       ),

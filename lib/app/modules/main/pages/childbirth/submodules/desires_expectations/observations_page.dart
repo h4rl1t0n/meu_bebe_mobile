@@ -43,6 +43,7 @@ class _ObservationsPageState extends State<ObservationsPage> with ObservationsFo
     return Observer(
       builder: (_) {
         if (_controller.saved) {
+          _controller.saved = false;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Modular.to.pop();
           });

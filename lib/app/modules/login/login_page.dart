@@ -6,7 +6,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:validatorless/validatorless.dart';
 
 import '../../app_module.dart';
-import '../../core/helpers/messages.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
 import 'login_controller.dart';
@@ -136,9 +135,7 @@ class LoginPageState extends State<LoginPage> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {
-                            Messages.showError('Funcionalidade ainda não implementada');
-                          },
+                          onPressed: controller.forgotMyPassword,
                           child: const Text('Esqueceu a senha?', style: TextStyle(fontSize: 16)),
                         ),
                       ),
@@ -147,20 +144,32 @@ class LoginPageState extends State<LoginPage> {
 
                       SizedBox(
                         height: 50,
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Icons.login),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colors.darkText,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                          ),
-                          onPressed: () {
-                            final valid = formKey.currentState?.validate() ?? false;
-
-                            if (valid) {
-                              Modular.to.pushReplacementNamed(routeTab);
-                            }
+                        child: Observer(
+                          builder: (_) {
+                            return ElevatedButton.icon(
+                              icon: controller.loading
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                    )
+                                  : const Icon(Icons.login),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colors.darkText,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                              ),
+                              onPressed: controller.loading
+                                  ? null
+                                  : () {
+                                      final valid = formKey.currentState?.validate() ?? false;
+                                      if (valid) {
+                                        Modular.to.pushReplacementNamed(routeTab);
+                                        //controller.login(emailTEC.text, passwordTEC.text);
+                                      }
+                                    },
+                              label: const Text('Entrar', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                            );
                           },
-                          label: const Text('Entrar', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
                         ),
                       ),
 

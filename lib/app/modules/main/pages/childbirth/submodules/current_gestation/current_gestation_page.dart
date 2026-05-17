@@ -40,6 +40,7 @@ class _CurrentGestationPageState extends State<CurrentGestationPage> with Curren
     return Observer(
       builder: (_) {
         if (_controller.saved) {
+          _controller.saved = false;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.pop(context);
           });

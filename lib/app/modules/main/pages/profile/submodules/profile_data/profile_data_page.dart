@@ -215,7 +215,9 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
         ),
       );
 
-      if (success) controller.setFormEnabled(false);
+      if (success && mounted) {
+        controller.setFormEnabled(false);
+      }
     },
   );
 

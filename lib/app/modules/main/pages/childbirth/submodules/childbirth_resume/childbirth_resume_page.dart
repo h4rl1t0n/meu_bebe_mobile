@@ -62,7 +62,8 @@ class _ChildbirthResumePageState extends State<ChildbirthResumePage> {
                     children: [
                       IdentificationCard(
                         pregnantData: _controller.pregnantData,
-                        onEdit: () => Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.setUpdated(true)),
+                        onEdit: () =>
+                            Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.setUpdated(true)),
                       ),
                       const SizedBox(height: 10),
                       HistoryCard(
@@ -72,7 +73,8 @@ class _ChildbirthResumePageState extends State<ChildbirthResumePage> {
                       const SizedBox(height: 10),
                       CurrentGestationCard(
                         current: _controller.currentPregnancyData,
-                        onEdit: () => Modular.to.pushNamed(routeGravidezAtual).then((_) => _controller.setUpdated(true)),
+                        onEdit: () =>
+                            Modular.to.pushNamed(routeGravidezAtual).then((_) => _controller.setUpdated(true)),
                       ),
                       const SizedBox(height: 10),
                       ExpectationsCard(

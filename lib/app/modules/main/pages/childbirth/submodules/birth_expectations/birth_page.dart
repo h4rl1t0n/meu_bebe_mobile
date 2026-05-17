@@ -19,6 +19,12 @@ class BirthPage extends StatefulWidget {
 class _BirthPageState extends State<BirthPage> with BirthFormController {
   final _controller = Modular.get<BirthController>();
 
+  int _parseSafely(TextEditingController ctrl, {int fallback = 0}) {
+    final text = ctrl.text;
+    if (text.isEmpty) return fallback;
+    return int.tryParse(text) ?? fallback;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +50,7 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
     return Observer(
       builder: (_) {
         if (_controller.saved) {
+          _controller.saved = false;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Modular.to.pop();
           });
@@ -148,12 +155,12 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
           _controller.saveBirth(
             Birth(
               id: _controller.birth?.id ?? 0,
-              whoCut: WhoCutUmbilicalCord.values[int.parse(whoCutEC.text)],
+              whoCut: WhoCutUmbilicalCord.values[_parseSafely(whoCutEC)],
               collectStemCells: collectStemCells,
-              skinBabyContact: SkinBabyContact.values[int.parse(skinBabyContactEC.text)],
-              breastfeedFirstHour: BreastfeedFirstHour.values[int.parse(breastfeedFirstHourEC.text)],
+              skinBabyContact: SkinBabyContact.values[_parseSafely(skinBabyContactEC)],
+              breastfeedFirstHour: BreastfeedFirstHour.values[_parseSafely(breastfeedFirstHourEC)],
               breastfeedRestrictions: breastfeedRestrictions,
-              firstBath: FirstBath.values[int.parse(firstBathEC.text)],
+              firstBath: FirstBath.values[_parseSafely(firstBathEC)],
             ),
           );
         },

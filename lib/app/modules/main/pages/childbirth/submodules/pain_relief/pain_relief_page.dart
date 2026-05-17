@@ -19,6 +19,12 @@ class PainReliefPage extends StatefulWidget {
 class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormController {
   final _controller = Modular.get<PainReliefController>();
 
+  int _parseSafely(TextEditingController ctrl, {int fallback = 0}) {
+    final text = ctrl.text;
+    if (text.isEmpty) return fallback;
+    return int.tryParse(text) ?? fallback;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +50,7 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
     return Observer(
       builder: (_) {
         if (_controller.saved) {
+          _controller.saved = false;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Modular.to.pop();
           });
@@ -174,7 +181,7 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
           _controller.savePainRelief(
             PainRelief(
               id: _controller.painRelief?.id ?? 0,
-              painRelief: NeedPainRelief.values[int.parse(painReliefEC.text)],
+              painRelief: NeedPainRelief.values[_parseSafely(painReliefEC)],
               massage: massage,
               ballExercises: ballExercises,
               breathRelaxExercises: breathRelaxExercises,

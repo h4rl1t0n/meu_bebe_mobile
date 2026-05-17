@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -22,12 +20,15 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
   final formKey = GlobalKey<FormState>();
   final _controller = Modular.get<ExpectationsController>();
 
-  List<int> selectedIndex = [];
+  int _parseSafely(TextEditingController ctrl, {int fallback = 0}) {
+    final text = ctrl.text;
+    if (text.isEmpty) return fallback;
+    return int.tryParse(text) ?? fallback;
+  }
 
   @override
   void initState() {
     super.initState();
-
     _controller.initialize().then((_) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -50,6 +51,7 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
     return Observer(
       builder: (_) {
         if (_controller.saved) {
+          _controller.saved = false;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Modular.to.pop();
           });
@@ -103,7 +105,6 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
   }
 
   Widget _customTabBar(TextEditingController controllerEC) {
-    log('Controlador: ${controllerEC.text}');
     return Row(
       children: [_tab('Sim', 0, controllerEC), _tab('Não', 1, controllerEC), _tab('Não sei', 2, controllerEC)],
     );
@@ -139,7 +140,6 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
       case 2:
         return const BorderRadius.only(topRight: Radius.circular(16), bottomRight: Radius.circular(16));
     }
-
     return null;
   }
 
@@ -152,17 +152,16 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
           FocusScope.of(context).unfocus();
           final valid = formKey.currentState?.validate() ?? false;
           if (valid) {
-            log('Tá aqui');
             _controller.saveExpectations(
               Expectation(
-                id: 1,
-                companion: Alternatives.values[int.parse(companionEC.text)],
-                shaveIntimateHair: Alternatives.values[int.parse(shaveIntimateHairEC.text)],
-                bowelWashOrSuppository: Alternatives.values[int.parse(bowelWashOrSuppositoryEC.text)],
-                lowLightEnvironment: Alternatives.values[int.parse(lowLightEnvironmentEC.text)],
-                listenToMusic: Alternatives.values[int.parse(listenToMusicEC.text)],
-                drinkLiquids: Alternatives.values[int.parse(drinkLiquidsEC.text)],
-                recordPhotosOrVideos: Alternatives.values[int.parse(recordPhotosOrVideosEC.text)],
+                id: _controller.expectations?.id ?? 1,
+                companion: Alternatives.values[_parseSafely(companionEC)],
+                shaveIntimateHair: Alternatives.values[_parseSafely(shaveIntimateHairEC)],
+                bowelWashOrSuppository: Alternatives.values[_parseSafely(bowelWashOrSuppositoryEC)],
+                lowLightEnvironment: Alternatives.values[_parseSafely(lowLightEnvironmentEC)],
+                listenToMusic: Alternatives.values[_parseSafely(listenToMusicEC)],
+                drinkLiquids: Alternatives.values[_parseSafely(drinkLiquidsEC)],
+                recordPhotosOrVideos: Alternatives.values[_parseSafely(recordPhotosOrVideosEC)],
               ),
             );
           }

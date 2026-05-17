@@ -40,6 +40,7 @@ class _IdentificationPageState extends State<IdentificationPage> with Identifica
     return Observer(
       builder: (_) {
         if (_controller.saved) {
+          _controller.setSaved(false);
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Modular.to.pop();
           });

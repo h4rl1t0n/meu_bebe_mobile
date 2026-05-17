@@ -20,6 +20,12 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
   final formKey = GlobalKey<FormState>();
   final _controller = Modular.get<BirthMomentController>();
 
+  int _parseSafely(TextEditingController ctrl, {int fallback = 0}) {
+    final text = ctrl.text;
+    if (text.isEmpty) return fallback;
+    return int.tryParse(text) ?? fallback;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +51,7 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
     return Observer(
       builder: (_) {
         if (_controller.saved) {
+          _controller.saved = false;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Modular.to.pop();
           });
@@ -175,11 +182,11 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
           _controller.saveBirthMoment(
             BirthMoment(
               id: _controller.birthMoment?.id ?? 0,
-              birthWay: BirthWay.values[int.parse(birthWayEC.text)],
-              anesthesia: Anesthesia.values[int.parse(anesthesiaEC.text)],
-              vaginalCut: VaginalCut.values[int.parse(vaginalCutEC.text)],
+              birthWay: BirthWay.values[_parseSafely(birthWayEC)],
+              anesthesia: Anesthesia.values[_parseSafely(anesthesiaEC)],
+              vaginalCut: VaginalCut.values[_parseSafely(vaginalCutEC)],
               preferredPosition: preferredPositionEC.text.isNotEmpty
-                  ? Positions.values[int.parse(preferredPositionEC.text)]
+                  ? Positions.values[_parseSafely(preferredPositionEC)]
                   : null,
               otherPosition: otherPositionEC.text.isNotEmpty ? otherPositionEC.text : null,
             ),

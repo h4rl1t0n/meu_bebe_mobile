@@ -176,13 +176,31 @@ class _FormularioPageState extends State<FormularioPage> {
               padding: const EdgeInsets.all(16),
               child: SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    Messages.showSuccess('Formulário enviado com sucesso!');
+                child: StatefulBuilder(
+                  builder: (context, setLocalState) {
+                    return ElevatedButton.icon(
+                      onPressed: controller.loading
+                          ? null
+                          : () async {
+                              setLocalState(() {});
+                              final ok = await controller.enviarFormulario();
+                              if (ok && ctx.mounted) {
+                                Navigator.pop(ctx);
+                                if (mounted) {
+                                  Messages.showSuccess('Formulário enviado com sucesso!');
+                                }
+                              }
+                            },
+                      icon: controller.loading
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.check_circle),
+                      label: Text(controller.loading ? 'Enviando...' : 'Confirmar e Enviar'),
+                    );
                   },
-                  icon: const Icon(Icons.check_circle),
-                  label: const Text('Confirmar e Enviar'),
                 ),
               ),
             ),

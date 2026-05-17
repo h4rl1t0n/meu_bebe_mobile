@@ -39,6 +39,7 @@ class _HistoryPageState extends State<HistoryPage> with HistoryFormController {
     return Observer(
       builder: (_) {
         if (_controller.saved) {
+          _controller.saved = false;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.pop(context);
           });
