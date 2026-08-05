@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
@@ -13,40 +15,55 @@ class AppointmentsExamsPage extends StatefulWidget {
   State<AppointmentsExamsPage> createState() => _AppointmentsExamsPageState();
 }
 
-class _AppointmentsExamsPageState extends State<AppointmentsExamsPage> {
-  final _controller = Modular.get<AppointmentsExamsController>();
+class _AppointmentsExamsPageState extends State<AppointmentsExamsPage> with SingleTickerProviderStateMixin {
+  final controller = Modular.get<AppointmentsExamsController>();
+  late final TabController tabController;
 
-  List<Tab> get _tabs => [
-    Tab(icon: Icon(Icons.content_paste_search_outlined), text: 'Consultas'),
-    Tab(icon: Icon(Icons.local_hospital), text: 'Exames'),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(length: 2, vsync: this);
+    controller.initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _controller.initialize(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return DefaultTabController(
-            length: _tabs.length,
-            child: Scaffold(
-              appBar: AppBar(
-                title: Text('Consultas e Exames', style: context.textStyles.titleSmallStyle),
-                centerTitle: true,
+    return Scaffold(
+      appBar: AppBar(title: Text('Consultas e Exames', style: context.textStyles.titleSmallStyle), centerTitle: true),
+      body: TabBarView(
+        controller: tabController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          AppointmentsPage(controller: controller),
+          ExamsPage(controller: controller),
+        ],
+      ),
+      bottomNavigationBar: Observer(
+        builder: (context) {
+          final index = controller.index;
+          return NavigationBar(
+            selectedIndex: index,
+            onDestinationSelected: (index) {
+              tabController.animateTo(index, duration: const Duration(milliseconds: 350), curve: Curves.easeInOutCubic);
+              controller.setIndex(index);
+            },
+            destinations: [
+              NavigationDestination(
+                icon: Icon(CupertinoIcons.calendar),
+                selectedIcon: Icon(CupertinoIcons.calendar_today),
+                label: 'Consultas',
+                tooltip: 'Consultas',
               ),
-              body: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  AppointmentsPage(controller: _controller),
-                  ExamsPage(controller: _controller),
-                ],
+              NavigationDestination(
+                icon: Icon(CupertinoIcons.doc_text),
+                selectedIcon: Icon(CupertinoIcons.doc_text_fill),
+                label: 'Exames',
+                tooltip: 'Exames',
               ),
-              bottomNavigationBar: SafeArea(child: TabBar(tabs: _tabs)),
-            ),
+            ],
           );
-        }
-        return const Center(child: CircularProgressIndicator());
-      },
+        },
+      ),
     );
   }
 }

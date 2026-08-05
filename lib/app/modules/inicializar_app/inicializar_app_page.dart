@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../app_module.dart';
+import '../../core/constants/images.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/design_tokens.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
@@ -74,7 +75,7 @@ class _InicializarAppPageState extends State<InicializarAppPage> with SingleTick
                           ),
                         ],
                       ),
-                      child: Image.asset('assets/images/maternity.png', width: 100, height: 100, fit: BoxFit.contain),
+                      child: Image.asset(Images.maternity, width: 100, height: 100, fit: BoxFit.contain),
                     ),
                   ),
                 ),

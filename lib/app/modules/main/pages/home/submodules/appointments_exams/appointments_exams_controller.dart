@@ -19,6 +19,9 @@ abstract class AppointmentsExamsControllerBase with Store {
   bool updated = false;
 
   @observable
+  int index = 0;
+
+  @observable
   var appointments = ObservableList<Appointment>();
 
   @observable
@@ -27,6 +30,11 @@ abstract class AppointmentsExamsControllerBase with Store {
   Future<void> initialize() async {
     await _getAppointments();
     await _getExams();
+  }
+
+  @action
+  void setIndex(int value) {
+    index = value;
   }
 
   @action

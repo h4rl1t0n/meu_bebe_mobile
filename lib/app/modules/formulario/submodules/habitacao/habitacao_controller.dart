@@ -1,6 +1,6 @@
 import 'package:mobx/mobx.dart';
 
-import '../../models/formulario_data.dart';
+import '../../models/habitacao/habitacao_model.dart';
 import 'habitacao_validator.dart';
 
 part 'habitacao_controller.g.dart';
@@ -101,15 +101,15 @@ abstract class HabitacaoControllerBase with Store {
     );
   }
 
-  HabitacaoData buildHabitacaoData() => HabitacaoData(
-        tipoMoradia: tipoMoradia,
-        numeroPessoas: numeroPessoas,
-        numeroComodos: numeroComodos,
-        temAguaEncanada: temAguaEncanada,
-        temBanheiro: temBanheiro,
-        temCozinhaSeparada: temCozinhaSeparada,
-        segurancaEstrutural: segurancaEstrutural,
-        melhoriasDesejadas: melhoriasDesejadas,
-        facilAcessoSaude: facilAcessoSaude,
-      );
+  HabitacaoModel buildHabitacaoData() => HabitacaoModel(
+    tipoMoradia: tipoMoradia,
+    numeroPessoas: numeroPessoas,
+    numeroComodos: numeroComodos,
+    temAguaEncanada: temAguaEncanada,
+    temBanheiro: temBanheiro,
+    temCozinhaSeparada: temCozinhaSeparada,
+    segurancaEstrutural: segurancaEstrutural,
+    melhoriasDesejadas: melhoriasDesejadas,
+    facilAcessoSaude: facilAcessoSaude,
+  );
 }

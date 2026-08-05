@@ -1,6 +1,6 @@
 import 'package:mobx/mobx.dart';
 
-import '../../models/formulario_data.dart';
+import '../../models/educacao/educacao_model.dart';
 import 'educacao_validator.dart';
 
 part 'educacao_controller.g.dart';
@@ -79,13 +79,15 @@ abstract class EducacaoControllerBase with Store {
     isValid = EducacaoValidator.isTabValid(escolaridade: escolaridade);
   }
 
-  EducacaoData buildEducacaoData() => EducacaoData(
-        escolaridade: escolaridade,
-        estuda: estuda,
-        interrompeuEstudos: interrompeuEstudos,
-        dificuldadesEscolares: dificuldadesEscolares,
-        entendeOrientacoes: entendeOrientacoes,
-        cursosExtracurriculares: cursosExtracurriculares,
-        expectativasEducacionais: expectativasEducacionais,
-      );
+  EducacaoModel buildEducacaoData() {
+    return EducacaoModel(
+      escolaridade: escolaridade,
+      estuda: estuda,
+      interrompeuEstudos: interrompeuEstudos,
+      dificuldadesEscolares: dificuldadesEscolares,
+      entendeOrientacoes: entendeOrientacoes,
+      cursosExtracurriculares: cursosExtracurriculares,
+      expectativasEducacionais: expectativasEducacionais,
+    );
+  }
 }

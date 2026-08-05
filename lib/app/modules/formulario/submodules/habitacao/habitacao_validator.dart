@@ -21,8 +21,6 @@ class HabitacaoValidator {
     required int numeroPessoas,
     required String segurancaEstrutural,
   }) {
-    return tipoMoradia.trim().isNotEmpty &&
-        numeroPessoas > 0 &&
-        segurancaEstrutural.trim().isNotEmpty;
+    return tipoMoradia.trim().isNotEmpty && numeroPessoas > 0 && segurancaEstrutural.trim().isNotEmpty;
   }
 }

@@ -19,8 +19,6 @@ class SaudeValidator {
     required String acessibilidadeUBS,
     required String avaliacaoPreNatal,
   }) {
-    return distanciaUBS.trim().isNotEmpty &&
-        acessibilidadeUBS.trim().isNotEmpty &&
-        avaliacaoPreNatal.trim().isNotEmpty;
+    return distanciaUBS.trim().isNotEmpty && acessibilidadeUBS.trim().isNotEmpty && avaliacaoPreNatal.trim().isNotEmpty;
   }
 }

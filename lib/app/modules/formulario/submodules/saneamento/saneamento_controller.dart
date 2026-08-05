@@ -1,6 +1,6 @@
 import 'package:mobx/mobx.dart';
 
-import '../../models/formulario_data.dart';
+import '../../models/saneamento/saneamento_model.dart';
 import 'saneamento_validator.dart';
 
 part 'saneamento_controller.g.dart';
@@ -75,12 +75,12 @@ abstract class SaneamentoControllerBase with Store {
     );
   }
 
-  SaneamentoData buildSaneamentoData() => SaneamentoData(
-        fonteAgua: fonteAgua,
-        interrupcoesAgua: interrupcoesAgua,
-        destinoEsgoto: destinoEsgoto,
-        coletaLixo: coletaLixo,
-        preocupacaoAgua: preocupacaoAgua,
-        cuidadosVetores: cuidadosVetores,
-      );
+  SaneamentoModel buildSaneamentoData() => SaneamentoModel(
+    fonteAgua: fonteAgua,
+    interrupcoesAgua: interrupcoesAgua,
+    destinoEsgoto: destinoEsgoto,
+    coletaLixo: coletaLixo,
+    preocupacaoAgua: preocupacaoAgua,
+    cuidadosVetores: cuidadosVetores,
+  );
 }

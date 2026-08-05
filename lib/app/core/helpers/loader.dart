@@ -31,10 +31,7 @@ mixin Loader<T extends StatefulWidget> on State<T> {
                           builder: (context, double opacity, child) {
                             return Opacity(
                               opacity: opacity,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 4,
-                              ),
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 4),
                             );
                           },
                         ),
@@ -47,9 +44,7 @@ mixin Loader<T extends StatefulWidget> on State<T> {
                             return Opacity(
                               opacity: opacity,
                               child: Text(
-                                messageLoader.isEmpty
-                                    ? 'Carregando...'
-                                    : messageLoader,
+                                messageLoader.isEmpty ? 'Carregando...' : messageLoader,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontFamily: 'SFProDisplay',

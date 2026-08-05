@@ -1,6 +1,6 @@
 import 'package:mobx/mobx.dart';
 
-import '../../models/formulario_data.dart';
+import '../../models/saude/saude_model.dart';
 import 'saude_validator.dart';
 
 part 'saude_controller.g.dart';
@@ -122,17 +122,17 @@ abstract class SaudeControllerBase with Store {
     );
   }
 
-  SaudeData buildSaudeData() => SaudeData(
-        distanciaUBS: distanciaUBS,
-        faltouConsulta: faltouConsulta,
-        acessibilidadeUBS: acessibilidadeUBS,
-        cadastradaUBS: cadastradaUBS,
-        preNatalMedico: preNatalMedico,
-        preNatalEnfermagem: preNatalEnfermagem,
-        participaGrupoGestantes: participaGrupoGestantes,
-        examesPreNatalCompletos: examesPreNatalCompletos,
-        vacinasEmDia: vacinasEmDia,
-        avaliacaoPreNatal: avaliacaoPreNatal,
-        dificuldadesSaude: dificuldadesSaude,
-      );
+  SaudeModel buildSaudeData() => SaudeModel(
+    distanciaUBS: distanciaUBS,
+    faltouConsulta: faltouConsulta,
+    acessibilidadeUBS: acessibilidadeUBS,
+    cadastradaUBS: cadastradaUBS,
+    preNatalMedico: preNatalMedico,
+    preNatalEnfermagem: preNatalEnfermagem,
+    participaGrupoGestantes: participaGrupoGestantes,
+    examesPreNatalCompletos: examesPreNatalCompletos,
+    vacinasEmDia: vacinasEmDia,
+    avaliacaoPreNatal: avaliacaoPreNatal,
+    dificuldadesSaude: dificuldadesSaude,
+  );
 }

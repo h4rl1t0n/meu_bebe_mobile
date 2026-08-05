@@ -6,6 +6,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:validatorless/validatorless.dart';
 
 import '../../app_module.dart';
+import '../../core/constants/images.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/design_tokens.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
@@ -75,7 +76,7 @@ class LoginPageState extends State<LoginPage> {
                     children: [
                       Column(
                         children: [
-                          Image.asset('assets/images/mother.png', height: 120),
+                          Image.asset(Images.mother, height: 120),
                           SizedBox(height: Spacing.sm),
                           Text(
                             'Bem-vinda',

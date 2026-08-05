@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Design tokens de spacing, radius e elevation.
-/// Uso: `Spacing.md`, `Radius.lg`, `Elevation.card`.
 abstract final class Spacing {
   Spacing._();
 
@@ -46,27 +44,19 @@ abstract final class ElevationTokens {
   static const double raised = 6;
   static const double dialog = 12;
 
-  static BoxShadow subtleShadow(Color color) => BoxShadow(
-        color: color.withValues(alpha: 0.04),
-        blurRadius: 8,
-        offset: const Offset(0, 2),
-      );
+  static BoxShadow subtleShadow(Color color) {
+    return BoxShadow(color: color.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2));
+  }
 
-  static BoxShadow cardShadow(Color color) => BoxShadow(
-        color: color.withValues(alpha: 0.06),
-        blurRadius: 16,
-        offset: const Offset(0, 4),
-      );
+  static BoxShadow cardShadow(Color color) {
+    return BoxShadow(color: color.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 4));
+  }
 
-  static BoxShadow raisedShadow(Color color) => BoxShadow(
-        color: color.withValues(alpha: 0.08),
-        blurRadius: 24,
-        offset: const Offset(0, 8),
-      );
+  static BoxShadow raisedShadow(Color color) {
+    return BoxShadow(color: color.withValues(alpha: 0.08), blurRadius: 24, offset: const Offset(0, 8));
+  }
 
-  static BoxShadow dialogShadow(Color color) => BoxShadow(
-        color: color.withValues(alpha: 0.12),
-        blurRadius: 32,
-        offset: const Offset(0, 12),
-      );
+  static BoxShadow dialogShadow(Color color) {
+    return BoxShadow(color: color.withValues(alpha: 0.12), blurRadius: 32, offset: const Offset(0, 12));
+  }
 }

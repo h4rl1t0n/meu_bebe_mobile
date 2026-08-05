@@ -19,8 +19,6 @@ class AlimentacaoValidator {
     required String fonteAlimentos,
     required String avaliacaoAlimentacao,
   }) {
-    return refeicoesPorDia > 0 &&
-        fonteAlimentos.trim().isNotEmpty &&
-        avaliacaoAlimentacao.trim().isNotEmpty;
+    return refeicoesPorDia > 0 && fonteAlimentos.trim().isNotEmpty && avaliacaoAlimentacao.trim().isNotEmpty;
   }
 }

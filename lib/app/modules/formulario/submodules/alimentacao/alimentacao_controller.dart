@@ -1,6 +1,6 @@
 import 'package:mobx/mobx.dart';
 
-import '../../models/formulario_data.dart';
+import '../../models/alimentacao/alimentacao_model.dart';
 import 'alimentacao_validator.dart';
 
 part 'alimentacao_controller.g.dart';
@@ -110,16 +110,16 @@ abstract class AlimentacaoControllerBase with Store {
     );
   }
 
-  AlimentacaoData buildAlimentacaoData() => AlimentacaoData(
-        refeicoesPorDia: refeicoesPorDia,
-        insegurancaAlimentar: insegurancaAlimentar,
-        consomeFrutasVerduras: consomeFrutasVerduras,
-        consomeCarnes: consomeCarnes,
-        consomeLeite: consomeLeite,
-        consomeFeijao: consomeFeijao,
-        fonteAlimentos: fonteAlimentos,
-        mudancaAlimentacaoGestacao: mudancaAlimentacaoGestacao,
-        usaSuplementos: usaSuplementos,
-        avaliacaoAlimentacao: avaliacaoAlimentacao,
-      );
+  AlimentacaoModel buildAlimentacaoData() => AlimentacaoModel(
+    refeicoesPorDia: refeicoesPorDia,
+    insegurancaAlimentar: insegurancaAlimentar,
+    consomeFrutasVerduras: consomeFrutasVerduras,
+    consomeCarnes: consomeCarnes,
+    consomeLeite: consomeLeite,
+    consomeFeijao: consomeFeijao,
+    fonteAlimentos: fonteAlimentos,
+    mudancaAlimentacaoGestacao: mudancaAlimentacaoGestacao,
+    usaSuplementos: usaSuplementos,
+    avaliacaoAlimentacao: avaliacaoAlimentacao,
+  );
 }

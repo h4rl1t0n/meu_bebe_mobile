@@ -12,13 +12,25 @@ abstract class MainControllerBase with Store {
   final GestationRepository gestationRepository;
 
   @observable
+  int index = 0;
+
+  @observable
   String name = '';
 
   @observable
-  String tabName = 'Home';
+  String titulo = 'Home';
 
   @action
-  void setTabName(String name) => tabName = name;
+  void setIndex(int value) {
+    index = value;
+    titulo = switch (index) {
+      0 => 'Home',
+      1 => 'Gestação',
+      2 => 'Parto',
+      3 => 'Perfil',
+      _ => '-',
+    };
+  }
 
   MainControllerBase(this.gestationRepository);
 

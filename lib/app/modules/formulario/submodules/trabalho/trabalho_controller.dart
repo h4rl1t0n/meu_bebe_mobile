@@ -1,6 +1,6 @@
 import 'package:mobx/mobx.dart';
 
-import '../../models/formulario_data.dart';
+import '../../models/trabalho/trabalho_model.dart';
 import 'trabalho_validator.dart';
 
 part 'trabalho_controller.g.dart';
@@ -137,18 +137,20 @@ abstract class TrabalhoControllerBase with Store {
     isValid = TrabalhoValidator.isTabValid(empregado: empregado, tipoEmprego: tipoEmprego, faixaRenda: faixaRenda);
   }
 
-  TrabalhoData buildTrabalhoData() => TrabalhoData(
-        empregado: empregado,
-        tipoEmprego: tipoEmprego,
-        faixaRenda: faixaRenda,
-        permitePreNatal: permitePreNatal,
-        ambienteSeguro: ambienteSeguro,
-        temPausas: temPausas,
-        recebeAuxilioMaternidade: recebeAuxilioMaternidade,
-        recebeValeTransporte: recebeValeTransporte,
-        recebeValeAlimentacao: recebeValeAlimentacao,
-        motivoDesemprego: motivoDesemprego,
-        recebeBeneficioSocial: recebeBeneficioSocial,
-        impactoGestacaoTrabalho: impactoGestacaoTrabalho,
-      );
+  TrabalhoModel buildTrabalhoData() {
+    return TrabalhoModel(
+      empregado: empregado,
+      tipoEmprego: tipoEmprego,
+      faixaRenda: faixaRenda,
+      permitePreNatal: permitePreNatal,
+      ambienteSeguro: ambienteSeguro,
+      temPausas: temPausas,
+      recebeAuxilioMaternidade: recebeAuxilioMaternidade,
+      recebeValeTransporte: recebeValeTransporte,
+      recebeValeAlimentacao: recebeValeAlimentacao,
+      motivoDesemprego: motivoDesemprego,
+      recebeBeneficioSocial: recebeBeneficioSocial,
+      impactoGestacaoTrabalho: impactoGestacaoTrabalho,
+    );
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../core/constants/images.dart';
 import '../../core/helpers/messages.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/design_tokens.dart';
@@ -49,8 +50,8 @@ class _FormularioPageState extends State<FormularioPage> {
       ),
       body: Container(
         padding: EdgeInsets.all(Spacing.sm),
-        decoration: const BoxDecoration(
-          image: DecorationImage(opacity: .05, fit: BoxFit.contain, image: AssetImage('assets/images/mother.png')),
+        decoration: BoxDecoration(
+          image: DecorationImage(opacity: .05, fit: BoxFit.contain, image: AssetImage(Images.mother)),
         ),
         child: Observer(
           builder: (_) => IndexedStack(

@@ -9,11 +9,7 @@ class TrabalhoValidator {
     return null;
   }
 
-  static bool isTabValid({
-    required bool empregado,
-    required String tipoEmprego,
-    required String faixaRenda,
-  }) {
+  static bool isTabValid({required bool empregado, required String tipoEmprego, required String faixaRenda}) {
     if (!empregado) return true;
     return tipoEmprego.trim().isNotEmpty && faixaRenda.trim().isNotEmpty;
   }
