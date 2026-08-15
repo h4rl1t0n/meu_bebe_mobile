@@ -155,14 +155,17 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
   }
 
   Widget _buildCheckbox(String label, bool value, ValueChanged<bool?> onChanged) {
-    return CheckboxListTile(
-      title: Text(label, style: context.textStyles.textStyle),
-      value: value,
-      onChanged: onChanged,
-      activeColor: context.colors.text,
-      contentPadding: EdgeInsets.zero,
-      controlAffinity: ListTileControlAffinity.leading,
-      dense: true,
+    return Material(
+      color: Colors.transparent,
+      child: CheckboxListTile(
+        title: Text(label, style: context.textStyles.textStyle),
+        value: value,
+        onChanged: onChanged,
+        activeColor: context.colors.text,
+        contentPadding: EdgeInsets.zero,
+        controlAffinity: ListTileControlAffinity.leading,
+        dense: true,
+      ),
     );
   }
 

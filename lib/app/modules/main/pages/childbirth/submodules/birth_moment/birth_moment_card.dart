@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/birth_moment.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/custom_item_tile.dart';
-import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class BirthMomentCard extends StatelessWidget {
   const BirthMomentCard({super.key, required this.birthMoment, this.onEdit});
@@ -22,7 +22,7 @@ class BirthMomentCard extends StatelessWidget {
             children: [
               Icon(Icons.child_care, size: 20, color: context.colors.text),
               const SizedBox(width: Spacing.sm),
-              Text('Expectativas para o momento do parto', style: context.textStyles.titleSmallStyle),
+              Flexible(child: Text('Expectativas para o momento do parto', style: context.textStyles.titleSmallStyle)),
             ],
           ),
           const SizedBox(height: Spacing.lg),

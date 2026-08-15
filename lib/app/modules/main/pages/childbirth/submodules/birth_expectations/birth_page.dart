@@ -108,6 +108,7 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
 
   Widget _buildTabBar(TextEditingController controller, List<String> labels) {
     return Row(
+      spacing: 5,
       children: List.generate(labels.length, (index) {
         return Expanded(
           child: InkWell(
@@ -130,13 +131,16 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
   }
 
   Widget _buildSwitchTile(String label, bool value, ValueChanged<bool> onChanged) {
-    return SwitchListTile(
-      title: Text(label, style: context.textStyles.textStyle),
-      value: value,
-      onChanged: onChanged,
-      activeThumbColor: context.colors.text,
-      contentPadding: EdgeInsets.zero,
-      dense: true,
+    return Material(
+      color: Colors.transparent,
+      child: SwitchListTile(
+        title: Text(label, style: context.textStyles.textStyle),
+        value: value,
+        onChanged: onChanged,
+        activeThumbColor: context.colors.text,
+        contentPadding: EdgeInsets.zero,
+        dense: true,
+      ),
     );
   }
 

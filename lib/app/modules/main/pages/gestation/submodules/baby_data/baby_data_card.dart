@@ -91,7 +91,7 @@ class _BabyDataCardState extends State<BabyDataCard> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            children: [ItemTileWithList(title: 'Dados sobre o nascimento', list: widget.list)],
+            children: [Expanded(child: ItemTileWithList(title: 'Dados sobre o nascimento', list: widget.list))],
           ),
           const SizedBox(height: Spacing.sm),
           SizedBox(

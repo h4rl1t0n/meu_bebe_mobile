@@ -22,7 +22,7 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
     _NotificationItem(
       icon: Icons.vaccines,
       title: 'Vacina dTpa disponivel',
-      subtitle: 'Voce esta no periodo recomendado para a vacina dTpa',
+      subtitle: 'Você esta no periodo recomendado para a vacina dTpa',
       time: '2 dias atras',
     ),
     _NotificationItem(

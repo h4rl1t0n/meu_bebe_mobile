@@ -130,6 +130,7 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
 
   Widget _buildTabBar(TextEditingController controller, List<String> labels) {
     return Row(
+      spacing: 5,
       children: List.generate(labels.length, (index) {
         return Expanded(
           child: InkWell(

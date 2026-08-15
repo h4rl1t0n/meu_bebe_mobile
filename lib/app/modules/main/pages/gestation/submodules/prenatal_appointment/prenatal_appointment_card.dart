@@ -91,7 +91,7 @@ class _PrenatalAppointmentCardState extends State<PrenatalAppointmentCard> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            children: [ItemTileWithList(title: 'Consultas de pre-natal', list: widget.list)],
+            children: [Expanded(child: ItemTileWithList(title: 'Consultas de pre-natal', list: widget.list))],
           ),
           const SizedBox(height: Spacing.sm),
           SizedBox(

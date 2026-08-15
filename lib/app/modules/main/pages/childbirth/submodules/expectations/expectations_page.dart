@@ -107,6 +107,7 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
 
   Widget _customTabBar(TextEditingController controllerEC) {
     return Row(
+      spacing: 5,
       children: [_tab('Sim', 0, controllerEC), _tab('Não', 1, controllerEC), _tab('Não sei', 2, controllerEC)],
     );
   }
