@@ -37,15 +37,15 @@ class ColorsApp {
 
   // ── Neutral Gray Scale ──
   Color get gray50 => const Color(0xFFF8F9FA);
-  Color get gray100 => const Color(0xFFF1F3F5);
-  Color get gray200 => const Color(0xFFE9ECEF);
-  Color get gray300 => const Color(0xFFDEE2E6);
-  Color get gray400 => const Color(0xFFCED4DA);
-  Color get gray500 => const Color(0xFFADB5BD);
-  Color get gray600 => const Color(0xFF6C757D);
-  Color get gray700 => const Color(0xFF495057);
-  Color get gray800 => const Color(0xFF343A40);
-  Color get gray900 => const Color(0xFF212529);
+  Color get gray100 => const Color(0xFFF8FAFC);
+  Color get gray200 => const Color(0xFFF1F5F9);
+  Color get gray300 => const Color(0xFFE2E8F0);
+  Color get gray400 => const Color(0xFFCBD5E1);
+  Color get gray500 => const Color(0xFF94A3B8);
+  Color get gray600 => const Color(0xFF64748B);
+  Color get gray700 => const Color(0xFF475569);
+  Color get gray800 => const Color(0xFF334155);
+  Color get gray900 => const Color(0xFF1E293B);
 
   // ── Semantic Colors ──
   Color get success => const Color(0xFF2E7D32);

@@ -18,7 +18,7 @@ class TextStyles {
   TextStyle get titleStyle => TextStyle(
     fontFamily: 'Cabin',
     color: _c.darkText,
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: FontWeight.w900,
     height: 1.15,
     letterSpacing: -0.5,
@@ -68,31 +68,16 @@ class TextStyles {
   // ── Body ──
 
   /// 16px · w400 · default body / paragraph
-  TextStyle get textStyle => TextStyle(
-    fontFamily: 'Cabin',
-    color: _c.text,
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    height: 1.5,
-  );
+  TextStyle get textStyle =>
+      TextStyle(fontFamily: 'Cabin', color: _c.text, fontSize: 16, fontWeight: FontWeight.w400, height: 1.5);
 
   /// 14px · w400 · secondary body
-  TextStyle get bodySmall => TextStyle(
-    fontFamily: 'Cabin',
-    color: _c.text,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    height: 1.45,
-  );
+  TextStyle get bodySmall =>
+      TextStyle(fontFamily: 'Cabin', color: _c.text, fontSize: 14, fontWeight: FontWeight.w400, height: 1.45);
 
   /// 14px · w500 · emphasized body
-  TextStyle get bodyMedium => TextStyle(
-    fontFamily: 'Cabin',
-    color: _c.darkText,
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    height: 1.45,
-  );
+  TextStyle get bodyMedium =>
+      TextStyle(fontFamily: 'Cabin', color: _c.darkText, fontSize: 14, fontWeight: FontWeight.w500, height: 1.45);
 
   // ── Captions & Labels ──
 
@@ -119,71 +104,38 @@ class TextStyles {
   // ── Form ──
 
   /// 14px · w700 · input labels
-  TextStyle get labelTextStyle => TextStyle(
-    fontFamily: 'Cabin',
-    fontSize: 14,
-    color: _c.text,
-    fontWeight: FontWeight.w700,
-    height: 1.3,
-  );
+  TextStyle get labelTextStyle =>
+      TextStyle(fontFamily: 'Cabin', fontSize: 14, color: _c.text, fontWeight: FontWeight.w700, height: 1.3);
 
   /// 14px · w600 · floating input labels
-  TextStyle get floatingLabelTextStyle => TextStyle(
-    fontFamily: 'Cabin',
-    color: _c.darkText,
-    fontWeight: FontWeight.w600,
-    fontSize: 14,
-    height: 1.2,
-  );
+  TextStyle get floatingLabelTextStyle =>
+      TextStyle(fontFamily: 'Cabin', color: _c.darkText, fontWeight: FontWeight.w600, fontSize: 14, height: 1.2);
 
   /// 13px · w400 · input hint / helper
-  TextStyle get hintStyle => TextStyle(
-    fontFamily: 'Cabin',
-    color: _c.gray400,
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-    height: 1.3,
-  );
+  TextStyle get hintStyle =>
+      TextStyle(fontFamily: 'Cabin', color: _c.gray400, fontSize: 13, fontWeight: FontWeight.w400, height: 1.3);
 
   /// 12px · w500 · input error
-  TextStyle get errorStyle => TextStyle(
-    fontFamily: 'Cabin',
-    color: _c.error,
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    height: 1.25,
-  );
+  TextStyle get errorStyle =>
+      TextStyle(fontFamily: 'Cabin', color: _c.error, fontSize: 12, fontWeight: FontWeight.w500, height: 1.25);
 
   // ── Buttons ──
 
   /// 14px · w700 · button text
-  TextStyle get buttonTextStyle => TextStyle(
-    fontSize: 14,
-    fontFamily: 'Cabin',
-    fontWeight: FontWeight.w700,
-    height: 1.2,
-    letterSpacing: 0.3,
-  );
+  TextStyle get buttonTextStyle =>
+      TextStyle(fontSize: 14, fontFamily: 'Cabin', fontWeight: FontWeight.w700, height: 1.2, letterSpacing: 0.3);
 
   /// 18px · w700 · large button text
-  TextStyle get buttonLargeStyle => TextStyle(
-    fontSize: 18,
-    fontFamily: 'Cabin',
-    fontWeight: FontWeight.w700,
-    height: 1.2,
-    letterSpacing: 0.2,
-  );
+  TextStyle get buttonLargeStyle =>
+      TextStyle(fontSize: 18, fontFamily: 'Cabin', fontWeight: FontWeight.w700, height: 1.2, letterSpacing: 0.2);
 
   // ── Tab / Nav ──
 
   /// 12px · w600 · tab bar labels
-  TextStyle get tabLabelStyle => TextStyle(
-    fontFamily: 'Cabin',
-    fontSize: 12,
-    fontWeight: FontWeight.w600,
-    height: 1.2,
-    letterSpacing: 0.2,
-  );
+  TextStyle get tabLabelStyle =>
+      TextStyle(fontFamily: 'Cabin', fontSize: 12, fontWeight: FontWeight.w600, height: 1.2, letterSpacing: 0.2);
+
+ 
 }
 
 extension TextStylesExtension on BuildContext {

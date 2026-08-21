@@ -23,14 +23,12 @@ class SobreAppPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: colors.surface,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  ElevationTokens.raisedShadow(colors.onSurface),
-                ],
+                boxShadow: [ElevationTokens.raisedShadow(colors.onSurface)],
               ),
               child: CircleAvatar(
                 radius: 60,
                 backgroundColor: context.colors.primary,
-                child: const Icon(Icons.child_care, size: 60, color: Colors.white),
+                child: Icon(Icons.child_care, size: 60, color: colors.primary500),
               ),
             ),
             const SizedBox(height: Spacing.xxl),

@@ -238,17 +238,38 @@ class AppTheme {
     // ── Switch ──
     // switchTheme: SwitchThemeData(
     //   thumbColor: WidgetStateProperty.resolveWith((states) {
-    //     if (states.contains(WidgetState.selected)) return colors.primary500;
-    //     if (states.contains(WidgetState.disabled)) return colors.gray300;
-    //     return colors.gray400;
+    //     if (states.contains(WidgetState.selected)) {
+    //       return colors.primary500;
+    //     }
+
+    //     if (states.contains(WidgetState.disabled)) {
+    //       return colors.gray300;
+    //     }
+
+    //     return colors.gray500;
     //   }),
+
     //   trackColor: WidgetStateProperty.resolveWith((states) {
-    //     if (states.contains(WidgetState.selected)) return colors.primary300;
-    //     if (states.contains(WidgetState.disabled)) return colors.gray200;
-    //     return colors.gray300;
+    //     if (states.contains(WidgetState.selected)) {
+    //       return colors.primary200;
+    //     }
+
+    //     if (states.contains(WidgetState.disabled)) {
+    //       return colors.gray200;
+    //     }
+
+    //     return colors.gray200;
     //   }),
+
     //   trackOutlineColor: WidgetStateProperty.resolveWith((states) {
-    //     if (states.contains(WidgetState.selected)) return Colors.transparent;
+    //     if (states.contains(WidgetState.selected)) {
+    //       return Colors.transparent;
+    //     }
+
+    //     if (states.contains(WidgetState.disabled)) {
+    //       return colors.gray300;
+    //     }
+
     //     return colors.gray300;
     //   }),
     // ),
@@ -319,13 +340,13 @@ class AppTheme {
         if (states.contains(WidgetState.selected)) {
           return textStyles.tabLabelStyle.copyWith(color: colors.primary500);
         }
-        return textStyles.tabLabelStyle.copyWith(color: colors.gray500);
+        return textStyles.tabLabelStyle.copyWith(color: colors.gray600);
       }),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return IconThemeData(color: colors.primary500, size: 22);
         }
-        return IconThemeData(color: colors.gray500, size: 22);
+        return IconThemeData(color: colors.gray600, size: 22);
       }),
     ),
 
