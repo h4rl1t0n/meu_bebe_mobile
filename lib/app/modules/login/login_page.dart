@@ -77,12 +77,7 @@ class LoginPageState extends State<LoginPage> {
                             Stack(
                               alignment: Alignment.bottomCenter,
                               children: [
-                                Container(
-                                  color: colors.primary300,
-                                  height: 280,
-                                  width: double.infinity,
-                                  //child: Image.asset(Images.mother, fit: BoxFit.cover, alignment: Alignment.topCenter),
-                                ),
+                                Container(color: colors.primary300, height: 280, width: double.infinity),
                                 Container(
                                   height: 50,
                                   width: double.infinity,
@@ -99,11 +94,27 @@ class LoginPageState extends State<LoginPage> {
                                     child: Container(
                                       width: 140,
                                       height: 140,
-                                      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: colors.secondary.withValues(alpha: 0.10),
+                                            blurRadius: 4,
+                                            spreadRadius: 1,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
+                                        color: Colors.white,
+                                      ),
                                       padding: const EdgeInsets.all(12),
                                       child: Hero(
                                         tag: 'logo',
-                                        child: Image.asset(Images.mother, fit: BoxFit.contain),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          shape: const CircleBorder(),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: Image.asset(Images.mother, fit: BoxFit.contain),
+                                        ),
                                       ),
                                     ),
                                   ),
