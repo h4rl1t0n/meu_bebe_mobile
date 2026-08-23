@@ -89,6 +89,7 @@ abstract class EducacaoControllerBase with Store {
       situacaoEstudosGestacao: situacaoEstudosGestacao,
       entendeOrientacoes: entendeOrientacoes,
       fezCursoQualificacaoProfissional: fezCursoQualificacaoProfissional,
+      dificuldadesEducacao: dificuldadesEscolares,
     );
   }
 

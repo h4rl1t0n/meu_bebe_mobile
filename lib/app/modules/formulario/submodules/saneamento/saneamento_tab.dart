@@ -42,10 +42,10 @@ class _SaneamentoTabState extends State<SaneamentoTab> {
               onChanged: (v) => controller.setFonteAgua(v),
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text('Há interrupções frequentes no fornecimento de água?'),
-              value: controller.interrupcoesAgua,
-              onChanged: controller.setInterrupcoesAgua,
+            _simNao(
+              'Há interrupções frequentes no fornecimento de água?',
+              controller.interrupcoesAgua,
+              controller.setInterrupcoesAgua,
             ),
             SizedBox(height: Spacing.lg),
             Column(
@@ -99,10 +99,10 @@ class _SaneamentoTabState extends State<SaneamentoTab> {
                 onChanged: (v) => controller.setDestinoLixoSemColeta(v),
               ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text(textAlign: TextAlign.justify, 'Já teve algum problema de saúde por conta da água?'),
-              value: controller.preocupacaoAgua,
-              onChanged: controller.setPreocupacaoAgua,
+            _simNao(
+              'Já teve algum problema de saúde por conta da água?',
+              controller.preocupacaoAgua,
+              controller.setPreocupacaoAgua,
             ),
             SizedBox(height: Spacing.lg),
             Column(
@@ -124,6 +124,32 @@ class _SaneamentoTabState extends State<SaneamentoTab> {
           ],
         ),
       ),
+    );
+  }
+
+  /// Pergunta de Sim/Não com três estados: `null` (ainda não respondido),
+  /// `true` (Sim) e `false` (Não). Nada fica pré-selecionado.
+  Widget _simNao(String title, bool? value, ValueChanged<bool?> onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        SizedBox(height: Spacing.sm),
+        RadioGroup<bool>(
+          groupValue: value,
+          onChanged: onChanged,
+          child: Row(
+            children: [
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Sim'), value: true),
+              ),
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Não'), value: false),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

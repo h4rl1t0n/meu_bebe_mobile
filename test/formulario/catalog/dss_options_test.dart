@@ -69,6 +69,9 @@ void main() {
       expect(MotivoDesemprego.labelOf('gestacao'), 'Por causa da gestação');
       expect(ImpactoGestacaoTrabalho.labelOf('nao_afetou'), 'Não afetou');
       expect(ImpactoGestacaoTrabalho.labelOf('afastamento_temporario'), 'Afastamento temporário');
+      expect(BeneficioTrabalho.labelOf('sem_beneficios'), 'Não possui os benefícios listados');
+      expect(ServicoPreNatal.labelOf('nenhum_dos_listados'), 'Nenhum dos serviços listados');
+      expect(ItemResidencia.labelOf('nenhum_dos_listados'), 'Nenhum dos itens listados');
 
       expect(DificuldadeSaude.labelOf('falta_transporte'), 'Falta de transporte');
       expect(DificuldadeSaude.labelOf('sem_dificuldades'), 'Não tenho dificuldades');

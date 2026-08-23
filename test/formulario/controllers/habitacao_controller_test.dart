@@ -48,6 +48,9 @@ void main() {
       controller.setTipoMoradia(TipoMoradia.casa);
       controller.setMaterialMoradia(MaterialMoradia.alvenaria);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       final data = controller.buildHabitacaoData();
       expect(data.tipoMoradia, 'casa');
@@ -63,6 +66,9 @@ void main() {
       controller.setNumeroComodos(4);
       controller.setNumeroDormitorios(2);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isTrue);
     });
@@ -74,6 +80,9 @@ void main() {
       controller.setNumeroComodos(4);
       controller.setNumeroDormitorios(2);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isFalse);
     });
@@ -85,6 +94,9 @@ void main() {
       controller.setNumeroComodos(4);
       controller.setNumeroDormitorios(2);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isFalse);
     });
@@ -96,6 +108,9 @@ void main() {
       controller.setNumeroComodos(4);
       controller.setNumeroDormitorios(2);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isFalse);
     });
@@ -107,6 +122,9 @@ void main() {
       controller.setNumeroPessoas(3);
       controller.setNumeroDormitorios(2);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isFalse);
     });
@@ -118,6 +136,9 @@ void main() {
       controller.setNumeroPessoas(3);
       controller.setNumeroComodos(4);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isFalse);
     });
@@ -129,6 +150,9 @@ void main() {
       controller.setNumeroPessoas(3);
       controller.setNumeroComodos(4);
       controller.setNumeroDormitorios(2);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isFalse);
     });
@@ -141,6 +165,9 @@ void main() {
       controller.setNumeroComodos(4);
       controller.setNumeroDormitorios(2);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isTrue);
     });
@@ -153,6 +180,9 @@ void main() {
       controller.setNumeroComodos(2);
       controller.setNumeroDormitorios(2);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isTrue);
     });
@@ -165,6 +195,9 @@ void main() {
       controller.setNumeroComodos(2);
       controller.setNumeroDormitorios(3);
       controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.setFacilAcessoSaude(true);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
 
       expect(controller.isValid, isFalse);
     });
@@ -173,6 +206,40 @@ void main() {
       expect(HabitacaoValidator.numeroDormitorios('3', numeroComodos: 2), isNotNull);
       expect(HabitacaoValidator.numeroDormitorios('2', numeroComodos: 2), isNull);
       expect(HabitacaoValidator.numeroDormitorios('1', numeroComodos: 1), isNull);
+    });
+
+    test('nenhum_dos_listados em itens de residência é mutuamente exclusiva', () {
+      final controller = HabitacaoController();
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleItemResidencia(ItemResidencia.banheiroInterno);
+
+      controller.toggleItemResidencia(ItemResidencia.nenhumDosListados);
+
+      expect(controller.buildHabitacaoData().itensResidencia, ['nenhum_dos_listados']);
+
+      controller.toggleItemResidencia(ItemResidencia.cozinhaSeparada);
+      final codes = controller.buildHabitacaoData().itensResidencia;
+      expect(codes, contains('cozinha_separada'));
+      expect(codes, isNot(contains('nenhum_dos_listados')));
+      expect(codes, isNot(contains('Água encanada')));
+    });
+
+    test('facil_acesso_saude começa null e é obrigatório', () {
+      final controller = HabitacaoController();
+      expect(controller.facilAcessoSaude, isNull);
+
+      controller.setTipoMoradia(TipoMoradia.casa);
+      controller.setMaterialMoradia(MaterialMoradia.alvenaria);
+      controller.setNumeroPessoas(3);
+      controller.setNumeroComodos(4);
+      controller.setNumeroDormitorios(2);
+      controller.setSegurancaResidencia(SegurancaResidencia.segura);
+      controller.toggleItemResidencia(ItemResidencia.aguaEncanada);
+      controller.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
+      expect(controller.isValid, isFalse); // facil_acesso_saude null
+
+      controller.setFacilAcessoSaude(false);
+      expect(controller.isValid, isTrue);
     });
   });
 }

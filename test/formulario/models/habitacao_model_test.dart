@@ -79,7 +79,7 @@ void main() {
       expect(model.materialMoradia, isNull);
     });
 
-    test('empty() começa com números 0, listas vazias e booleanos falsos', () {
+    test('empty() começa com números 0, listas vazias e booleanos nulos', () {
       final model = HabitacaoModel.empty();
 
       expect(model.numeroPessoas, 0);
@@ -90,7 +90,17 @@ void main() {
       expect(model.tipoMoradia, isNull);
       expect(model.materialMoradia, isNull);
       expect(model.segurancaResidencia, isNull);
-      expect(model.facilAcessoSaude, isFalse);
+      expect(model.facilAcessoSaude, isNull);
+    });
+
+    test('facil_acesso_saude preserva true, false e null', () {
+      final sim = HabitacaoModel(numeroPessoas: 1, numeroComodos: 1, numeroDormitorios: 1, facilAcessoSaude: true);
+      final nao = HabitacaoModel(numeroPessoas: 1, numeroComodos: 1, numeroDormitorios: 1, facilAcessoSaude: false);
+      final naoRespondido = HabitacaoModel(numeroPessoas: 1, numeroComodos: 1, numeroDormitorios: 1);
+
+      expect(HabitacaoModel.fromMap(sim.toMap()).facilAcessoSaude, isTrue);
+      expect(HabitacaoModel.fromMap(nao.toMap()).facilAcessoSaude, isFalse);
+      expect(HabitacaoModel.fromMap(naoRespondido.toMap()).facilAcessoSaude, isNull);
     });
   });
 }

@@ -18,7 +18,7 @@ class HabitacaoModel {
   /// Múltipla escolha de melhorias desejadas (códigos canônicos de
   /// `MelhoriaMoradia`). `sem_melhorias` é mutuamente exclusiva.
   final List<String> melhoriasDesejadas;
-  final bool facilAcessoSaude;
+  final bool? facilAcessoSaude;
 
   const HabitacaoModel({
     this.tipoMoradia,
@@ -29,14 +29,13 @@ class HabitacaoModel {
     this.itensResidencia = const [],
     this.segurancaResidencia,
     this.melhoriasDesejadas = const [],
-    required this.facilAcessoSaude,
+    this.facilAcessoSaude,
   });
 
   factory HabitacaoModel.empty() => const HabitacaoModel(
     numeroPessoas: 0,
     numeroComodos: 0,
     numeroDormitorios: 0,
-    facilAcessoSaude: false,
   );
 
   Map<String, dynamic> toMap() => {
@@ -60,7 +59,7 @@ class HabitacaoModel {
     itensResidencia: List<String>.from((map['itens_residencia'] as List?) ?? const []),
     segurancaResidencia: map['seguranca_residencia'] as String?,
     melhoriasDesejadas: List<String>.from((map['melhorias_desejadas'] as List?) ?? const []),
-    facilAcessoSaude: map['facil_acesso_saude'] == true,
+    facilAcessoSaude: map['facil_acesso_saude'] as bool?,
   );
 
   HabitacaoModel copyWith({

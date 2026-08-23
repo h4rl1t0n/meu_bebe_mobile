@@ -129,14 +129,40 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
               ],
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text('Tem fácil acesso a serviços de saúde a partir da sua residência?'),
-              value: controller.facilAcessoSaude,
-              onChanged: controller.setFacilAcessoSaude,
+            _simNao(
+              'Tem fácil acesso a serviços de saúde a partir da sua residência?',
+              controller.facilAcessoSaude,
+              controller.setFacilAcessoSaude,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  /// Pergunta de Sim/Não com três estados: `null` (ainda não respondido),
+  /// `true` (Sim) e `false` (Não). Nada fica pré-selecionado.
+  Widget _simNao(String title, bool? value, ValueChanged<bool?> onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        SizedBox(height: Spacing.sm),
+        RadioGroup<bool>(
+          groupValue: value,
+          onChanged: onChanged,
+          child: Row(
+            children: [
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Sim'), value: true),
+              ),
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Não'), value: false),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

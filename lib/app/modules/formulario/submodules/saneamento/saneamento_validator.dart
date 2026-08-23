@@ -21,8 +21,16 @@ class SaneamentoValidator {
     required EsgotamentoSanitario? esgotamentoSanitario,
     required FrequenciaColetaLixo? frequenciaColetaLixo,
     required DestinoLixoSemColeta? destinoLixoSemColeta,
+    required bool? interrupcoesAgua,
+    required bool? preocupacaoAgua,
+    required List<CuidadoVetor> cuidadosVetores,
   }) {
-    if (fonteAgua == null || esgotamentoSanitario == null || frequenciaColetaLixo == null) {
+    if (fonteAgua == null ||
+        esgotamentoSanitario == null ||
+        frequenciaColetaLixo == null ||
+        interrupcoesAgua == null ||
+        preocupacaoAgua == null ||
+        cuidadosVetores.isEmpty) {
       return false;
     }
     // Com coleta regular, a destinação alternativa é não aplicável (null).

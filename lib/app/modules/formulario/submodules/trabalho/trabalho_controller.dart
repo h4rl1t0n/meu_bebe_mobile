@@ -10,7 +10,7 @@ class TrabalhoController = TrabalhoControllerBase with _$TrabalhoController;
 
 abstract class TrabalhoControllerBase with Store {
   @observable
-  bool empregado = false;
+  bool? empregado;
 
   @observable
   TipoEmprego? tipoEmprego;
@@ -43,11 +43,11 @@ abstract class TrabalhoControllerBase with Store {
   bool isValid = false;
 
   @action
-  void setEmpregado(bool value) {
+  void setEmpregado(bool? value) {
     empregado = value;
-    if (value) {
+    if (value == true) {
       motivoDesemprego = null;
-    } else {
+    } else if (value == false) {
       tipoEmprego = null;
       permitePreNatal = null;
       ambienteSeguro = null;
@@ -89,10 +89,23 @@ abstract class TrabalhoControllerBase with Store {
 
   @action
   void toggleBeneficio(BeneficioTrabalho beneficio) {
-    if (beneficios.contains(beneficio)) {
-      beneficios.remove(beneficio);
+    if (beneficio == BeneficioTrabalho.semBeneficios) {
+      // `sem_beneficios` é mutuamente exclusiva com as demais opções.
+      if (beneficios.contains(BeneficioTrabalho.semBeneficios)) {
+        beneficios.clear();
+      } else {
+        beneficios
+          ..clear()
+          ..add(BeneficioTrabalho.semBeneficios);
+      }
     } else {
-      beneficios.add(beneficio);
+      // Selecionar qualquer benefício remove `sem_beneficios`.
+      beneficios.remove(BeneficioTrabalho.semBeneficios);
+      if (beneficios.contains(beneficio)) {
+        beneficios.remove(beneficio);
+      } else {
+        beneficios.add(beneficio);
+      }
     }
     validate();
   }
@@ -117,7 +130,12 @@ abstract class TrabalhoControllerBase with Store {
 
   @action
   void validate() {
-    isValid = TrabalhoValidator.isTabValid(empregado: empregado, tipoEmprego: tipoEmprego, faixaRenda: faixaRenda);
+    isValid = TrabalhoValidator.isTabValid(
+      empregado: empregado,
+      tipoEmprego: tipoEmprego,
+      faixaRenda: faixaRenda,
+      beneficios: beneficios,
+    );
   }
 
   TrabalhoModel buildTrabalhoData() {
@@ -125,10 +143,10 @@ abstract class TrabalhoControllerBase with Store {
       empregado: empregado,
       tipoEmprego: tipoEmprego?.code,
       faixaRenda: faixaRenda?.code,
-      permitePreNatal: empregado ? permitePreNatal : null,
-      ambienteSeguro: empregado ? ambienteSeguro : null,
-      temPausas: empregado ? temPausas : null,
-      beneficiosTrabalho: empregado ? beneficios.map((b) => b.code).toList() : null,
+      permitePreNatal: empregado == true ? permitePreNatal : null,
+      ambienteSeguro: empregado == true ? ambienteSeguro : null,
+      temPausas: empregado == true ? temPausas : null,
+      beneficiosTrabalho: empregado == true ? beneficios.map((b) => b.code).toList() : null,
       motivoDesemprego: motivoDesemprego?.code,
       recebeBeneficioSocial: recebeBeneficioSocial,
       impactoGestacaoTrabalho: impactoGestacaoTrabalho?.code,

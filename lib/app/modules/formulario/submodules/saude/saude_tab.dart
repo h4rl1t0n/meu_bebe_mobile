@@ -41,13 +41,10 @@ class _SaudeTabState extends State<SaudeTab> {
               onChanged: (v) => controller.setDistanciaUBS(v),
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text(
-                textAlign: TextAlign.justify,
-                'Já faltou a alguma consulta por dificuldade de transporte ou trabalho?',
-              ),
-              value: controller.faltouConsulta,
-              onChanged: controller.setFaltouConsulta,
+            _simNao(
+              'Já faltou a alguma consulta por dificuldade de transporte ou trabalho?',
+              controller.faltouConsulta,
+              controller.setFaltouConsulta,
             ),
             SizedBox(height: Spacing.lg),
             DropdownButtonFormField<AcessoUBS>(
@@ -83,16 +80,15 @@ class _SaudeTabState extends State<SaudeTab> {
               ],
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text('Realizou todos os exames solicitados no pré-natal?'),
-              value: controller.examesPreNatalCompletos,
-              onChanged: controller.setExamesPreNatalCompletos,
+            _simNao(
+              'Realizou todos os exames solicitados no pré-natal?',
+              controller.examesPreNatalCompletos,
+              controller.setExamesPreNatalCompletos,
             ),
-            SwitchListTile(
-              title: const Text('Tomou todas as vacinas indicadas para gestantes?'),
-              subtitle: const Text('Incluindo dTpa e influenza'),
-              value: controller.vacinasEmDia,
-              onChanged: controller.setVacinasEmDia,
+            _simNao(
+              'Tomou todas as vacinas indicadas para gestantes?',
+              controller.vacinasEmDia,
+              controller.setVacinasEmDia,
             ),
             SizedBox(height: Spacing.lg),
             DropdownButtonFormField<AvaliacaoPreNatal>(
@@ -127,6 +123,32 @@ class _SaudeTabState extends State<SaudeTab> {
           ],
         ),
       ),
+    );
+  }
+
+  /// Pergunta de Sim/Não com três estados: `null` (ainda não respondido),
+  /// `true` (Sim) e `false` (Não). Nada fica pré-selecionado.
+  Widget _simNao(String title, bool? value, ValueChanged<bool?> onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        SizedBox(height: Spacing.sm),
+        RadioGroup<bool>(
+          groupValue: value,
+          onChanged: onChanged,
+          child: Row(
+            children: [
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Sim'), value: true),
+              ),
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Não'), value: false),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

@@ -12,14 +12,17 @@ class TrabalhoValidator {
   }
 
   static bool isTabValid({
-    required bool empregado,
+    required bool? empregado,
     required TipoEmprego? tipoEmprego,
     required FaixaRenda? faixaRenda,
+    required List<BeneficioTrabalho> beneficios,
   }) {
-    // faixa_renda é obrigatória independentemente da situação profissional.
+    // empregado e faixa_renda são obrigatórios independentemente da situação.
+    if (empregado == null) return false;
     if (faixaRenda == null) return false;
-    // tipo_emprego é obrigatório apenas quando empregada.
-    if (!empregado) return true;
-    return tipoEmprego != null;
+    // Desempregada: apenas faixa_renda (e empregado) são obrigatórios.
+    if (empregado == false) return true;
+    // Empregada: tipo_emprego e ao menos um benefício são obrigatórios.
+    return tipoEmprego != null && beneficios.isNotEmpty;
   }
 }

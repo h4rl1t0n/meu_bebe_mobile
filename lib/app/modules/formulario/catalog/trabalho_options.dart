@@ -40,7 +40,8 @@ enum FaixaRenda {
 enum BeneficioTrabalho {
   auxilioMaternidade('auxilio_maternidade', 'Auxílio-maternidade'),
   valeTransporte('vale_transporte', 'Vale-transporte'),
-  valeAlimentacao('vale_alimentacao', 'Vale-alimentação/refeição');
+  valeAlimentacao('vale_alimentacao', 'Vale-alimentação/refeição'),
+  semBeneficios('sem_beneficios', 'Não possui os benefícios listados');
 
   const BeneficioTrabalho(this.code, this.label);
 

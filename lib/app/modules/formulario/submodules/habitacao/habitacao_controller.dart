@@ -34,7 +34,7 @@ abstract class HabitacaoControllerBase with Store {
   ObservableList<MelhoriaMoradia> melhoriasDesejadas = ObservableList<MelhoriaMoradia>();
 
   @observable
-  bool facilAcessoSaude = false;
+  bool? facilAcessoSaude;
 
   @observable
   bool isValid = false;
@@ -71,10 +71,23 @@ abstract class HabitacaoControllerBase with Store {
 
   @action
   void toggleItemResidencia(ItemResidencia item) {
-    if (itensResidencia.contains(item)) {
-      itensResidencia.remove(item);
+    if (item == ItemResidencia.nenhumDosListados) {
+      // `nenhum_dos_listados` é mutuamente exclusiva com as demais opções.
+      if (itensResidencia.contains(ItemResidencia.nenhumDosListados)) {
+        itensResidencia.clear();
+      } else {
+        itensResidencia
+          ..clear()
+          ..add(ItemResidencia.nenhumDosListados);
+      }
     } else {
-      itensResidencia.add(item);
+      // Selecionar qualquer item remove `nenhum_dos_listados`.
+      itensResidencia.remove(ItemResidencia.nenhumDosListados);
+      if (itensResidencia.contains(item)) {
+        itensResidencia.remove(item);
+      } else {
+        itensResidencia.add(item);
+      }
     }
     validate();
   }
@@ -107,7 +120,7 @@ abstract class HabitacaoControllerBase with Store {
   }
 
   @action
-  void setFacilAcessoSaude(bool value) {
+  void setFacilAcessoSaude(bool? value) {
     facilAcessoSaude = value;
     validate();
   }
@@ -121,6 +134,9 @@ abstract class HabitacaoControllerBase with Store {
       numeroComodos: numeroComodos,
       numeroDormitorios: numeroDormitorios,
       segurancaResidencia: segurancaResidencia,
+      facilAcessoSaude: facilAcessoSaude,
+      itensResidencia: itensResidencia,
+      melhoriasDesejadas: melhoriasDesejadas,
     );
   }
 

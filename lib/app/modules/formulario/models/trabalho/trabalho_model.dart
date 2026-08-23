@@ -5,7 +5,9 @@ import '../../catalog/dss_schema.dart';
 /// Os campos condicionados por `empregado` são anuláveis: `null` significa
 /// "não se aplica" (ex.: `tipo_emprego` quando desempregada).
 class TrabalhoModel {
-  final bool empregado;
+  /// Situação de trabalho (Sim/Não). `null` significa "não respondido" e,
+  /// quando nulo, nenhum bloco condicional (emprego/desemprego) é exibido.
+  final bool? empregado;
   final String? tipoEmprego;
 
   /// Faixa de renda mensal **familiar** (código canônico de [FaixaRenda]).
@@ -31,7 +33,7 @@ class TrabalhoModel {
   final String? impactoGestacaoTrabalho;
 
   const TrabalhoModel({
-    required this.empregado,
+    this.empregado,
     this.tipoEmprego,
     this.faixaRenda,
     this.permitePreNatal,
@@ -43,7 +45,7 @@ class TrabalhoModel {
     this.impactoGestacaoTrabalho,
   });
 
-  factory TrabalhoModel.empty() => const TrabalhoModel(empregado: false);
+  factory TrabalhoModel.empty() => const TrabalhoModel();
 
   Map<String, dynamic> toMap() => {
     'empregado': empregado,
@@ -59,7 +61,7 @@ class TrabalhoModel {
   };
 
   factory TrabalhoModel.fromMap(Map<String, dynamic> map) => TrabalhoModel(
-    empregado: map['empregado'] == true,
+    empregado: map['empregado'] as bool?,
     tipoEmprego: map['tipo_emprego'] as String?,
     faixaRenda: map['faixa_renda'] as String?,
     permitePreNatal: map['trabalho_permite_pre_natal'] as bool?,

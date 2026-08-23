@@ -20,7 +20,13 @@ class SaudeValidator {
     required DistanciaUBS? distanciaUBS,
     required AcessoUBS? acessoUBS,
     required AvaliacaoPreNatal? avaliacaoPreNatal,
+    required List<ServicoPreNatal> servicosPreNatal,
+    required List<DificuldadeSaude> dificuldadesSaude,
   }) {
-    return distanciaUBS != null && acessoUBS != null && avaliacaoPreNatal != null;
+    return distanciaUBS != null &&
+        acessoUBS != null &&
+        avaliacaoPreNatal != null &&
+        servicosPreNatal.isNotEmpty &&
+        dificuldadesSaude.isNotEmpty;
   }
 }

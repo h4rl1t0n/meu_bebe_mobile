@@ -61,6 +61,9 @@ void main() {
       controller.setFonteAgua(FonteAgua.redePublica);
       controller.setEsgotamentoSanitario(EsgotamentoSanitario.fossaSeptica);
       controller.setFrequenciaColetaLixo(FrequenciaColetaLixo.regular);
+      controller.setInterrupcoesAgua(false);
+      controller.setPreocupacaoAgua(false);
+      controller.toggleCuidadoVetor(CuidadoVetor.semCuidados);
 
       expect(controller.isValid, isTrue);
       expect(controller.buildSaneamentoData().destinoLixoSemColeta, isNull);
@@ -71,6 +74,9 @@ void main() {
       controller.setFonteAgua(FonteAgua.redePublica);
       controller.setEsgotamentoSanitario(EsgotamentoSanitario.fossaSeptica);
       controller.setFrequenciaColetaLixo(FrequenciaColetaLixo.irregular);
+      controller.setInterrupcoesAgua(false);
+      controller.setPreocupacaoAgua(false);
+      controller.toggleCuidadoVetor(CuidadoVetor.semCuidados);
 
       expect(controller.isValid, isFalse);
     });
@@ -81,6 +87,9 @@ void main() {
       controller.setEsgotamentoSanitario(EsgotamentoSanitario.fossaSeptica);
       controller.setFrequenciaColetaLixo(FrequenciaColetaLixo.irregular);
       controller.setDestinoLixoSemColeta(DestinoLixoSemColeta.aguardaProximaColeta);
+      controller.setInterrupcoesAgua(false);
+      controller.setPreocupacaoAgua(false);
+      controller.toggleCuidadoVetor(CuidadoVetor.semCuidados);
 
       expect(controller.isValid, isTrue);
       expect(controller.buildSaneamentoData().destinoLixoSemColeta, 'aguarda_proxima_coleta');
@@ -92,6 +101,9 @@ void main() {
       controller.setEsgotamentoSanitario(EsgotamentoSanitario.fossaSeptica);
       controller.setFrequenciaColetaLixo(FrequenciaColetaLixo.irregular);
       controller.setDestinoLixoSemColeta(DestinoLixoSemColeta.queima);
+      controller.setInterrupcoesAgua(false);
+      controller.setPreocupacaoAgua(false);
+      controller.toggleCuidadoVetor(CuidadoVetor.semCuidados);
 
       expect(controller.isValid, isTrue);
       expect(controller.buildSaneamentoData().destinoLixoSemColeta, 'queima');
@@ -103,6 +115,9 @@ void main() {
       controller.setEsgotamentoSanitario(EsgotamentoSanitario.fossaSeptica);
       controller.setFrequenciaColetaLixo(FrequenciaColetaLixo.naoPossui);
       controller.setDestinoLixoSemColeta(DestinoLixoSemColeta.terrenoBaldio);
+      controller.setInterrupcoesAgua(false);
+      controller.setPreocupacaoAgua(false);
+      controller.toggleCuidadoVetor(CuidadoVetor.semCuidados);
 
       expect(controller.isValid, isTrue);
       expect(controller.buildSaneamentoData().destinoLixoSemColeta, 'terreno_baldio');
@@ -113,6 +128,9 @@ void main() {
       controller.setFonteAgua(FonteAgua.redePublica);
       controller.setEsgotamentoSanitario(EsgotamentoSanitario.fossaSeptica);
       controller.setFrequenciaColetaLixo(FrequenciaColetaLixo.naoPossui);
+      controller.setInterrupcoesAgua(false);
+      controller.setPreocupacaoAgua(false);
+      controller.toggleCuidadoVetor(CuidadoVetor.semCuidados);
 
       expect(controller.isValid, isFalse);
     });
@@ -126,6 +144,35 @@ void main() {
       controller.setFrequenciaColetaLixo(FrequenciaColetaLixo.naoPossui);
 
       expect(controller.buildSaneamentoData().destinoLixoSemColeta, isNull);
+    });
+
+    test('interrupcoes_agua e problema_saude_agua começam null e são obrigatórios', () {
+      final controller = SaneamentoController();
+      expect(controller.interrupcoesAgua, isNull);
+      expect(controller.preocupacaoAgua, isNull);
+
+      controller.setFonteAgua(FonteAgua.redePublica);
+      controller.setEsgotamentoSanitario(EsgotamentoSanitario.fossaSeptica);
+      controller.setFrequenciaColetaLixo(FrequenciaColetaLixo.regular);
+      controller.toggleCuidadoVetor(CuidadoVetor.semCuidados);
+      expect(controller.isValid, isFalse); // booleanos ainda null
+
+      controller.setInterrupcoesAgua(false);
+      expect(controller.isValid, isFalse); // problema_saude_agua ainda null
+
+      controller.setPreocupacaoAgua(true);
+      expect(controller.isValid, isTrue);
+    });
+
+    test('cuidados_vetores vazio é inválido', () {
+      final controller = SaneamentoController();
+      controller.setFonteAgua(FonteAgua.redePublica);
+      controller.setEsgotamentoSanitario(EsgotamentoSanitario.fossaSeptica);
+      controller.setFrequenciaColetaLixo(FrequenciaColetaLixo.regular);
+      controller.setInterrupcoesAgua(false);
+      controller.setPreocupacaoAgua(false);
+
+      expect(controller.isValid, isFalse);
     });
   });
 }

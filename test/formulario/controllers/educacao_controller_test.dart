@@ -100,7 +100,7 @@ void main() {
       expect(data.fezCursoQualificacaoProfissional, isFalse);
     });
 
-    test('isValid exige escolaridade, situação dos estudos e todos os booleanos', () {
+    test('isValid exige escolaridade, situação, booleanos e ao menos uma dificuldade', () {
       final controller = EducacaoController();
       expect(controller.isValid, isFalse);
 
@@ -117,6 +117,9 @@ void main() {
       expect(controller.isValid, isFalse);
 
       controller.setFezCursoQualificacaoProfissional(false);
+      expect(controller.isValid, isFalse); // dificuldades ainda vazia
+
+      controller.toggleDificuldade(DificuldadeEducacao.semDificuldades);
       expect(controller.isValid, isTrue);
     });
   });

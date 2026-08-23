@@ -13,7 +13,7 @@ abstract class SaneamentoControllerBase with Store {
   FonteAgua? fonteAgua;
 
   @observable
-  bool interrupcoesAgua = false;
+  bool? interrupcoesAgua;
 
   @observable
   EsgotamentoSanitario? esgotamentoSanitario;
@@ -25,7 +25,7 @@ abstract class SaneamentoControllerBase with Store {
   DestinoLixoSemColeta? destinoLixoSemColeta;
 
   @observable
-  bool preocupacaoAgua = false;
+  bool? preocupacaoAgua;
 
   @observable
   ObservableList<CuidadoVetor> cuidadosVetores = ObservableList<CuidadoVetor>();
@@ -40,7 +40,7 @@ abstract class SaneamentoControllerBase with Store {
   }
 
   @action
-  void setInterrupcoesAgua(bool value) {
+  void setInterrupcoesAgua(bool? value) {
     interrupcoesAgua = value;
     validate();
   }
@@ -73,7 +73,7 @@ abstract class SaneamentoControllerBase with Store {
   }
 
   @action
-  void setPreocupacaoAgua(bool value) {
+  void setPreocupacaoAgua(bool? value) {
     preocupacaoAgua = value;
     validate();
   }
@@ -108,6 +108,9 @@ abstract class SaneamentoControllerBase with Store {
       esgotamentoSanitario: esgotamentoSanitario,
       frequenciaColetaLixo: frequenciaColetaLixo,
       destinoLixoSemColeta: destinoLixoSemColeta,
+      interrupcoesAgua: interrupcoesAgua,
+      preocupacaoAgua: preocupacaoAgua,
+      cuidadosVetores: cuidadosVetores,
     );
   }
 

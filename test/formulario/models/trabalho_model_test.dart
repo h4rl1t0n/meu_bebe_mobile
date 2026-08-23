@@ -42,12 +42,23 @@ void main() {
       expect(model.impactoGestacaoTrabalho, isNull);
     });
 
-    test('empty() começa desempregada e sem categorias', () {
+    test('empty() começa sem situação de trabalho definida e sem categorias', () {
       final model = TrabalhoModel.empty();
 
-      expect(model.empregado, isFalse);
+      expect(model.empregado, isNull);
       expect(model.motivoDesemprego, isNull);
       expect(model.impactoGestacaoTrabalho, isNull);
+    });
+
+    test('empregado preserva true, false e null (round-trip)', () {
+      const empregada = TrabalhoModel(empregado: true);
+      const desempregada = TrabalhoModel(empregado: false);
+      const naoRespondida = TrabalhoModel();
+
+      expect(TrabalhoModel.fromMap(empregada.toMap()).empregado, isTrue);
+      expect(TrabalhoModel.fromMap(desempregada.toMap()).empregado, isFalse);
+      expect(TrabalhoModel.fromMap(naoRespondida.toMap()).empregado, isNull);
+      expect(TrabalhoModel.fromMap(const {}).empregado, isNull);
     });
   });
 }

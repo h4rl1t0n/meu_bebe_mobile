@@ -45,13 +45,23 @@ void main() {
       expect(model.dificuldadesSaude, isEmpty);
     });
 
-    test('empty() começa sem dificuldades e com booleanos falsos', () {
+    test('empty() começa sem dificuldades e com booleanos nulos', () {
       final model = SaudeModel.empty();
 
-      expect(model.faltouConsulta, isFalse);
-      expect(model.examesPreNatalCompletos, isFalse);
-      expect(model.vacinasEmDia, isFalse);
+      expect(model.faltouConsulta, isNull);
+      expect(model.examesPreNatalCompletos, isNull);
+      expect(model.vacinasEmDia, isNull);
       expect(model.dificuldadesSaude, isEmpty);
+    });
+
+    test('faltou_consulta, exames e vacinas preservam true, false e null', () {
+      const model = SaudeModel(faltouConsulta: true, examesPreNatalCompletos: false, vacinasEmDia: null);
+
+      final restored = SaudeModel.fromMap(model.toMap());
+
+      expect(restored.faltouConsulta, isTrue);
+      expect(restored.examesPreNatalCompletos, isFalse);
+      expect(restored.vacinasEmDia, isNull);
     });
   });
 }

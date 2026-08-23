@@ -13,7 +13,7 @@ abstract class SaudeControllerBase with Store {
   DistanciaUBS? distanciaUBS;
 
   @observable
-  bool faltouConsulta = false;
+  bool? faltouConsulta;
 
   @observable
   AcessoUBS? acessoUBS;
@@ -25,10 +25,10 @@ abstract class SaudeControllerBase with Store {
   ObservableList<ServicoPreNatal> servicosPreNatal = ObservableList<ServicoPreNatal>();
 
   @observable
-  bool examesPreNatalCompletos = false;
+  bool? examesPreNatalCompletos;
 
   @observable
-  bool vacinasEmDia = false;
+  bool? vacinasEmDia;
 
   @observable
   AvaliacaoPreNatal? avaliacaoPreNatal;
@@ -46,7 +46,7 @@ abstract class SaudeControllerBase with Store {
   }
 
   @action
-  void setFaltouConsulta(bool value) {
+  void setFaltouConsulta(bool? value) {
     faltouConsulta = value;
     validate();
   }
@@ -65,22 +65,35 @@ abstract class SaudeControllerBase with Store {
 
   @action
   void toggleServicoPreNatal(ServicoPreNatal servico) {
-    if (servicosPreNatal.contains(servico)) {
-      servicosPreNatal.remove(servico);
+    if (servico == ServicoPreNatal.nenhumDosListados) {
+      // `nenhum_dos_listados` é mutuamente exclusiva com as demais opções.
+      if (servicosPreNatal.contains(ServicoPreNatal.nenhumDosListados)) {
+        servicosPreNatal.clear();
+      } else {
+        servicosPreNatal
+          ..clear()
+          ..add(ServicoPreNatal.nenhumDosListados);
+      }
     } else {
-      servicosPreNatal.add(servico);
+      // Selecionar qualquer serviço remove `nenhum_dos_listados`.
+      servicosPreNatal.remove(ServicoPreNatal.nenhumDosListados);
+      if (servicosPreNatal.contains(servico)) {
+        servicosPreNatal.remove(servico);
+      } else {
+        servicosPreNatal.add(servico);
+      }
     }
     validate();
   }
 
   @action
-  void setExamesPreNatalCompletos(bool value) {
+  void setExamesPreNatalCompletos(bool? value) {
     examesPreNatalCompletos = value;
     validate();
   }
 
   @action
-  void setVacinasEmDia(bool value) {
+  void setVacinasEmDia(bool? value) {
     vacinasEmDia = value;
     validate();
   }
@@ -120,6 +133,8 @@ abstract class SaudeControllerBase with Store {
       distanciaUBS: distanciaUBS,
       acessoUBS: acessoUBS,
       avaliacaoPreNatal: avaliacaoPreNatal,
+      servicosPreNatal: servicosPreNatal,
+      dificuldadesSaude: dificuldadesSaude,
     );
   }
 

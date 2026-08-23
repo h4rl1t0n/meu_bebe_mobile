@@ -3,7 +3,7 @@ import '../../catalog/dss_schema.dart';
 /// Dimensão Saneamento Básico.
 class SaneamentoModel {
   final String? fonteAgua;
-  final bool interrupcoesAgua;
+  final bool? interrupcoesAgua;
   final String? esgotamentoSanitario;
 
   /// Regularidade da coleta de lixo (`FrequenciaColetaLixo`).
@@ -14,7 +14,7 @@ class SaneamentoModel {
   /// significa "não aplicável".
   final String? destinoLixoSemColeta;
 
-  final bool preocupacaoAgua;
+  final bool? preocupacaoAgua;
 
   /// Cuidados adotados contra mosquitos e outros vetores (múltipla escolha,
   /// códigos canônicos de [CuidadoVetor]).
@@ -22,16 +22,15 @@ class SaneamentoModel {
 
   const SaneamentoModel({
     this.fonteAgua,
-    required this.interrupcoesAgua,
+    this.interrupcoesAgua,
     this.esgotamentoSanitario,
     this.frequenciaColetaLixo,
     this.destinoLixoSemColeta,
-    required this.preocupacaoAgua,
+    this.preocupacaoAgua,
     this.cuidadosVetores = const [],
   });
 
-  factory SaneamentoModel.empty() =>
-      const SaneamentoModel(interrupcoesAgua: false, preocupacaoAgua: false);
+  factory SaneamentoModel.empty() => const SaneamentoModel();
 
   Map<String, dynamic> toMap() => {
     'fonte_agua': fonteAgua,
@@ -45,11 +44,11 @@ class SaneamentoModel {
 
   factory SaneamentoModel.fromMap(Map<String, dynamic> map) => SaneamentoModel(
     fonteAgua: map['fonte_agua'] as String?,
-    interrupcoesAgua: map['interrupcoes_agua'] == true,
+    interrupcoesAgua: map['interrupcoes_agua'] as bool?,
     esgotamentoSanitario: map['esgotamento_sanitario'] as String?,
     frequenciaColetaLixo: map['frequencia_coleta_lixo'] as String?,
     destinoLixoSemColeta: map['destino_lixo_sem_coleta'] as String?,
-    preocupacaoAgua: map['problema_saude_agua'] == true,
+    preocupacaoAgua: map['problema_saude_agua'] as bool?,
     cuidadosVetores: List<String>.from((map['cuidados_vetores'] as List?) ?? const []),
   );
 

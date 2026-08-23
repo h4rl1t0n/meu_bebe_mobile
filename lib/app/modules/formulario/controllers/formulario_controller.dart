@@ -132,15 +132,15 @@ abstract class FormularioControllerBase with Store {
       },
       {
         'categoria': 'Trabalho e Renda',
-        'Está empregada': _simNao(data.trabalho.empregado),
+        'Está empregada': _simNaoNullable(data.trabalho.empregado),
         'Faixa de renda familiar': _label(data.trabalho.faixaRenda, FaixaRenda.labelOf),
-        if (data.trabalho.empregado) ...{
+        if (data.trabalho.empregado == true) ...{
           'Tipo de emprego': _label(data.trabalho.tipoEmprego, TipoEmprego.labelOf),
           'Permite pré-natal': _simNaoNullable(data.trabalho.permitePreNatal),
           'Ambiente seguro': _simNaoNullable(data.trabalho.ambienteSeguro),
           'Tem pausas adequadas': _simNaoNullable(data.trabalho.temPausas),
           'Benefícios': _joinNullable(data.trabalho.beneficiosTrabalho, BeneficioTrabalho.labelOf),
-        } else ...{
+        } else if (data.trabalho.empregado == false) ...{
           'Motivo desemprego': _label(data.trabalho.motivoDesemprego, MotivoDesemprego.labelOf),
         },
         'Recebe benefício social': _simNaoNullable(data.trabalho.recebeBeneficioSocial),
@@ -152,23 +152,23 @@ abstract class FormularioControllerBase with Store {
       {
         'categoria': 'Saneamento Básico',
         'Fonte de água': _label(data.saneamento.fonteAgua, FonteAgua.labelOf),
-        'Interrupções de água': _simNao(data.saneamento.interrupcoesAgua),
+        'Interrupções de água': _simNaoNullable(data.saneamento.interrupcoesAgua),
         'Destino do esgoto': _label(data.saneamento.esgotamentoSanitario, EsgotamentoSanitario.labelOf),
         'Regularidade da coleta de lixo': _label(data.saneamento.frequenciaColetaLixo, FrequenciaColetaLixo.labelOf),
         if (data.saneamento.frequenciaColetaLixo != FrequenciaColetaLixo.regular.code)
           'Destinação do lixo sem coleta': _label(data.saneamento.destinoLixoSemColeta, DestinoLixoSemColeta.labelOf),
-        'Problema de saúde por água': _simNao(data.saneamento.preocupacaoAgua),
+        'Problema de saúde por água': _simNaoNullable(data.saneamento.preocupacaoAgua),
         'Cuidados contra vetores': _join(data.saneamento.cuidadosVetores, CuidadoVetor.labelOf),
       },
       {
         'categoria': 'Saúde',
         'Distância da UBS': _label(data.saude.distanciaUBS, DistanciaUBS.labelOf),
-        'Faltou consulta': _simNao(data.saude.faltouConsulta),
+        'Faltou consulta': _simNaoNullable(data.saude.faltouConsulta),
         'Como chega à UBS': _label(data.saude.acessoUBS, AcessoUBS.labelOf),
         'Cadastrada na UBS': _simNaoNullable(data.saude.cadastradaUBS),
         'Serviços de pré-natal': _join(data.saude.servicosPreNatal, ServicoPreNatal.labelOf),
-        'Exames completos': _simNao(data.saude.examesPreNatalCompletos),
-        'Vacinas em dia': _simNao(data.saude.vacinasEmDia),
+        'Exames completos': _simNaoNullable(data.saude.examesPreNatalCompletos),
+        'Vacinas em dia': _simNaoNullable(data.saude.vacinasEmDia),
         'Avaliação do pré-natal': _label(data.saude.avaliacaoPreNatal, AvaliacaoPreNatal.labelOf),
         'Dificuldades de acesso à saúde': _join(data.saude.dificuldadesSaude, DificuldadeSaude.labelOf),
       },
@@ -182,7 +182,7 @@ abstract class FormularioControllerBase with Store {
         'Itens da residência': _join(data.habitacao.itensResidencia, ItemResidencia.labelOf),
         'Segurança da residência': _label(data.habitacao.segurancaResidencia, SegurancaResidencia.labelOf),
         'Melhorias desejadas': _join(data.habitacao.melhoriasDesejadas, MelhoriaMoradia.labelOf),
-        'Fácil acesso à saúde': _simNao(data.habitacao.facilAcessoSaude),
+        'Fácil acesso à saúde': _simNaoNullable(data.habitacao.facilAcessoSaude),
       },
       {
         'categoria': 'Alimentação',
@@ -196,8 +196,6 @@ abstract class FormularioControllerBase with Store {
       },
     ];
   }
-
-  String _simNao(bool value) => value ? 'Sim' : 'Não';
 
   String _simNaoNullable(bool? value) {
     if (value == null) return 'Não informado';

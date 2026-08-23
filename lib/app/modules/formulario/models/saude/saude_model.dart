@@ -6,12 +6,12 @@ import '../../catalog/dss_schema.dart';
 /// "não respondido" (o vínculo com a UBS não depende do meio de transporte).
 class SaudeModel {
   final String? distanciaUBS;
-  final bool faltouConsulta;
+  final bool? faltouConsulta;
   final String? acessoUBS;
   final bool? cadastradaUBS;
   final List<String> servicosPreNatal;
-  final bool examesPreNatalCompletos;
-  final bool vacinasEmDia;
+  final bool? examesPreNatalCompletos;
+  final bool? vacinasEmDia;
   final String? avaliacaoPreNatal;
 
   /// Dificuldades de acesso/utilização dos serviços de saúde (múltipla
@@ -20,18 +20,17 @@ class SaudeModel {
 
   const SaudeModel({
     this.distanciaUBS,
-    required this.faltouConsulta,
+    this.faltouConsulta,
     this.acessoUBS,
     this.cadastradaUBS,
     this.servicosPreNatal = const [],
-    required this.examesPreNatalCompletos,
-    required this.vacinasEmDia,
+    this.examesPreNatalCompletos,
+    this.vacinasEmDia,
     this.avaliacaoPreNatal,
     this.dificuldadesSaude = const [],
   });
 
-  factory SaudeModel.empty() =>
-      const SaudeModel(faltouConsulta: false, examesPreNatalCompletos: false, vacinasEmDia: false);
+  factory SaudeModel.empty() => const SaudeModel();
 
   Map<String, dynamic> toMap() => {
     'distancia_ubs': distanciaUBS,
@@ -47,12 +46,12 @@ class SaudeModel {
 
   factory SaudeModel.fromMap(Map<String, dynamic> map) => SaudeModel(
     distanciaUBS: map['distancia_ubs'] as String?,
-    faltouConsulta: map['faltou_consulta'] == true,
+    faltouConsulta: map['faltou_consulta'] as bool?,
     acessoUBS: map['acesso_ubs'] as String?,
     cadastradaUBS: map['cadastrada_ubs'] as bool?,
     servicosPreNatal: List<String>.from((map['servicos_pre_natal'] as List?) ?? const []),
-    examesPreNatalCompletos: map['exames_pre_natal_completos'] == true,
-    vacinasEmDia: map['vacinas_em_dia'] == true,
+    examesPreNatalCompletos: map['exames_pre_natal_completos'] as bool?,
+    vacinasEmDia: map['vacinas_em_dia'] as bool?,
     avaliacaoPreNatal: map['avaliacao_pre_natal'] as String?,
     dificuldadesSaude: List<String>.from((map['dificuldades_saude'] as List?) ?? const []),
   );

@@ -39,7 +39,8 @@ enum AcessoUBS {
 enum ServicoPreNatal {
   consultaMedica('consulta_medica', 'Consulta médica regular'),
   consultaEnfermagem('consulta_enfermagem', 'Consulta com enfermeiro'),
-  grupoGestantes('grupo_gestantes', 'Grupo de gestantes');
+  grupoGestantes('grupo_gestantes', 'Grupo de gestantes'),
+  nenhumDosListados('nenhum_dos_listados', 'Nenhum dos serviços listados');
 
   const ServicoPreNatal(this.code, this.label);
 

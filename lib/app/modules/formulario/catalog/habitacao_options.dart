@@ -44,7 +44,8 @@ enum MaterialMoradia {
 enum ItemResidencia {
   aguaEncanada('agua_encanada', 'Água encanada'),
   banheiroInterno('banheiro_interno', 'Banheiro dentro da casa'),
-  cozinhaSeparada('cozinha_separada', 'Cozinha separada');
+  cozinhaSeparada('cozinha_separada', 'Cozinha separada'),
+  nenhumDosListados('nenhum_dos_listados', 'Nenhum dos itens listados');
 
   const ItemResidencia(this.code, this.label);
 

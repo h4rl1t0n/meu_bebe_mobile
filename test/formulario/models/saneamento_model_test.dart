@@ -82,14 +82,27 @@ void main() {
       expect(model.cuidadosVetores, isEmpty);
     });
 
-    test('empty() começa sem categorias e com booleanos falsos', () {
+    test('empty() começa sem categorias e com booleanos nulos', () {
       final model = SaneamentoModel.empty();
 
-      expect(model.interrupcoesAgua, isFalse);
-      expect(model.preocupacaoAgua, isFalse);
+      expect(model.interrupcoesAgua, isNull);
+      expect(model.preocupacaoAgua, isNull);
       expect(model.cuidadosVetores, isEmpty);
       expect(model.frequenciaColetaLixo, isNull);
       expect(model.destinoLixoSemColeta, isNull);
+    });
+
+    test('interrupcoes_agua e problema_saude_agua preservam true, false e null', () {
+      const comProblema = SaneamentoModel(interrupcoesAgua: true, preocupacaoAgua: false);
+      const semProblema = SaneamentoModel(interrupcoesAgua: false, preocupacaoAgua: true);
+      const naoRespondido = SaneamentoModel();
+
+      expect(SaneamentoModel.fromMap(comProblema.toMap()).interrupcoesAgua, isTrue);
+      expect(SaneamentoModel.fromMap(comProblema.toMap()).preocupacaoAgua, isFalse);
+      expect(SaneamentoModel.fromMap(semProblema.toMap()).interrupcoesAgua, isFalse);
+      expect(SaneamentoModel.fromMap(semProblema.toMap()).preocupacaoAgua, isTrue);
+      expect(SaneamentoModel.fromMap(naoRespondido.toMap()).interrupcoesAgua, isNull);
+      expect(SaneamentoModel.fromMap(naoRespondido.toMap()).preocupacaoAgua, isNull);
     });
   });
 }

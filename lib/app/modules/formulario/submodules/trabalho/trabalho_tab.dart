@@ -27,12 +27,8 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
         builder: (_) => ItemTabPage(
           title: 'Trabalho e Renda',
           children: [
-            SwitchListTile(
-              title: const Text('Você está trabalhando atualmente?'),
-              value: controller.empregado,
-              onChanged: controller.setEmpregado,
-            ),
-            if (controller.empregado) ...[
+            _simNao('Você está trabalhando atualmente?', controller.empregado, controller.setEmpregado),
+            if (controller.empregado == true) ...[
               SizedBox(height: Spacing.lg),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +80,7 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
                 ],
               ),
             ],
-            if (!controller.empregado) ...[
+            if (controller.empregado == false) ...[
               SizedBox(height: Spacing.lg),
               DropdownButtonFormField<MotivoDesemprego>(
                 decoration: const InputDecoration(
@@ -132,6 +128,32 @@ class _TrabalhoTabState extends State<TrabalhoTab> {
           ],
         ),
       ),
+    );
+  }
+
+  /// Pergunta de Sim/Não com três estados: `null` (ainda não respondido),
+  /// `true` (Sim) e `false` (Não). Nada fica pré-selecionado.
+  Widget _simNao(String title, bool? value, ValueChanged<bool?> onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        SizedBox(height: Spacing.sm),
+        RadioGroup<bool>(
+          groupValue: value,
+          onChanged: onChanged,
+          child: Row(
+            children: [
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Sim'), value: true),
+              ),
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Não'), value: false),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

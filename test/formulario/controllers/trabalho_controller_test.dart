@@ -72,20 +72,54 @@ void main() {
       expect(controller.buildTrabalhoData().faixaRenda, 'entre_1_2_sm');
     });
 
-    test('isValid exige faixa_renda independentemente de empregado', () {
+    test('empregado começa null e isValid exige empregado, faixa_renda e benefícios quando empregada', () {
       final controller = TrabalhoController();
+      expect(controller.empregado, isNull);
+      expect(controller.isValid, isFalse); // empregado null
 
       controller.setEmpregado(false);
-      expect(controller.isValid, isFalse);
+      expect(controller.isValid, isFalse); // faixa_renda null
 
       controller.setFaixaRenda(FaixaRenda.ate1Sm);
-      expect(controller.isValid, isTrue);
+      expect(controller.isValid, isTrue); // empregado=false + faixa → válido
 
       controller.setEmpregado(true);
-      expect(controller.isValid, isFalse);
+      expect(controller.isValid, isFalse); // tipo_emprego null
 
       controller.setTipoEmprego(TipoEmprego.clt);
+      expect(controller.isValid, isFalse); // beneficios vazio
+
+      controller.toggleBeneficio(BeneficioTrabalho.valeTransporte);
       expect(controller.isValid, isTrue);
+    });
+
+    test('sem_beneficios é mutuamente exclusiva e nunca é serializado como label', () {
+      final controller = TrabalhoController();
+      controller.setEmpregado(true);
+      controller.toggleBeneficio(BeneficioTrabalho.valeTransporte);
+      controller.toggleBeneficio(BeneficioTrabalho.auxilioMaternidade);
+
+      controller.toggleBeneficio(BeneficioTrabalho.semBeneficios);
+
+      expect(controller.buildTrabalhoData().beneficiosTrabalho, ['sem_beneficios']);
+
+      controller.toggleBeneficio(BeneficioTrabalho.valeAlimentacao);
+      final codes = controller.buildTrabalhoData().beneficiosTrabalho;
+      expect(codes, contains('vale_alimentacao'));
+      expect(codes, isNot(contains('sem_beneficios')));
+      expect(codes, isNot(contains('Vale-transporte')));
+    });
+
+    test('beneficios_trabalho é null quando desempregada ou não respondida', () {
+      final controller = TrabalhoController();
+
+      expect(controller.buildTrabalhoData().beneficiosTrabalho, isNull); // empregado null
+
+      controller.setEmpregado(false);
+      expect(controller.buildTrabalhoData().beneficiosTrabalho, isNull); // desempregada
+
+      controller.setEmpregado(true);
+      expect(controller.buildTrabalhoData().beneficiosTrabalho, isEmpty); // empregada, ainda não respondeu
     });
 
     test('impacto_gestacao_trabalho aplica-se tanto empregada quanto desempregada', () {

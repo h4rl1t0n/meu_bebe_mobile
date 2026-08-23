@@ -47,6 +47,9 @@ class HabitacaoValidator {
     required int numeroComodos,
     required int numeroDormitorios,
     required SegurancaResidencia? segurancaResidencia,
+    required bool? facilAcessoSaude,
+    required List<ItemResidencia> itensResidencia,
+    required List<MelhoriaMoradia> melhoriasDesejadas,
   }) {
     return tipoMoradia != null &&
         materialMoradia != null &&
@@ -54,6 +57,9 @@ class HabitacaoValidator {
         numeroComodos > 0 &&
         numeroDormitorios > 0 &&
         numeroDormitorios <= numeroComodos &&
-        segurancaResidencia != null;
+        segurancaResidencia != null &&
+        facilAcessoSaude != null &&
+        itensResidencia.isNotEmpty &&
+        melhoriasDesejadas.isNotEmpty;
   }
 }
