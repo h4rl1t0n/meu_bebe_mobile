@@ -21,7 +21,8 @@ enum AlimentoConsumido {
   frutasVerduras('frutas_verduras', 'Frutas e verduras'),
   carnes('carnes', 'Carnes (vermelha, frango ou peixe)'),
   leiteDerivados('leite_derivados', 'Leite e derivados'),
-  feijaoLeguminosas('feijao_leguminosas', 'Feijão e outras leguminosas');
+  feijaoLeguminosas('feijao_leguminosas', 'Feijão e outras leguminosas'),
+  nenhumDosListados('nenhum_dos_listados', 'Nenhum dos listados');
 
   const AlimentoConsumido(this.code, this.label);
 

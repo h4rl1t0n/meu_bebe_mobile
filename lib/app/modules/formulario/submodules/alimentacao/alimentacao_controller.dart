@@ -13,19 +13,19 @@ abstract class AlimentacaoControllerBase with Store {
   RefeicoesPorDia? refeicoesPorDia;
 
   @observable
-  bool insegurancaAlimentar = false;
+  bool? deixouDeComerFaltaDinheiro;
 
   @observable
   ObservableList<AlimentoConsumido> alimentosConsumidos = ObservableList<AlimentoConsumido>();
 
   @observable
-  FonteAlimentos? fonteAlimentos;
+  ObservableList<FonteAlimentos> fonteAlimentos = ObservableList<FonteAlimentos>();
 
   @observable
-  bool mudancaAlimentacaoGestacao = false;
+  bool? mudancaAlimentacaoGestacao;
 
   @observable
-  bool usaSuplementos = false;
+  bool? usaSuplementos;
 
   @observable
   AvaliacaoAlimentacao? avaliacaoAlimentacao;
@@ -40,35 +40,50 @@ abstract class AlimentacaoControllerBase with Store {
   }
 
   @action
-  void setInsegurancaAlimentar(bool value) {
-    insegurancaAlimentar = value;
+  void setDeixouComerFaltaDinheiro(bool? value) {
+    deixouDeComerFaltaDinheiro = value;
     validate();
   }
 
   @action
   void toggleAlimento(AlimentoConsumido alimento) {
-    if (alimentosConsumidos.contains(alimento)) {
-      alimentosConsumidos.remove(alimento);
+    if (alimento == AlimentoConsumido.nenhumDosListados) {
+      if (alimentosConsumidos.contains(alimento)) {
+        alimentosConsumidos.remove(alimento);
+      } else {
+        alimentosConsumidos
+          ..clear()
+          ..add(alimento);
+      }
     } else {
-      alimentosConsumidos.add(alimento);
+      alimentosConsumidos.remove(AlimentoConsumido.nenhumDosListados);
+      if (alimentosConsumidos.contains(alimento)) {
+        alimentosConsumidos.remove(alimento);
+      } else {
+        alimentosConsumidos.add(alimento);
+      }
     }
     validate();
   }
 
   @action
-  void setFonteAlimentos(FonteAlimentos? value) {
-    fonteAlimentos = value;
+  void toggleFonteAlimento(FonteAlimentos fonte) {
+    if (fonteAlimentos.contains(fonte)) {
+      fonteAlimentos.remove(fonte);
+    } else {
+      fonteAlimentos.add(fonte);
+    }
     validate();
   }
 
   @action
-  void setMudancaAlimentacaoGestacao(bool value) {
+  void setMudancaAlimentacaoGestacao(bool? value) {
     mudancaAlimentacaoGestacao = value;
     validate();
   }
 
   @action
-  void setUsaSuplementos(bool value) {
+  void setUsaSuplementos(bool? value) {
     usaSuplementos = value;
     validate();
   }
@@ -83,16 +98,20 @@ abstract class AlimentacaoControllerBase with Store {
   void validate() {
     isValid = AlimentacaoValidator.isTabValid(
       refeicoesPorDia: refeicoesPorDia,
+      deixouDeComerFaltaDinheiro: deixouDeComerFaltaDinheiro,
+      alimentosConsumidos: alimentosConsumidos,
       fonteAlimentos: fonteAlimentos,
+      mudancaAlimentacaoGestacao: mudancaAlimentacaoGestacao,
+      usaSuplementos: usaSuplementos,
       avaliacaoAlimentacao: avaliacaoAlimentacao,
     );
   }
 
   AlimentacaoModel buildAlimentacaoData() => AlimentacaoModel(
     refeicoesPorDia: refeicoesPorDia?.code,
-    insegurancaAlimentar: insegurancaAlimentar,
+    deixouDeComerFaltaDinheiro: deixouDeComerFaltaDinheiro,
     alimentosConsumidos: alimentosConsumidos.map((a) => a.code).toList(),
-    fonteAlimentos: fonteAlimentos?.code,
+    fonteAlimentos: fonteAlimentos.map((f) => f.code).toList(),
     mudancaAlimentacaoGestacao: mudancaAlimentacaoGestacao,
     usaSuplementos: usaSuplementos,
     avaliacaoAlimentacao: avaliacaoAlimentacao?.code,

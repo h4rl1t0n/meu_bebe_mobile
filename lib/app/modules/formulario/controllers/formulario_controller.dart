@@ -187,11 +187,11 @@ abstract class FormularioControllerBase with Store {
       {
         'categoria': 'Alimentação',
         'Refeições por dia': _label(data.alimentacao.refeicoesPorDia, RefeicoesPorDia.labelOf),
-        'Insegurança alimentar': _simNao(data.alimentacao.insegurancaAlimentar),
+        'Deixou de comer por falta de dinheiro': _simNaoNullable(data.alimentacao.deixouDeComerFaltaDinheiro),
         'Alimentos consumidos': _join(data.alimentacao.alimentosConsumidos, AlimentoConsumido.labelOf),
-        'Origem dos alimentos': _label(data.alimentacao.fonteAlimentos, FonteAlimentos.labelOf),
-        'Mudança na gestação': _simNao(data.alimentacao.mudancaAlimentacaoGestacao),
-        'Usa suplementos': _simNao(data.alimentacao.usaSuplementos),
+        'Origem dos alimentos': _join(data.alimentacao.fonteAlimentos, FonteAlimentos.labelOf),
+        'Mudança na gestação': _simNaoNullable(data.alimentacao.mudancaAlimentacaoGestacao),
+        'Usa suplementos': _simNaoNullable(data.alimentacao.usaSuplementos),
         'Avaliação da alimentação': _label(data.alimentacao.avaliacaoAlimentacao, AvaliacaoAlimentacao.labelOf),
       },
     ];

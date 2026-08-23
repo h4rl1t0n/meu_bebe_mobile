@@ -7,7 +7,6 @@ import '../../../../core/ui/theme/styles/text_styles.dart';
 import '../../catalog/alimentacao_options.dart';
 import '../../widgets/item_tab_page.dart';
 import 'alimentacao_controller.dart';
-import 'alimentacao_validator.dart';
 
 class AlimentacaoTab extends StatefulWidget {
   const AlimentacaoTab({super.key});
@@ -44,10 +43,10 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
               ],
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text('Nos últimos 3 meses, deixou de comer por falta de dinheiro?'),
-              value: controller.insegurancaAlimentar,
-              onChanged: controller.setInsegurancaAlimentar,
+            _simNao(
+              'Nos últimos 3 meses, deixou de comer por falta de dinheiro?',
+              controller.deixouDeComerFaltaDinheiro,
+              controller.setDeixouComerFaltaDinheiro,
             ),
             SizedBox(height: Spacing.lg),
             Column(
@@ -64,29 +63,29 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
               ],
             ),
             SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<FonteAlimentos>(
-              decoration: const InputDecoration(
-                labelText: 'De onde vem os alimentos que você consome?',
-                border: OutlineInputBorder(),
-              ),
-              validator: AlimentacaoValidator.fonteAlimentos,
-              initialValue: controller.fonteAlimentos,
-              items: FonteAlimentos.values
-                  .map((e) => DropdownMenuItem<FonteAlimentos>(value: e, child: Text(e.label)))
-                  .toList(),
-              onChanged: (v) => controller.setFonteAlimentos(v),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('De onde vêm os alimentos que você consome?', style: context.textStyles.subTitleSmallStyle),
+                ...FonteAlimentos.values.map(
+                  (f) => CheckboxListTile(
+                    title: Text(f.label),
+                    value: controller.fonteAlimentos.contains(f),
+                    onChanged: (_) => controller.toggleFonteAlimento(f),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text('Sua alimentação mudou durante a gestação?'),
-              subtitle: const Text('Seja por orientação médica ou outros motivos'),
-              value: controller.mudancaAlimentacaoGestacao,
-              onChanged: controller.setMudancaAlimentacaoGestacao,
+            _simNao(
+              'Sua alimentação mudou durante a gestação?',
+              controller.mudancaAlimentacaoGestacao,
+              controller.setMudancaAlimentacaoGestacao,
             ),
-            SwitchListTile(
-              title: const Text('Está tomando suplementos vitamínicos ou de ferro?'),
-              value: controller.usaSuplementos,
-              onChanged: controller.setUsaSuplementos,
+            _simNao(
+              'Está tomando suplementos vitamínicos ou de ferro?',
+              controller.usaSuplementos,
+              controller.setUsaSuplementos,
             ),
             SizedBox(height: Spacing.lg),
             Column(
@@ -113,5 +112,29 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
     );
   }
 
-  bool validateTab() => formKey.currentState?.validate() ?? false;
+  /// Pergunta de Sim/Não com três estados: `null` (ainda não respondido),
+  /// `true` (Sim) e `false` (Não). Nada fica pré-selecionado.
+  Widget _simNao(String title, bool? value, ValueChanged<bool?> onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        SizedBox(height: Spacing.sm),
+        RadioGroup<bool>(
+          groupValue: value,
+          onChanged: onChanged,
+          child: Row(
+            children: [
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Sim'), value: true),
+              ),
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Não'), value: false),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }

@@ -89,6 +89,15 @@ void main() {
       expect(MelhoriaMoradia.labelOf('sem_melhorias'), 'Não desejo melhorias');
       expect(MelhoriaMoradia.labelOf('melhorar_banheiro'), 'Melhorar o banheiro');
       expect(MelhoriaMoradia.labelOf('outro'), 'Outra melhoria');
+
+      expect(RefeicoesPorDia.labelOf('uma_duas'), '1-2 refeições');
+      expect(RefeicoesPorDia.labelOf('quatro_mais'), '4 ou mais refeições');
+      expect(AlimentoConsumido.labelOf('feijao_leguminosas'), 'Feijão e outras leguminosas');
+      expect(AlimentoConsumido.labelOf('nenhum_dos_listados'), 'Nenhum dos listados');
+      expect(FonteAlimentos.labelOf('supermercado_feira'), 'Supermercado/feira');
+      expect(FonteAlimentos.labelOf('cesta_basica'), 'Cesta básica');
+      expect(AvaliacaoAlimentacao.labelOf('muito_boa'), 'Muito boa - atende todas minhas necessidades');
+      expect(AvaliacaoAlimentacao.labelOf('ruim'), 'Ruim - não atende minhas necessidades');
     });
   });
 }

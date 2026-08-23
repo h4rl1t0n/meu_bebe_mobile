@@ -28,7 +28,15 @@ FormularioData _sample() => FormularioData(
   saneamento: SaneamentoModel.empty(),
   saude: SaudeModel.empty(),
   habitacao: HabitacaoModel.empty(),
-  alimentacao: AlimentacaoModel.empty(),
+  alimentacao: const AlimentacaoModel(
+    refeicoesPorDia: 'tres',
+    deixouDeComerFaltaDinheiro: false,
+    alimentosConsumidos: ['frutas_verduras', 'feijao_leguminosas'],
+    fonteAlimentos: ['supermercado_feira', 'horta_propria'],
+    mudancaAlimentacaoGestacao: true,
+    usaSuplementos: true,
+    avaliacaoAlimentacao: 'boa',
+  ),
 );
 
 void main() {
@@ -36,7 +44,7 @@ void main() {
     test('consolida as 6 dimensões em toMap aninhado e versionado', () {
       final map = _sample().toMap();
 
-      expect(map['schema_version'], '1.10');
+      expect(map['schema_version'], '1.12');
       expect(map.containsKey('educacao'), isTrue);
       expect(map.containsKey('trabalho'), isTrue);
       expect(map.containsKey('saneamento'), isTrue);
@@ -56,6 +64,8 @@ void main() {
       expect(flat['educacao.estuda_atualmente'], isTrue);
       expect(flat['educacao.situacao_estudos_gestacao'], 'nao_interrompeu');
       expect(flat['trabalho.tipo_emprego'], 'clt');
+      expect(flat['alimentacao.refeicoes_por_dia'], 'tres');
+      expect(flat['alimentacao.fonte_alimentos'], ['supermercado_feira', 'horta_propria']);
       expect(flat.containsKey('schema_version'), isFalse);
     });
 
