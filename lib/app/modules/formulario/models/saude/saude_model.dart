@@ -2,8 +2,8 @@ import '../../catalog/dss_schema.dart';
 
 /// Dimensão Saúde.
 ///
-/// `cadastradaUBS` é condicionada por `acessoUBS`: `null` quando o acesso à
-/// UBS ainda não foi informado.
+/// `cadastradaUBS` é independente de `acessoUBS`: `null` significa apenas
+/// "não respondido" (o vínculo com a UBS não depende do meio de transporte).
 class SaudeModel {
   final String? distanciaUBS;
   final bool faltouConsulta;
@@ -14,9 +14,9 @@ class SaudeModel {
   final bool vacinasEmDia;
   final String? avaliacaoPreNatal;
 
-  /// Texto livre (relato qualitativo). NÃO entra no modelo tabular inicial —
-  /// preservado no JSON.
-  final String? dificuldadesSaude;
+  /// Dificuldades de acesso/utilização dos serviços de saúde (múltipla
+  /// escolha, códigos canônicos de [DificuldadeSaude]).
+  final List<String> dificuldadesSaude;
 
   const SaudeModel({
     this.distanciaUBS,
@@ -27,7 +27,7 @@ class SaudeModel {
     required this.examesPreNatalCompletos,
     required this.vacinasEmDia,
     this.avaliacaoPreNatal,
-    this.dificuldadesSaude,
+    this.dificuldadesSaude = const [],
   });
 
   factory SaudeModel.empty() =>
@@ -54,7 +54,7 @@ class SaudeModel {
     examesPreNatalCompletos: map['exames_pre_natal_completos'] == true,
     vacinasEmDia: map['vacinas_em_dia'] == true,
     avaliacaoPreNatal: map['avaliacao_pre_natal'] as String?,
-    dificuldadesSaude: map['dificuldades_saude'] as String?,
+    dificuldadesSaude: List<String>.from((map['dificuldades_saude'] as List?) ?? const []),
   );
 
   SaudeModel copyWith({
@@ -66,7 +66,7 @@ class SaudeModel {
     bool? examesPreNatalCompletos,
     bool? vacinasEmDia,
     String? avaliacaoPreNatal,
-    String? dificuldadesSaude,
+    List<String>? dificuldadesSaude,
   }) => SaudeModel(
     distanciaUBS: distanciaUBS ?? this.distanciaUBS,
     faltouConsulta: faltouConsulta ?? this.faltouConsulta,
@@ -95,7 +95,7 @@ class SaudeModel {
           other.examesPreNatalCompletos == examesPreNatalCompletos &&
           other.vacinasEmDia == vacinasEmDia &&
           other.avaliacaoPreNatal == avaliacaoPreNatal &&
-          other.dificuldadesSaude == dificuldadesSaude;
+          DssSchema.listsEqual(other.dificuldadesSaude, dificuldadesSaude);
 
   @override
   int get hashCode => Object.hash(
@@ -107,6 +107,6 @@ class SaudeModel {
     examesPreNatalCompletos,
     vacinasEmDia,
     avaliacaoPreNatal,
-    dificuldadesSaude,
+    Object.hashAll(dificuldadesSaude),
   );
 }

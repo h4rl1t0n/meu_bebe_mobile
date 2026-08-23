@@ -7,12 +7,14 @@ import 'package:meu_bebe/app/modules/formulario/models/saneamento/saneamento_mod
 import 'package:meu_bebe/app/modules/formulario/models/saude/saude_model.dart';
 import 'package:meu_bebe/app/modules/formulario/models/trabalho/trabalho_model.dart';
 
-/// Garante que os 3 campos de texto livre (qualitativos) remanescentes são
+/// Garante que os 2 campos de texto livre (qualitativos) remanescentes são
 /// preservados como `String?` crua por todo o caminho UI → Controller → Model →
 /// FormularioData → toMap → fromMap, sem conversão automática em categoria.
 ///
-/// `trabalho.motivo_desemprego` e `trabalho.impacto_gestacao_trabalho` deixaram
-/// de ser texto livre: viraram categorias canônicas (ver `trabalho_options.dart`).
+/// Deixaram de ser texto livre (viraram categorias canônicas):
+///   - `trabalho.motivo_desemprego` e `trabalho.impacto_gestacao_trabalho`
+///     (ver `trabalho_options.dart`);
+///   - `saude.dificuldades_saude` (ver `DificuldadeSaude`).
 FormularioData _data() => FormularioData(
   educacao: EducacaoModel.empty(),
   trabalho: TrabalhoModel.empty(),
@@ -25,7 +27,6 @@ FormularioData _data() => FormularioData(
     faltouConsulta: false,
     examesPreNatalCompletos: false,
     vacinasEmDia: false,
-    dificuldadesSaude: 'Falta de transporte e horários da UBS',
   ),
   habitacao: const HabitacaoModel(
     numeroPessoas: 0,
@@ -43,13 +44,11 @@ void main() {
       final map = data.toMap();
 
       expect(map['saneamento'], containsPair('cuidados_vetores', 'Uso repelente e telas nas janelas'));
-      expect(map['saude'], containsPair('dificuldades_saude', 'Falta de transporte e horários da UBS'));
       expect(map['habitacao'], containsPair('melhorias_desejadas', 'Reformar o banheiro e melhorar a ventilação'));
 
       final restored = FormularioData.fromMap(map);
 
       expect(restored.saneamento.cuidadosVetores, 'Uso repelente e telas nas janelas');
-      expect(restored.saude.dificuldadesSaude, 'Falta de transporte e horários da UBS');
       expect(restored.habitacao.melhoriasDesejadas, 'Reformar o banheiro e melhorar a ventilação');
     });
 
@@ -57,7 +56,6 @@ void main() {
       final flat = _data().toFlatMap();
 
       expect(flat['saneamento.cuidados_vetores'], 'Uso repelente e telas nas janelas');
-      expect(flat['saude.dificuldades_saude'], 'Falta de transporte e horários da UBS');
       expect(flat['habitacao.melhorias_desejadas'], 'Reformar o banheiro e melhorar a ventilação');
     });
 
@@ -65,12 +63,10 @@ void main() {
       final map = FormularioData.empty().toMap();
 
       expect(map['saneamento']['cuidados_vetores'], isNull);
-      expect(map['saude']['dificuldades_saude'], isNull);
       expect(map['habitacao']['melhorias_desejadas'], isNull);
 
       final restored = FormularioData.fromMap(map);
       expect(restored.saneamento.cuidadosVetores, isNull);
-      expect(restored.saude.dificuldadesSaude, isNull);
       expect(restored.habitacao.melhoriasDesejadas, isNull);
     });
   });

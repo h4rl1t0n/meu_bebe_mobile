@@ -55,22 +55,20 @@ class _SaudeTabState extends State<SaudeTab> {
                 labelText: 'Como você costuma chegar à UBS?',
                 border: OutlineInputBorder(),
               ),
-              validator: SaudeValidator.acessibilidadeUBS,
-              initialValue: controller.acessibilidadeUBS,
+              validator: SaudeValidator.acessoUBS,
+              initialValue: controller.acessoUBS,
               items: AcessoUBS.values
                   .map((e) => DropdownMenuItem<AcessoUBS>(value: e, child: Text(e.label)))
                   .toList(),
-              onChanged: (v) => controller.setAcessibilidadeUBS(v),
+              onChanged: (v) => controller.setAcessoUBS(v),
             ),
             SizedBox(height: Spacing.lg),
-            if (controller.acessibilidadeUBS != null) ...[
-              SwitchListTile(
-                title: const Text('Está cadastrada na UBS mais próxima?'),
-                value: controller.cadastradaUBS ?? false,
-                onChanged: controller.setCadastradaUBS,
-              ),
-              SizedBox(height: Spacing.lg),
-            ],
+            SwitchListTile(
+              title: const Text('Você possui cadastro em uma Unidade Básica de Saúde (UBS)?'),
+              value: controller.cadastradaUBS ?? false,
+              onChanged: controller.setCadastradaUBS,
+            ),
+            SizedBox(height: Spacing.lg),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -110,14 +108,21 @@ class _SaudeTabState extends State<SaudeTab> {
               onChanged: (v) => controller.setAvaliacaoPreNatal(v),
             ),
             SizedBox(height: Spacing.lg),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Quais dificuldades enfrenta no acesso à saúde?',
-                border: OutlineInputBorder(),
-                hintText: 'Ex: Horários, falta de profissionais, transporte...',
-              ),
-              maxLines: 3,
-              onChanged: controller.setDificuldadesSaude,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Quais dificuldades você enfrenta para acessar/utilizar os serviços de saúde?',
+                  style: context.textStyles.subTitleSmallStyle,
+                ),
+                ...DificuldadeSaude.values.map(
+                  (d) => CheckboxListTile(
+                    title: Text(d.label),
+                    value: controller.dificuldadesSaude.contains(d),
+                    onChanged: (_) => controller.toggleDificuldadeSaude(d),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

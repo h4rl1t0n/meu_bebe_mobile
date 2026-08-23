@@ -162,7 +162,7 @@ abstract class FormularioControllerBase with Store {
         'Exames completos': _simNao(data.saude.examesPreNatalCompletos),
         'Vacinas em dia': _simNao(data.saude.vacinasEmDia),
         'Avaliação do pré-natal': _label(data.saude.avaliacaoPreNatal, AvaliacaoPreNatal.labelOf),
-        'Dificuldades de acesso à saúde': data.saude.dificuldadesSaude ?? 'Não informado',
+        'Dificuldades de acesso à saúde': _join(data.saude.dificuldadesSaude, DificuldadeSaude.labelOf),
       },
       {
         'categoria': 'Habitação',

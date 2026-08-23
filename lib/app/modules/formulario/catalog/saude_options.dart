@@ -73,3 +73,31 @@ enum AvaliacaoPreNatal {
     return code ?? '';
   }
 }
+
+/// Dificuldades de acesso/utilização dos serviços de saúde (múltipla escolha).
+///
+/// `semDificuldades` é mutuamente exclusiva: quando selecionada, as demais
+/// opções são removidas (regra implementada no controller).
+enum DificuldadeSaude {
+  dificuldadeAgendamento('dificuldade_agendamento', 'Dificuldade para agendar'),
+  demoraAtendimento('demora_atendimento', 'Demora no atendimento'),
+  distancia('distancia', 'Distância'),
+  faltaTransporte('falta_transporte', 'Falta de transporte'),
+  horarioIncompativel('horario_incompativel', 'Horário incompatível'),
+  faltaProfissional('falta_profissional', 'Falta de profissionais'),
+  faltaExames('falta_exames', 'Falta de exames'),
+  semDificuldades('sem_dificuldades', 'Não tenho dificuldades'),
+  outro('outro', 'Outro');
+
+  const DificuldadeSaude(this.code, this.label);
+
+  final String code;
+  final String label;
+
+  static String labelOf(String? code) {
+    for (final option in values) {
+      if (option.code == code) return option.label;
+    }
+    return code ?? '';
+  }
+}

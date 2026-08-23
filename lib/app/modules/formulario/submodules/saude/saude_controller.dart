@@ -16,7 +16,7 @@ abstract class SaudeControllerBase with Store {
   bool faltouConsulta = false;
 
   @observable
-  AcessoUBS? acessibilidadeUBS;
+  AcessoUBS? acessoUBS;
 
   @observable
   bool? cadastradaUBS;
@@ -34,7 +34,7 @@ abstract class SaudeControllerBase with Store {
   AvaliacaoPreNatal? avaliacaoPreNatal;
 
   @observable
-  String? dificuldadesSaude;
+  ObservableList<DificuldadeSaude> dificuldadesSaude = ObservableList<DificuldadeSaude>();
 
   @observable
   bool isValid = false;
@@ -52,11 +52,8 @@ abstract class SaudeControllerBase with Store {
   }
 
   @action
-  void setAcessibilidadeUBS(AcessoUBS? value) {
-    acessibilidadeUBS = value;
-    if (value == null) {
-      cadastradaUBS = null;
-    }
+  void setAcessoUBS(AcessoUBS? value) {
+    acessoUBS = value;
     validate();
   }
 
@@ -95,8 +92,25 @@ abstract class SaudeControllerBase with Store {
   }
 
   @action
-  void setDificuldadesSaude(String value) {
-    dificuldadesSaude = value.trim().isEmpty ? null : value;
+  void toggleDificuldadeSaude(DificuldadeSaude dificuldade) {
+    if (dificuldade == DificuldadeSaude.semDificuldades) {
+      // `sem_dificuldades` é mutuamente exclusiva com as demais opções.
+      if (dificuldadesSaude.contains(DificuldadeSaude.semDificuldades)) {
+        dificuldadesSaude.clear();
+      } else {
+        dificuldadesSaude
+          ..clear()
+          ..add(DificuldadeSaude.semDificuldades);
+      }
+    } else {
+      // Selecionar qualquer dificuldade remove `sem_dificuldades`.
+      dificuldadesSaude.remove(DificuldadeSaude.semDificuldades);
+      if (dificuldadesSaude.contains(dificuldade)) {
+        dificuldadesSaude.remove(dificuldade);
+      } else {
+        dificuldadesSaude.add(dificuldade);
+      }
+    }
     validate();
   }
 
@@ -104,7 +118,7 @@ abstract class SaudeControllerBase with Store {
   void validate() {
     isValid = SaudeValidator.isTabValid(
       distanciaUBS: distanciaUBS,
-      acessibilidadeUBS: acessibilidadeUBS,
+      acessoUBS: acessoUBS,
       avaliacaoPreNatal: avaliacaoPreNatal,
     );
   }
@@ -112,12 +126,12 @@ abstract class SaudeControllerBase with Store {
   SaudeModel buildSaudeData() => SaudeModel(
     distanciaUBS: distanciaUBS?.code,
     faltouConsulta: faltouConsulta,
-    acessoUBS: acessibilidadeUBS?.code,
-    cadastradaUBS: acessibilidadeUBS == null ? null : cadastradaUBS,
+    acessoUBS: acessoUBS?.code,
+    cadastradaUBS: cadastradaUBS,
     servicosPreNatal: servicosPreNatal.map((s) => s.code).toList(),
     examesPreNatalCompletos: examesPreNatalCompletos,
     vacinasEmDia: vacinasEmDia,
     avaliacaoPreNatal: avaliacaoPreNatal?.code,
-    dificuldadesSaude: dificuldadesSaude,
+    dificuldadesSaude: dificuldadesSaude.map((d) => d.code).toList(),
   );
 }

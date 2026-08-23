@@ -16,7 +16,7 @@ abstract final class DssSchema {
   /// (adição/remoção/renomeação de perguntas ou alteração nos códigos
   /// canônicos), para que cada registro coletado possa ser rastreado até a
   /// versão do formulário que o gerou.
-  static const String schemaVersion = '1.2';
+  static const String schemaVersion = '1.3';
 
   /// Compara duas listas por conteúdo (usado nos operadores `==` dos models,
   /// que possuem campos de múltipla escolha).

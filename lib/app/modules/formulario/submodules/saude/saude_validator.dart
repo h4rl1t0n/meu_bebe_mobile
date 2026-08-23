@@ -6,7 +6,7 @@ class SaudeValidator {
     return null;
   }
 
-  static String? acessibilidadeUBS(AcessoUBS? value) {
+  static String? acessoUBS(AcessoUBS? value) {
     if (value == null) return 'Campo obrigatório';
     return null;
   }
@@ -18,9 +18,9 @@ class SaudeValidator {
 
   static bool isTabValid({
     required DistanciaUBS? distanciaUBS,
-    required AcessoUBS? acessibilidadeUBS,
+    required AcessoUBS? acessoUBS,
     required AvaliacaoPreNatal? avaliacaoPreNatal,
   }) {
-    return distanciaUBS != null && acessibilidadeUBS != null && avaliacaoPreNatal != null;
+    return distanciaUBS != null && acessoUBS != null && avaliacaoPreNatal != null;
   }
 }

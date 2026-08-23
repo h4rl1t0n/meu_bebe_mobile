@@ -36,7 +36,7 @@ void main() {
     test('consolida as 6 dimensões em toMap aninhado e versionado', () {
       final map = _sample().toMap();
 
-      expect(map['schema_version'], '1.2');
+      expect(map['schema_version'], '1.3');
       expect(map.containsKey('educacao'), isTrue);
       expect(map.containsKey('trabalho'), isTrue);
       expect(map.containsKey('saneamento'), isTrue);

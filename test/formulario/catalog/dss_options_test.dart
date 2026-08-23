@@ -30,6 +30,7 @@ void main() {
       _expectUnique(AcessoUBS.values.map((e) => e.code).toList());
       _expectUnique(ServicoPreNatal.values.map((e) => e.code).toList());
       _expectUnique(AvaliacaoPreNatal.values.map((e) => e.code).toList());
+      _expectUnique(DificuldadeSaude.values.map((e) => e.code).toList());
 
       _expectUnique(TipoMoradia.values.map((e) => e.code).toList());
       _expectUnique(ItemResidencia.values.map((e) => e.code).toList());
@@ -49,6 +50,9 @@ void main() {
       expect(MotivoDesemprego.labelOf('gestacao'), 'Por causa da gestação');
       expect(ImpactoGestacaoTrabalho.labelOf('nao_afetou'), 'Não afetou');
       expect(ImpactoGestacaoTrabalho.labelOf('afastamento_temporario'), 'Afastamento temporário');
+
+      expect(DificuldadeSaude.labelOf('falta_transporte'), 'Falta de transporte');
+      expect(DificuldadeSaude.labelOf('sem_dificuldades'), 'Não tenho dificuldades');
     });
   });
 }
