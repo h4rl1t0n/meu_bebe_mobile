@@ -1,22 +1,33 @@
+import '../../catalog/dss_schema.dart';
+
 /// Dimensão Saneamento Básico.
 class SaneamentoModel {
   final String? fonteAgua;
   final bool interrupcoesAgua;
-  final String? destinoEsgoto;
-  final String? coletaLixo;
+  final String? esgotamentoSanitario;
+
+  /// Regularidade da coleta de lixo (`FrequenciaColetaLixo`).
+  final String? frequenciaColetaLixo;
+
+  /// Destinação do lixo quando não há coleta adequada. Aplicável quando
+  /// `frequenciaColetaLixo` é `irregular`/`nao_possui`; para `regular`, `null`
+  /// significa "não aplicável".
+  final String? destinoLixoSemColeta;
+
   final bool preocupacaoAgua;
 
-  /// Texto livre (relato qualitativo). NÃO entra no modelo tabular inicial —
-  /// preservado no JSON.
-  final String? cuidadosVetores;
+  /// Cuidados adotados contra mosquitos e outros vetores (múltipla escolha,
+  /// códigos canônicos de [CuidadoVetor]).
+  final List<String> cuidadosVetores;
 
   const SaneamentoModel({
     this.fonteAgua,
     required this.interrupcoesAgua,
-    this.destinoEsgoto,
-    this.coletaLixo,
+    this.esgotamentoSanitario,
+    this.frequenciaColetaLixo,
+    this.destinoLixoSemColeta,
     required this.preocupacaoAgua,
-    this.cuidadosVetores,
+    this.cuidadosVetores = const [],
   });
 
   factory SaneamentoModel.empty() =>
@@ -25,8 +36,9 @@ class SaneamentoModel {
   Map<String, dynamic> toMap() => {
     'fonte_agua': fonteAgua,
     'interrupcoes_agua': interrupcoesAgua,
-    'esgotamento_sanitario': destinoEsgoto,
-    'coleta_lixo': coletaLixo,
+    'esgotamento_sanitario': esgotamentoSanitario,
+    'frequencia_coleta_lixo': frequenciaColetaLixo,
+    'destino_lixo_sem_coleta': destinoLixoSemColeta,
     'problema_saude_agua': preocupacaoAgua,
     'cuidados_vetores': cuidadosVetores,
   };
@@ -34,25 +46,28 @@ class SaneamentoModel {
   factory SaneamentoModel.fromMap(Map<String, dynamic> map) => SaneamentoModel(
     fonteAgua: map['fonte_agua'] as String?,
     interrupcoesAgua: map['interrupcoes_agua'] == true,
-    destinoEsgoto: map['esgotamento_sanitario'] as String?,
-    coletaLixo: map['coleta_lixo'] as String?,
+    esgotamentoSanitario: map['esgotamento_sanitario'] as String?,
+    frequenciaColetaLixo: map['frequencia_coleta_lixo'] as String?,
+    destinoLixoSemColeta: map['destino_lixo_sem_coleta'] as String?,
     preocupacaoAgua: map['problema_saude_agua'] == true,
-    cuidadosVetores: map['cuidados_vetores'] as String?,
+    cuidadosVetores: List<String>.from((map['cuidados_vetores'] as List?) ?? const []),
   );
 
   SaneamentoModel copyWith({
     String? fonteAgua,
     bool? interrupcoesAgua,
-    String? destinoEsgoto,
-    String? coletaLixo,
+    String? esgotamentoSanitario,
+    String? frequenciaColetaLixo,
+    String? destinoLixoSemColeta,
     bool? preocupacaoAgua,
-    String? cuidadosVetores,
+    List<String>? cuidadosVetores,
   }) {
     return SaneamentoModel(
       fonteAgua: fonteAgua ?? this.fonteAgua,
       interrupcoesAgua: interrupcoesAgua ?? this.interrupcoesAgua,
-      destinoEsgoto: destinoEsgoto ?? this.destinoEsgoto,
-      coletaLixo: coletaLixo ?? this.coletaLixo,
+      esgotamentoSanitario: esgotamentoSanitario ?? this.esgotamentoSanitario,
+      frequenciaColetaLixo: frequenciaColetaLixo ?? this.frequenciaColetaLixo,
+      destinoLixoSemColeta: destinoLixoSemColeta ?? this.destinoLixoSemColeta,
       preocupacaoAgua: preocupacaoAgua ?? this.preocupacaoAgua,
       cuidadosVetores: cuidadosVetores ?? this.cuidadosVetores,
     );
@@ -60,7 +75,7 @@ class SaneamentoModel {
 
   @override
   String toString() =>
-      'SaneamentoModel(fonteAgua: $fonteAgua, destinoEsgoto: $destinoEsgoto, coletaLixo: $coletaLixo)';
+      'SaneamentoModel(fonteAgua: $fonteAgua, esgotamentoSanitario: $esgotamentoSanitario, frequenciaColetaLixo: $frequenciaColetaLixo)';
 
   @override
   bool operator ==(Object other) =>
@@ -68,18 +83,20 @@ class SaneamentoModel {
       other is SaneamentoModel &&
           other.fonteAgua == fonteAgua &&
           other.interrupcoesAgua == interrupcoesAgua &&
-          other.destinoEsgoto == destinoEsgoto &&
-          other.coletaLixo == coletaLixo &&
+          other.esgotamentoSanitario == esgotamentoSanitario &&
+          other.frequenciaColetaLixo == frequenciaColetaLixo &&
+          other.destinoLixoSemColeta == destinoLixoSemColeta &&
           other.preocupacaoAgua == preocupacaoAgua &&
-          other.cuidadosVetores == cuidadosVetores;
+          DssSchema.listsEqual(other.cuidadosVetores, cuidadosVetores);
 
   @override
   int get hashCode => Object.hash(
     fonteAgua,
     interrupcoesAgua,
-    destinoEsgoto,
-    coletaLixo,
+    esgotamentoSanitario,
+    frequenciaColetaLixo,
+    destinoLixoSemColeta,
     preocupacaoAgua,
-    cuidadosVetores,
+    Object.hashAll(cuidadosVetores),
   );
 }

@@ -6,16 +6,30 @@ class SaneamentoValidator {
     return null;
   }
 
-  static String? coletaLixo(ColetaLixo? value) {
+  static String? frequenciaColetaLixo(FrequenciaColetaLixo? value) {
+    if (value == null) return 'Campo obrigatório';
+    return null;
+  }
+
+  static String? destinoLixoSemColeta(DestinoLixoSemColeta? value) {
     if (value == null) return 'Campo obrigatório';
     return null;
   }
 
   static bool isTabValid({
     required FonteAgua? fonteAgua,
-    required EsgotamentoSanitario? destinoEsgoto,
-    required ColetaLixo? coletaLixo,
+    required EsgotamentoSanitario? esgotamentoSanitario,
+    required FrequenciaColetaLixo? frequenciaColetaLixo,
+    required DestinoLixoSemColeta? destinoLixoSemColeta,
   }) {
-    return fonteAgua != null && destinoEsgoto != null && coletaLixo != null;
+    if (fonteAgua == null || esgotamentoSanitario == null || frequenciaColetaLixo == null) {
+      return false;
+    }
+    // Com coleta regular, a destinação alternativa é não aplicável (null).
+    // Com coleta irregular ou sem coleta, a destinação é obrigatória.
+    if (frequenciaColetaLixo == FrequenciaColetaLixo.regular) {
+      return true;
+    }
+    return destinoLixoSemColeta != null;
   }
 }

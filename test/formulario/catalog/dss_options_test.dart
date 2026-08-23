@@ -24,7 +24,9 @@ void main() {
 
       _expectUnique(FonteAgua.values.map((e) => e.code).toList());
       _expectUnique(EsgotamentoSanitario.values.map((e) => e.code).toList());
-      _expectUnique(ColetaLixo.values.map((e) => e.code).toList());
+      _expectUnique(FrequenciaColetaLixo.values.map((e) => e.code).toList());
+      _expectUnique(DestinoLixoSemColeta.values.map((e) => e.code).toList());
+      _expectUnique(CuidadoVetor.values.map((e) => e.code).toList());
 
       _expectUnique(DistanciaUBS.values.map((e) => e.code).toList());
       _expectUnique(AcessoUBS.values.map((e) => e.code).toList());
@@ -53,6 +55,14 @@ void main() {
 
       expect(DificuldadeSaude.labelOf('falta_transporte'), 'Falta de transporte');
       expect(DificuldadeSaude.labelOf('sem_dificuldades'), 'Não tenho dificuldades');
+
+      expect(CuidadoVetor.labelOf('elimina_agua_parada'), 'Elimina água parada');
+      expect(CuidadoVetor.labelOf('sem_cuidados'), 'Não realiza cuidados específicos');
+
+      expect(FrequenciaColetaLixo.labelOf('nao_possui'), 'Não possui coleta');
+      expect(DestinoLixoSemColeta.labelOf('terreno_baldio'), 'Joga em terreno baldio');
+      expect(DestinoLixoSemColeta.labelOf('enterra'), 'Enterra o lixo');
+      expect(DestinoLixoSemColeta.labelOf('aguarda_proxima_coleta'), 'Armazena o lixo até a próxima coleta');
     });
   });
 }

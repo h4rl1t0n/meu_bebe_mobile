@@ -141,16 +141,21 @@ abstract class FormularioControllerBase with Store {
           'Motivo desemprego': _label(data.trabalho.motivoDesemprego, MotivoDesemprego.labelOf),
         },
         'Recebe benefício social': _simNaoNullable(data.trabalho.recebeBeneficioSocial),
-        'Impacto da gestação no trabalho': _label(data.trabalho.impactoGestacaoTrabalho, ImpactoGestacaoTrabalho.labelOf),
+        'Impacto da gestação no trabalho': _label(
+          data.trabalho.impactoGestacaoTrabalho,
+          ImpactoGestacaoTrabalho.labelOf,
+        ),
       },
       {
         'categoria': 'Saneamento Básico',
         'Fonte de água': _label(data.saneamento.fonteAgua, FonteAgua.labelOf),
         'Interrupções de água': _simNao(data.saneamento.interrupcoesAgua),
-        'Destino do esgoto': _label(data.saneamento.destinoEsgoto, EsgotamentoSanitario.labelOf),
-        'Coleta de lixo': _label(data.saneamento.coletaLixo, ColetaLixo.labelOf),
+        'Destino do esgoto': _label(data.saneamento.esgotamentoSanitario, EsgotamentoSanitario.labelOf),
+        'Regularidade da coleta de lixo': _label(data.saneamento.frequenciaColetaLixo, FrequenciaColetaLixo.labelOf),
+        if (data.saneamento.frequenciaColetaLixo != FrequenciaColetaLixo.regular.code)
+          'Destinação do lixo sem coleta': _label(data.saneamento.destinoLixoSemColeta, DestinoLixoSemColeta.labelOf),
         'Problema de saúde por água': _simNao(data.saneamento.preocupacaoAgua),
-        'Cuidados contra vetores': data.saneamento.cuidadosVetores ?? 'Não informado',
+        'Cuidados contra vetores': _join(data.saneamento.cuidadosVetores, CuidadoVetor.labelOf),
       },
       {
         'categoria': 'Saúde',

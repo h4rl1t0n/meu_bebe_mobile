@@ -16,16 +16,19 @@ abstract class SaneamentoControllerBase with Store {
   bool interrupcoesAgua = false;
 
   @observable
-  EsgotamentoSanitario? destinoEsgoto;
+  EsgotamentoSanitario? esgotamentoSanitario;
 
   @observable
-  ColetaLixo? coletaLixo;
+  FrequenciaColetaLixo? frequenciaColetaLixo;
+
+  @observable
+  DestinoLixoSemColeta? destinoLixoSemColeta;
 
   @observable
   bool preocupacaoAgua = false;
 
   @observable
-  String? cuidadosVetores;
+  ObservableList<CuidadoVetor> cuidadosVetores = ObservableList<CuidadoVetor>();
 
   @observable
   bool isValid = false;
@@ -43,14 +46,29 @@ abstract class SaneamentoControllerBase with Store {
   }
 
   @action
-  void setDestinoEsgoto(EsgotamentoSanitario? value) {
-    destinoEsgoto = value;
+  void setEsgotamentoSanitario(EsgotamentoSanitario? value) {
+    esgotamentoSanitario = value;
     validate();
   }
 
   @action
-  void setColetaLixo(ColetaLixo? value) {
-    coletaLixo = value;
+  void setFrequenciaColetaLixo(FrequenciaColetaLixo? value) {
+    frequenciaColetaLixo = value;
+    // Com coleta regular, a destinação alternativa é não aplicável.
+    if (value == FrequenciaColetaLixo.regular) {
+      destinoLixoSemColeta = null;
+    }
+    // Sem coleta, "aguardar a próxima coleta" deixa de fazer sentido.
+    if (value == FrequenciaColetaLixo.naoPossui &&
+        destinoLixoSemColeta == DestinoLixoSemColeta.aguardaProximaColeta) {
+      destinoLixoSemColeta = null;
+    }
+    validate();
+  }
+
+  @action
+  void setDestinoLixoSemColeta(DestinoLixoSemColeta? value) {
+    destinoLixoSemColeta = value;
     validate();
   }
 
@@ -61,8 +79,25 @@ abstract class SaneamentoControllerBase with Store {
   }
 
   @action
-  void setCuidadosVetores(String value) {
-    cuidadosVetores = value.trim().isEmpty ? null : value;
+  void toggleCuidadoVetor(CuidadoVetor cuidado) {
+    if (cuidado == CuidadoVetor.semCuidados) {
+      // `sem_cuidados` é mutuamente exclusiva com as demais opções.
+      if (cuidadosVetores.contains(CuidadoVetor.semCuidados)) {
+        cuidadosVetores.clear();
+      } else {
+        cuidadosVetores
+          ..clear()
+          ..add(CuidadoVetor.semCuidados);
+      }
+    } else {
+      // Selecionar qualquer cuidado remove `sem_cuidados`.
+      cuidadosVetores.remove(CuidadoVetor.semCuidados);
+      if (cuidadosVetores.contains(cuidado)) {
+        cuidadosVetores.remove(cuidado);
+      } else {
+        cuidadosVetores.add(cuidado);
+      }
+    }
     validate();
   }
 
@@ -70,17 +105,19 @@ abstract class SaneamentoControllerBase with Store {
   void validate() {
     isValid = SaneamentoValidator.isTabValid(
       fonteAgua: fonteAgua,
-      destinoEsgoto: destinoEsgoto,
-      coletaLixo: coletaLixo,
+      esgotamentoSanitario: esgotamentoSanitario,
+      frequenciaColetaLixo: frequenciaColetaLixo,
+      destinoLixoSemColeta: destinoLixoSemColeta,
     );
   }
 
   SaneamentoModel buildSaneamentoData() => SaneamentoModel(
     fonteAgua: fonteAgua?.code,
     interrupcoesAgua: interrupcoesAgua,
-    destinoEsgoto: destinoEsgoto?.code,
-    coletaLixo: coletaLixo?.code,
+    esgotamentoSanitario: esgotamentoSanitario?.code,
+    frequenciaColetaLixo: frequenciaColetaLixo?.code,
+    destinoLixoSemColeta: destinoLixoSemColeta?.code,
     preocupacaoAgua: preocupacaoAgua,
-    cuidadosVetores: cuidadosVetores,
+    cuidadosVetores: cuidadosVetores.map((c) => c.code).toList(),
   );
 }

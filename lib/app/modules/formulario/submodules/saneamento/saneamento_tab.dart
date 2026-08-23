@@ -57,8 +57,8 @@ class _SaneamentoTabState extends State<SaneamentoTab> {
                 ),
                 SizedBox(height: Spacing.sm),
                 RadioGroup<EsgotamentoSanitario>(
-                  groupValue: controller.destinoEsgoto,
-                  onChanged: (v) => controller.setDestinoEsgoto(v),
+                  groupValue: controller.esgotamentoSanitario,
+                  onChanged: (v) => controller.setEsgotamentoSanitario(v),
                   child: Column(
                     children: EsgotamentoSanitario.values
                         .map((e) => RadioListTile<EsgotamentoSanitario>(title: Text(e.label), value: e))
@@ -68,18 +68,36 @@ class _SaneamentoTabState extends State<SaneamentoTab> {
               ],
             ),
             SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<ColetaLixo>(
+            DropdownButtonFormField<FrequenciaColetaLixo>(
               decoration: const InputDecoration(
-                labelText: 'Como é feita a coleta de lixo na sua comunidade?',
+                labelText: 'Com que regularidade o lixo da sua residência é coletado pelo serviço de coleta?',
                 border: OutlineInputBorder(),
               ),
-              validator: SaneamentoValidator.coletaLixo,
-              initialValue: controller.coletaLixo,
-              items: ColetaLixo.values
-                  .map((e) => DropdownMenuItem<ColetaLixo>(value: e, child: Text(e.label)))
+              validator: SaneamentoValidator.frequenciaColetaLixo,
+              initialValue: controller.frequenciaColetaLixo,
+              items: FrequenciaColetaLixo.values
+                  .map((e) => DropdownMenuItem<FrequenciaColetaLixo>(value: e, child: Text(e.label)))
                   .toList(),
-              onChanged: (v) => controller.setColetaLixo(v),
+              onChanged: (v) => controller.setFrequenciaColetaLixo(v),
             ),
+            SizedBox(height: Spacing.lg),
+            if (controller.frequenciaColetaLixo != null &&
+                controller.frequenciaColetaLixo != FrequenciaColetaLixo.regular)
+              DropdownButtonFormField<DestinoLixoSemColeta>(
+                decoration: const InputDecoration(
+                  labelText: 'Quando o lixo não é recolhido pelo serviço de coleta, qual é a principal forma de destinação?',
+                  border: OutlineInputBorder(),
+                ),
+                validator: SaneamentoValidator.destinoLixoSemColeta,
+                initialValue: controller.destinoLixoSemColeta,
+                items: DestinoLixoSemColeta.values
+                    .where((e) =>
+                        controller.frequenciaColetaLixo != FrequenciaColetaLixo.naoPossui ||
+                        e != DestinoLixoSemColeta.aguardaProximaColeta)
+                    .map((e) => DropdownMenuItem<DestinoLixoSemColeta>(value: e, child: Text(e.label)))
+                    .toList(),
+                onChanged: (v) => controller.setDestinoLixoSemColeta(v),
+              ),
             SizedBox(height: Spacing.lg),
             SwitchListTile(
               title: const Text(textAlign: TextAlign.justify, 'Já teve algum problema de saúde por conta da água?'),
@@ -87,14 +105,21 @@ class _SaneamentoTabState extends State<SaneamentoTab> {
               onChanged: controller.setPreocupacaoAgua,
             ),
             SizedBox(height: Spacing.lg),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Quais cuidados toma contra mosquitos/doenças?',
-                border: OutlineInputBorder(),
-                hintText: 'Ex: Telas, repelente, eliminação de criadouros...',
-              ),
-              maxLines: 2,
-              onChanged: controller.setCuidadosVetores,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Quais cuidados você adota para evitar mosquitos/vetores?',
+                  style: context.textStyles.subTitleSmallStyle.copyWith(color: context.colors.onSurface),
+                ),
+                ...CuidadoVetor.values.map(
+                  (c) => CheckboxListTile(
+                    title: Text(c.label),
+                    value: controller.cuidadosVetores.contains(c),
+                    onChanged: (_) => controller.toggleCuidadoVetor(c),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
