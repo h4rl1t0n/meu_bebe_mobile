@@ -42,11 +42,24 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
               onChanged: (v) => controller.setTipoMoradia(v),
             ),
             SizedBox(height: Spacing.lg),
+            DropdownButtonFormField<MaterialMoradia>(
+              decoration: const InputDecoration(
+                labelText: 'Material predominante das paredes',
+                border: OutlineInputBorder(),
+              ),
+              validator: HabitacaoValidator.materialMoradia,
+              initialValue: controller.materialMoradia,
+              items: MaterialMoradia.values
+                  .map((e) => DropdownMenuItem<MaterialMoradia>(value: e, child: Text(e.label)))
+                  .toList(),
+              onChanged: (v) => controller.setMaterialMoradia(v),
+            ),
+            SizedBox(height: Spacing.lg),
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
-                    decoration: const InputDecoration(labelText: 'Nº de pessoas na casa', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(labelText: 'Nº de pessoas', border: OutlineInputBorder()),
                     keyboardType: TextInputType.number,
                     validator: HabitacaoValidator.numeroPessoas,
                     onChanged: (v) => controller.setNumeroPessoas(int.tryParse(v) ?? 0),
@@ -57,7 +70,17 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
                   child: TextFormField(
                     decoration: const InputDecoration(labelText: 'Nº de cômodos', border: OutlineInputBorder()),
                     keyboardType: TextInputType.number,
+                    validator: HabitacaoValidator.numeroComodos,
                     onChanged: (v) => controller.setNumeroComodos(int.tryParse(v) ?? 0),
+                  ),
+                ),
+                SizedBox(width: Spacing.lg),
+                Expanded(
+                  child: TextFormField(
+                    decoration: const InputDecoration(labelText: 'Cômodos usados para dormir', border: OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    validator: (v) => HabitacaoValidator.numeroDormitorios(v, numeroComodos: controller.numeroComodos),
+                    onChanged: (v) => controller.setNumeroDormitorios(int.tryParse(v) ?? 0),
                   ),
                 ),
               ],
@@ -80,25 +103,30 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
             SizedBox(height: Spacing.lg),
             DropdownButtonFormField<SegurancaResidencia>(
               decoration: const InputDecoration(
-                labelText: 'Como avalia a segurança da sua casa?',
+                labelText: 'Como você avalia a segurança da sua moradia?',
                 border: OutlineInputBorder(),
               ),
-              validator: HabitacaoValidator.segurancaEstrutural,
-              initialValue: controller.segurancaEstrutural,
+              validator: HabitacaoValidator.segurancaResidencia,
+              initialValue: controller.segurancaResidencia,
               items: SegurancaResidencia.values
                   .map((e) => DropdownMenuItem<SegurancaResidencia>(value: e, child: Text(e.label)))
                   .toList(),
-              onChanged: (v) => controller.setSegurancaEstrutural(v),
+              onChanged: (v) => controller.setSegurancaResidencia(v),
             ),
             SizedBox(height: Spacing.lg),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Quais melhorias gostaria de fazer na sua moradia?',
-                border: OutlineInputBorder(),
-                hintText: 'Ex: Reformar banheiro, melhorar ventilação...',
-              ),
-              maxLines: 2,
-              onChanged: controller.setMelhoriasDesejadas,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Quais melhorias gostaria de fazer na sua moradia?', style: context.textStyles.subTitleSmallStyle),
+                SizedBox(height: Spacing.sm),
+                ...MelhoriaMoradia.values.map(
+                  (m) => CheckboxListTile(
+                    title: Text(m.label),
+                    value: controller.melhoriasDesejadas.contains(m),
+                    onChanged: (_) => controller.toggleMelhoriaMoradia(m),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: Spacing.lg),
             SwitchListTile(

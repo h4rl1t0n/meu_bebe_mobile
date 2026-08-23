@@ -13,19 +13,25 @@ abstract class HabitacaoControllerBase with Store {
   TipoMoradia? tipoMoradia;
 
   @observable
+  MaterialMoradia? materialMoradia;
+
+  @observable
   int numeroPessoas = 0;
 
   @observable
   int numeroComodos = 0;
 
   @observable
+  int numeroDormitorios = 0;
+
+  @observable
   ObservableList<ItemResidencia> itensResidencia = ObservableList<ItemResidencia>();
 
   @observable
-  SegurancaResidencia? segurancaEstrutural;
+  SegurancaResidencia? segurancaResidencia;
 
   @observable
-  String? melhoriasDesejadas;
+  ObservableList<MelhoriaMoradia> melhoriasDesejadas = ObservableList<MelhoriaMoradia>();
 
   @observable
   bool facilAcessoSaude = false;
@@ -36,6 +42,12 @@ abstract class HabitacaoControllerBase with Store {
   @action
   void setTipoMoradia(TipoMoradia? value) {
     tipoMoradia = value;
+    validate();
+  }
+
+  @action
+  void setMaterialMoradia(MaterialMoradia? value) {
+    materialMoradia = value;
     validate();
   }
 
@@ -52,6 +64,12 @@ abstract class HabitacaoControllerBase with Store {
   }
 
   @action
+  void setNumeroDormitorios(int value) {
+    numeroDormitorios = value;
+    validate();
+  }
+
+  @action
   void toggleItemResidencia(ItemResidencia item) {
     if (itensResidencia.contains(item)) {
       itensResidencia.remove(item);
@@ -62,14 +80,29 @@ abstract class HabitacaoControllerBase with Store {
   }
 
   @action
-  void setSegurancaEstrutural(SegurancaResidencia? value) {
-    segurancaEstrutural = value;
+  void setSegurancaResidencia(SegurancaResidencia? value) {
+    segurancaResidencia = value;
     validate();
   }
 
   @action
-  void setMelhoriasDesejadas(String value) {
-    melhoriasDesejadas = value.trim().isEmpty ? null : value;
+  void toggleMelhoriaMoradia(MelhoriaMoradia melhoria) {
+    if (melhoria == MelhoriaMoradia.semMelhorias) {
+      if (melhoriasDesejadas.contains(melhoria)) {
+        melhoriasDesejadas.remove(melhoria);
+      } else {
+        melhoriasDesejadas
+          ..clear()
+          ..add(melhoria);
+      }
+    } else {
+      melhoriasDesejadas.remove(MelhoriaMoradia.semMelhorias);
+      if (melhoriasDesejadas.contains(melhoria)) {
+        melhoriasDesejadas.remove(melhoria);
+      } else {
+        melhoriasDesejadas.add(melhoria);
+      }
+    }
     validate();
   }
 
@@ -83,18 +116,23 @@ abstract class HabitacaoControllerBase with Store {
   void validate() {
     isValid = HabitacaoValidator.isTabValid(
       tipoMoradia: tipoMoradia,
+      materialMoradia: materialMoradia,
       numeroPessoas: numeroPessoas,
-      segurancaEstrutural: segurancaEstrutural,
+      numeroComodos: numeroComodos,
+      numeroDormitorios: numeroDormitorios,
+      segurancaResidencia: segurancaResidencia,
     );
   }
 
   HabitacaoModel buildHabitacaoData() => HabitacaoModel(
     tipoMoradia: tipoMoradia?.code,
+    materialMoradia: materialMoradia?.code,
     numeroPessoas: numeroPessoas,
     numeroComodos: numeroComodos,
+    numeroDormitorios: numeroDormitorios,
     itensResidencia: itensResidencia.map((i) => i.code).toList(),
-    segurancaEstrutural: segurancaEstrutural?.code,
-    melhoriasDesejadas: melhoriasDesejadas,
+    segurancaResidencia: segurancaResidencia?.code,
+    melhoriasDesejadas: melhoriasDesejadas.map((m) => m.code).toList(),
     facilAcessoSaude: facilAcessoSaude,
   );
 }

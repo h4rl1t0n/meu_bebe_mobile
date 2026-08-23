@@ -35,8 +35,10 @@ void main() {
       _expectUnique(DificuldadeSaude.values.map((e) => e.code).toList());
 
       _expectUnique(TipoMoradia.values.map((e) => e.code).toList());
+      _expectUnique(MaterialMoradia.values.map((e) => e.code).toList());
       _expectUnique(ItemResidencia.values.map((e) => e.code).toList());
       _expectUnique(SegurancaResidencia.values.map((e) => e.code).toList());
+      _expectUnique(MelhoriaMoradia.values.map((e) => e.code).toList());
 
       _expectUnique(RefeicoesPorDia.values.map((e) => e.code).toList());
       _expectUnique(AlimentoConsumido.values.map((e) => e.code).toList());
@@ -63,6 +65,15 @@ void main() {
       expect(DestinoLixoSemColeta.labelOf('terreno_baldio'), 'Joga em terreno baldio');
       expect(DestinoLixoSemColeta.labelOf('enterra'), 'Enterra o lixo');
       expect(DestinoLixoSemColeta.labelOf('aguarda_proxima_coleta'), 'Armazena o lixo até a próxima coleta');
+
+      expect(TipoMoradia.labelOf('casa'), 'Casa');
+      expect(TipoMoradia.labelOf('comodo_unico'), 'Cômodo único');
+      expect(MaterialMoradia.labelOf('alvenaria'), 'Alvenaria/tijolo');
+      expect(MaterialMoradia.labelOf('mista'), 'Mista');
+      expect(SegurancaResidencia.labelOf('muito_segura'), 'Muito segura');
+      expect(MelhoriaMoradia.labelOf('sem_melhorias'), 'Não desejo melhorias');
+      expect(MelhoriaMoradia.labelOf('melhorar_banheiro'), 'Melhorar o banheiro');
+      expect(MelhoriaMoradia.labelOf('outro'), 'Outra melhoria');
     });
   });
 }

@@ -172,11 +172,13 @@ abstract class FormularioControllerBase with Store {
       {
         'categoria': 'Habitação',
         'Tipo de moradia': _label(data.habitacao.tipoMoradia, TipoMoradia.labelOf),
+        'Material da moradia': _label(data.habitacao.materialMoradia, MaterialMoradia.labelOf),
         'Nº de pessoas na casa': data.habitacao.numeroPessoas.toString(),
         'Nº de cômodos': data.habitacao.numeroComodos.toString(),
+        'Cômodos usados para dormir': data.habitacao.numeroDormitorios.toString(),
         'Itens da residência': _join(data.habitacao.itensResidencia, ItemResidencia.labelOf),
-        'Segurança estrutural': _label(data.habitacao.segurancaEstrutural, SegurancaResidencia.labelOf),
-        'Melhorias desejadas': data.habitacao.melhoriasDesejadas ?? 'Não informado',
+        'Segurança da residência': _label(data.habitacao.segurancaResidencia, SegurancaResidencia.labelOf),
+        'Melhorias desejadas': _join(data.habitacao.melhoriasDesejadas, MelhoriaMoradia.labelOf),
         'Fácil acesso à saúde': _simNao(data.habitacao.facilAcessoSaude),
       },
       {
