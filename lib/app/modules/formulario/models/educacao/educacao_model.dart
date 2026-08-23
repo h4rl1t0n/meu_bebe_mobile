@@ -4,69 +4,70 @@ import '../../catalog/dss_schema.dart';
 ///
 /// Campos categóricos e de texto livre são canônicos: armazenam o `code`
 /// (snake_case), nunca o rótulo exibido. `null` significa "não respondido".
+///
+/// Booleanos são `bool?` para distinguir semanticamente três estados:
+///   - `true`  = Sim;
+///   - `false` = Não;
+///   - `null`  = não respondido (nunca confundido com "Não").
 class EducacaoModel {
-  final bool estuda;
+  final bool? estuda;
   final String? escolaridade;
-  final bool interrompeuEstudos;
+  final String? situacaoEstudosGestacao;
   final List<String> dificuldadesEducacao;
-  final bool entendeOrientacoes;
-  final bool fezCursoExtracurricular;
+  final bool? entendeOrientacoes;
+  final bool? fezCursoQualificacaoProfissional;
 
   const EducacaoModel({
-    required this.estuda,
+    this.estuda,
     this.escolaridade,
-    required this.interrompeuEstudos,
+    this.situacaoEstudosGestacao,
     this.dificuldadesEducacao = const [],
-    required this.entendeOrientacoes,
-    required this.fezCursoExtracurricular,
+    this.entendeOrientacoes,
+    this.fezCursoQualificacaoProfissional,
   });
 
-  factory EducacaoModel.empty() => const EducacaoModel(
-    estuda: false,
-    interrompeuEstudos: false,
-    entendeOrientacoes: false,
-    fezCursoExtracurricular: false,
-  );
+  factory EducacaoModel.empty() => const EducacaoModel();
 
   Map<String, dynamic> toMap() => {
     'estuda_atualmente': estuda,
     'escolaridade': escolaridade,
-    'interrompeu_estudos_gestacao': interrompeuEstudos,
+    'situacao_estudos_gestacao': situacaoEstudosGestacao,
     'dificuldades_educacao': dificuldadesEducacao,
     'entende_orientacoes_saude': entendeOrientacoes,
-    'fez_curso_extracurricular': fezCursoExtracurricular,
+    'fez_curso_qualificacao_profissional': fezCursoQualificacaoProfissional,
   };
 
   factory EducacaoModel.fromMap(Map<String, dynamic> map) => EducacaoModel(
-    estuda: map['estuda_atualmente'] == true,
+    estuda: map['estuda_atualmente'] as bool?,
     escolaridade: map['escolaridade'] as String?,
-    interrompeuEstudos: map['interrompeu_estudos_gestacao'] == true,
+    situacaoEstudosGestacao: map['situacao_estudos_gestacao'] as String?,
     dificuldadesEducacao: List<String>.from((map['dificuldades_educacao'] as List?) ?? const []),
-    entendeOrientacoes: map['entende_orientacoes_saude'] == true,
-    fezCursoExtracurricular: map['fez_curso_extracurricular'] == true,
+    entendeOrientacoes: map['entende_orientacoes_saude'] as bool?,
+    fezCursoQualificacaoProfissional: map['fez_curso_qualificacao_profissional'] as bool?,
   );
 
   EducacaoModel copyWith({
     bool? estuda,
     String? escolaridade,
-    bool? interrompeuEstudos,
+    String? situacaoEstudosGestacao,
     List<String>? dificuldadesEducacao,
     bool? entendeOrientacoes,
-    bool? fezCursoExtracurricular,
+    bool? fezCursoQualificacaoProfissional,
   }) {
     return EducacaoModel(
       estuda: estuda ?? this.estuda,
       escolaridade: escolaridade ?? this.escolaridade,
-      interrompeuEstudos: interrompeuEstudos ?? this.interrompeuEstudos,
+      situacaoEstudosGestacao: situacaoEstudosGestacao ?? this.situacaoEstudosGestacao,
       dificuldadesEducacao: dificuldadesEducacao ?? this.dificuldadesEducacao,
       entendeOrientacoes: entendeOrientacoes ?? this.entendeOrientacoes,
-      fezCursoExtracurricular: fezCursoExtracurricular ?? this.fezCursoExtracurricular,
+      fezCursoQualificacaoProfissional:
+          fezCursoQualificacaoProfissional ?? this.fezCursoQualificacaoProfissional,
     );
   }
 
   @override
   String toString() =>
-      'EducacaoModel(escolaridade: $escolaridade, estuda: $estuda, dificuldadesEducacao: $dificuldadesEducacao)';
+      'EducacaoModel(escolaridade: $escolaridade, estuda: $estuda, situacaoEstudosGestacao: $situacaoEstudosGestacao, dificuldadesEducacao: $dificuldadesEducacao)';
 
   @override
   bool operator ==(Object other) =>
@@ -74,18 +75,18 @@ class EducacaoModel {
       other is EducacaoModel &&
           other.estuda == estuda &&
           other.escolaridade == escolaridade &&
-          other.interrompeuEstudos == interrompeuEstudos &&
+          other.situacaoEstudosGestacao == situacaoEstudosGestacao &&
           DssSchema.listsEqual(other.dificuldadesEducacao, dificuldadesEducacao) &&
           other.entendeOrientacoes == entendeOrientacoes &&
-          other.fezCursoExtracurricular == fezCursoExtracurricular;
+          other.fezCursoQualificacaoProfissional == fezCursoQualificacaoProfissional;
 
   @override
   int get hashCode => Object.hash(
     estuda,
     escolaridade,
-    interrompeuEstudos,
+    situacaoEstudosGestacao,
     Object.hashAll(dificuldadesEducacao),
     entendeOrientacoes,
-    fezCursoExtracurricular,
+    fezCursoQualificacaoProfissional,
   );
 }

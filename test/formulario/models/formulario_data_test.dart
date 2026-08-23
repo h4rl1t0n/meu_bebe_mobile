@@ -11,10 +11,10 @@ FormularioData _sample() => FormularioData(
   educacao: const EducacaoModel(
     estuda: true,
     escolaridade: 'medio_completo',
-    interrompeuEstudos: false,
+    situacaoEstudosGestacao: 'nao_interrompeu',
     dificuldadesEducacao: ['falta_dinheiro'],
     entendeOrientacoes: true,
-    fezCursoExtracurricular: false,
+    fezCursoQualificacaoProfissional: false,
   ),
   trabalho: const TrabalhoModel(
     empregado: true,
@@ -36,7 +36,7 @@ void main() {
     test('consolida as 6 dimensões em toMap aninhado e versionado', () {
       final map = _sample().toMap();
 
-      expect(map['schema_version'], '1.7');
+      expect(map['schema_version'], '1.10');
       expect(map.containsKey('educacao'), isTrue);
       expect(map.containsKey('trabalho'), isTrue);
       expect(map.containsKey('saneamento'), isTrue);
@@ -54,6 +54,7 @@ void main() {
 
       expect(flat['educacao.escolaridade'], 'medio_completo');
       expect(flat['educacao.estuda_atualmente'], isTrue);
+      expect(flat['educacao.situacao_estudos_gestacao'], 'nao_interrompeu');
       expect(flat['trabalho.tipo_emprego'], 'clt');
       expect(flat.containsKey('schema_version'), isFalse);
     });

@@ -10,28 +10,28 @@ class EducacaoController = EducacaoControllerBase with _$EducacaoController;
 
 abstract class EducacaoControllerBase with Store {
   @observable
-  bool estuda = false;
+  bool? estuda;
 
   @observable
   Escolaridade? escolaridade;
 
   @observable
-  bool interrompeuEstudos = false;
+  SituacaoEstudosGestacao? situacaoEstudosGestacao;
 
   @observable
   ObservableList<DificuldadeEducacao> dificuldadesEscolares = ObservableList<DificuldadeEducacao>();
 
   @observable
-  bool entendeOrientacoes = false;
+  bool? entendeOrientacoes;
 
   @observable
-  bool fezCursoExtracurricular = false;
+  bool? fezCursoQualificacaoProfissional;
 
   @observable
   bool isValid = false;
 
   @action
-  void setEstuda(bool value) {
+  void setEstuda(bool? value) {
     estuda = value;
     validate();
   }
@@ -43,46 +43,63 @@ abstract class EducacaoControllerBase with Store {
   }
 
   @action
-  void setInterrompeuEstudos(bool value) {
-    interrompeuEstudos = value;
+  void setSituacaoEstudosGestacao(SituacaoEstudosGestacao? value) {
+    situacaoEstudosGestacao = value;
     validate();
   }
 
   @action
   void toggleDificuldade(DificuldadeEducacao dificuldade) {
-    if (dificuldadesEscolares.contains(dificuldade)) {
-      dificuldadesEscolares.remove(dificuldade);
+    if (dificuldade == DificuldadeEducacao.semDificuldades) {
+      if (dificuldadesEscolares.contains(dificuldade)) {
+        dificuldadesEscolares.remove(dificuldade);
+      } else {
+        dificuldadesEscolares
+          ..clear()
+          ..add(dificuldade);
+      }
     } else {
-      dificuldadesEscolares.add(dificuldade);
+      dificuldadesEscolares.remove(DificuldadeEducacao.semDificuldades);
+      if (dificuldadesEscolares.contains(dificuldade)) {
+        dificuldadesEscolares.remove(dificuldade);
+      } else {
+        dificuldadesEscolares.add(dificuldade);
+      }
     }
     validate();
   }
 
   @action
-  void setEntendeOrientacoes(bool value) {
+  void setEntendeOrientacoes(bool? value) {
     entendeOrientacoes = value;
     validate();
   }
 
   @action
-  void setFezCursoExtracurricular(bool value) {
-    fezCursoExtracurricular = value;
+  void setFezCursoQualificacaoProfissional(bool? value) {
+    fezCursoQualificacaoProfissional = value;
     validate();
   }
 
   @action
   void validate() {
-    isValid = EducacaoValidator.isTabValid(escolaridade: escolaridade);
+    isValid = EducacaoValidator.isTabValid(
+      escolaridade: escolaridade,
+      estuda: estuda,
+      situacaoEstudosGestacao: situacaoEstudosGestacao,
+      entendeOrientacoes: entendeOrientacoes,
+      fezCursoQualificacaoProfissional: fezCursoQualificacaoProfissional,
+    );
   }
 
   EducacaoModel buildEducacaoData() {
     return EducacaoModel(
       estuda: estuda,
       escolaridade: escolaridade?.code,
-      interrompeuEstudos: interrompeuEstudos,
+      situacaoEstudosGestacao: situacaoEstudosGestacao?.code,
       dificuldadesEducacao: dificuldadesEscolares.map((d) => d.code).toList(),
       entendeOrientacoes: entendeOrientacoes,
-      fezCursoExtracurricular: fezCursoExtracurricular,
+      fezCursoQualificacaoProfissional: fezCursoQualificacaoProfissional,
     );
   }
 }

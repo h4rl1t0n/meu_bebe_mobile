@@ -15,6 +15,7 @@ void main() {
     test('códigos canônicos são únicos e labelOf resolve o rótulo', () {
       _expectUnique(Escolaridade.values.map((e) => e.code).toList());
       _expectUnique(DificuldadeEducacao.values.map((e) => e.code).toList());
+      _expectUnique(SituacaoEstudosGestacao.values.map((e) => e.code).toList());
 
       _expectUnique(TipoEmprego.values.map((e) => e.code).toList());
       _expectUnique(FaixaRenda.values.map((e) => e.code).toList());
@@ -46,8 +47,22 @@ void main() {
       _expectUnique(AvaliacaoAlimentacao.values.map((e) => e.code).toList());
 
       expect(Escolaridade.labelOf('medio_completo'), 'Ensino Médio Completo');
+      expect(Escolaridade.labelOf('superior_incompleto'), 'Ensino Superior Incompleto');
+      expect(Escolaridade.labelOf('superior_completo'), 'Ensino Superior Completo');
       expect(Escolaridade.labelOf(null), '');
       expect(Escolaridade.labelOf('codigo_inexistente'), 'codigo_inexistente');
+      expect(DificuldadeEducacao.labelOf('sem_dificuldades'), 'Não tenho dificuldades');
+      expect(DificuldadeEducacao.labelOf('falta_dinheiro'), 'Falta de dinheiro');
+
+      expect(SituacaoEstudosGestacao.labelOf('nao_estudava'), 'Não estava estudando');
+      expect(
+        SituacaoEstudosGestacao.labelOf('nao_interrompeu'),
+        'Continuei estudando sem precisar interromper',
+      );
+      expect(
+        SituacaoEstudosGestacao.labelOf('interrompeu'),
+        'Precisei interromper os estudos por causa da gestação',
+      );
 
       expect(MotivoDesemprego.labelOf('dificuldade_encontrar_vaga'), 'Dificuldade de encontrar vaga');
       expect(MotivoDesemprego.labelOf('cuidado_casa_filhos'), 'Cuidando da casa/filhos');

@@ -8,7 +8,8 @@ enum Escolaridade {
   fundamentalCompleto('fundamental_completo', 'Ensino Fundamental Completo'),
   medioIncompleto('medio_incompleto', 'Ensino Médio Incompleto'),
   medioCompleto('medio_completo', 'Ensino Médio Completo'),
-  superior('superior', 'Ensino Superior');
+  superiorIncompleto('superior_incompleto', 'Ensino Superior Incompleto'),
+  superiorCompleto('superior_completo', 'Ensino Superior Completo');
 
   const Escolaridade(this.code, this.label);
 
@@ -35,6 +36,27 @@ enum DificuldadeEducacao {
   outro('outro', 'Outro');
 
   const DificuldadeEducacao(this.code, this.label);
+
+  final String code;
+  final String label;
+
+  static String labelOf(String? code) {
+    for (final option in values) {
+      if (option.code == code) return option.label;
+    }
+    return code ?? '';
+  }
+}
+
+/// Situação dos estudos durante a gestação atual (substitui o antigo booleano
+/// `interrompeu_estudos_gestacao`, que confundia "não estudava" com "não
+/// interrompeu").
+enum SituacaoEstudosGestacao {
+  naoEstudava('nao_estudava', 'Não estava estudando'),
+  naoInterrompeu('nao_interrompeu', 'Continuei estudando sem precisar interromper'),
+  interrompeu('interrompeu', 'Precisei interromper os estudos por causa da gestação');
+
+  const SituacaoEstudosGestacao(this.code, this.label);
 
   final String code;
   final String label;

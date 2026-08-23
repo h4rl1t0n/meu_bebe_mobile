@@ -121,11 +121,14 @@ abstract class FormularioControllerBase with Store {
       {
         'categoria': 'Educação',
         'Escolaridade': _label(data.educacao.escolaridade, Escolaridade.labelOf),
-        'Estuda atualmente': _simNao(data.educacao.estuda),
-        'Interrompeu estudos pela gestação': _simNao(data.educacao.interrompeuEstudos),
+        'Estuda atualmente': _simNaoNullable(data.educacao.estuda),
+        'Situação dos estudos na gestação': _label(
+          data.educacao.situacaoEstudosGestacao,
+          SituacaoEstudosGestacao.labelOf,
+        ),
         'Dificuldades de acesso à educação': _join(data.educacao.dificuldadesEducacao, DificuldadeEducacao.labelOf),
-        'Entende orientações de saúde': _simNao(data.educacao.entendeOrientacoes),
-        'Curso extracurricular': _simNao(data.educacao.fezCursoExtracurricular),
+        'Entende orientações de saúde': _simNaoNullable(data.educacao.entendeOrientacoes),
+        'Curso profissionalizante ou de qualificação': _simNaoNullable(data.educacao.fezCursoQualificacaoProfissional),
       },
       {
         'categoria': 'Trabalho e Renda',

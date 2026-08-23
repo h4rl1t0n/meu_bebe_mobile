@@ -27,11 +27,7 @@ class _EducacaoTabState extends State<EducacaoTab> {
         builder: (_) => ItemTabPage(
           title: 'Educação',
           children: [
-            SwitchListTile(
-              title: const Text('Está estudando atualmente?'),
-              value: controller.estuda,
-              onChanged: controller.setEstuda,
-            ),
+            _simNao('Está estudando atualmente?', controller.estuda, controller.setEstuda),
             SizedBox(height: Spacing.lg),
             DropdownButtonFormField<Escolaridade>(
               decoration: const InputDecoration(
@@ -46,10 +42,10 @@ class _EducacaoTabState extends State<EducacaoTab> {
               validator: EducacaoValidator.escolaridade,
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text('Já teve que interromper os estudos por causa da gestação?'),
-              value: controller.interrompeuEstudos,
-              onChanged: controller.setInterrompeuEstudos,
+            _situacaoEstudos(
+              'Qual situação melhor descreve seus estudos durante esta gestação?',
+              controller.situacaoEstudosGestacao,
+              controller.setSituacaoEstudosGestacao,
             ),
             SizedBox(height: Spacing.lg),
             const Text('Que dificuldades enfrenta no acesso à educação?'),
@@ -73,20 +69,77 @@ class _EducacaoTabState extends State<EducacaoTab> {
               }).toList(),
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text('Você consegue entender bem as orientações dos profissionais de saúde?'),
-              value: controller.entendeOrientacoes,
-              onChanged: controller.setEntendeOrientacoes,
+            _simNao(
+              'Você consegue entender bem as orientações dos profissionais de saúde?',
+              controller.entendeOrientacoes,
+              controller.setEntendeOrientacoes,
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text('Faz ou fez algum curso extracurricular?'),
-              value: controller.fezCursoExtracurricular,
-              onChanged: controller.setFezCursoExtracurricular,
+            _simNao(
+              'Faz ou fez algum curso profissionalizante ou de qualificação?',
+              controller.fezCursoQualificacaoProfissional,
+              controller.setFezCursoQualificacaoProfissional,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  /// Pergunta de Sim/Não com três estados: `null` (ainda não respondido),
+  /// `true` (Sim) e `false` (Não). Nada fica pré-selecionado.
+  Widget _simNao(String title, bool? value, ValueChanged<bool?> onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        SizedBox(height: Spacing.sm),
+        RadioGroup<bool>(
+          groupValue: value,
+          onChanged: onChanged,
+          child: Row(
+            children: [
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Sim'), value: true),
+              ),
+              Expanded(
+                child: RadioListTile<bool>(title: const Text('Não'), value: false),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Situação dos estudos na gestação: pergunta categórica de escolha única,
+  /// inicia em `null` (nada pré-selecionado).
+  Widget _situacaoEstudos(
+    String title,
+    SituacaoEstudosGestacao? value,
+    ValueChanged<SituacaoEstudosGestacao?> onChanged,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        SizedBox(height: Spacing.sm),
+        RadioGroup<SituacaoEstudosGestacao>(
+          groupValue: value,
+          onChanged: onChanged,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: SituacaoEstudosGestacao.values
+                .map(
+                  (e) => RadioListTile<SituacaoEstudosGestacao>(
+                    title: Text(e.label),
+                    value: e,
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+      ],
     );
   }
 }
