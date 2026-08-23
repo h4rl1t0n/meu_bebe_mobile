@@ -1,0 +1,488 @@
+# =============================================================================
+# Contrato de dados DSS — Schema 1.13 (CONGELADO)
+# =============================================================================
+#
+# Espelho fiel do contrato de dados do formulário Flutter
+# (`lib/app/modules/formulario/`), versão `1.13`.
+#
+# Regras de congelamento (fonte de verdade: docs/planejamento_dataset_sintetico.md):
+#   - Não alterar nomes de campos (chaves JSON), códigos canônicos, listas,
+#     tipos, regras de condicionalidade ou exclusividade.
+#   - Labels NÃO fazem parte do dataset canônico: somente os códigos `snake_case`.
+#   - `bool?`: true = Sim; false = Não; null = não respondido (nunca "Não").
+#     Em campos condicionais, `null` também pode significar "não aplicável".
+#   - `List<String>` obrigatória: `[]` = não respondido/inválido no formulário.
+#   - `int` (Habitação): valores numéricos.
+#
+# Este arquivo NÃO gera dados. É a especificação do contrato usada pelos
+# validadores e pelos testes de invariantes.
+# =============================================================================
+
+schema_version: "1.13"
+
+# --- Classificação metodológica das 48 variáveis para ML ----------------------
+# IN            = feature metodologicamente admissível (X_model, 34)
+# OUT_LEAKAGE   = proximidade com acompanhamento/desfecho (5)
+# OUT_TEMPORAL  = mistura antecedente com acontecimento durante a gestação (5)
+# DESCRIPTIVE   = caracterização, sem justificativa p/ feature principal (2)
+# SENSITIVITY   = fora do modelo principal; comparação 34 vs 36 (2)
+# -----------------------------------------------------------------------------
+
+# Tipos canônicos:
+#   bool        -> bool? (true/false/null)
+#   categorical -> String? (código snake_case; null = não respondido/não aplicável)
+#   multiselect -> List<String> (códigos snake_case; [] = não respondido)
+#   int         -> int (Habitação)
+
+dimensions:
+
+  educacao:
+    variables:
+      - name: estuda_atualmente
+        type: bool
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: escolaridade
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - sem_instrucao
+          - fundamental_incompleto
+          - fundamental_completo
+          - medio_incompleto
+          - medio_completo
+          - superior_incompleto
+          - superior_completo
+
+      - name: situacao_estudos_gestacao
+        type: categorical
+        ml_class: OUT_TEMPORAL
+        required: true
+        categories:
+          - nao_estudava
+          - nao_interrompeu
+          - interrompeu
+
+      - name: dificuldades_educacao
+        type: multiselect
+        ml_class: IN
+        required: true
+        exclusive: sem_dificuldades
+        categories:
+          - falta_dinheiro
+          - distancia
+          - falta_transporte
+          - falta_vagas
+          - gravidez
+          - trabalho
+          - cuidado_filhos
+          - sem_dificuldades
+          - outro
+
+      - name: entende_orientacoes_saude
+        type: bool
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: fez_curso_qualificacao_profissional
+        type: bool
+        ml_class: IN
+        required: true
+        categories: []
+
+  trabalho_renda:
+    variables:
+      - name: empregado
+        type: bool
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: tipo_emprego
+        type: categorical
+        ml_class: IN
+        required: false
+        conditional: "empregado == true"
+        categories:
+          - clt
+          - autonomo
+          - informal
+
+      - name: faixa_renda
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - ate_1_sm
+          - entre_1_2_sm
+          - entre_2_3_sm
+          - mais_3_sm
+          - nao_informar
+
+      - name: trabalho_permite_pre_natal
+        type: bool
+        ml_class: IN
+        required: false
+        conditional: "empregado == true"
+        categories: []
+
+      - name: ambiente_trabalho_seguro
+        type: bool
+        ml_class: IN
+        required: false
+        conditional: "empregado == true"
+        categories: []
+
+      - name: tem_pausas_descanso
+        type: bool
+        ml_class: IN
+        required: false
+        conditional: "empregado == true"
+        categories: []
+
+      - name: beneficios_trabalho
+        type: multiselect
+        ml_class: IN
+        required: false
+        conditional: "empregado == true (não vazio)"
+        exclusive: sem_beneficios
+        categories:
+          - auxilio_maternidade
+          - vale_transporte
+          - vale_alimentacao
+          - sem_beneficios
+
+      - name: motivo_desemprego
+        type: categorical
+        ml_class: OUT_TEMPORAL
+        required: false
+        conditional: "empregado == false"
+        categories:
+          - dificuldade_encontrar_vaga
+          - problemas_saude
+          - cuidado_casa_filhos
+          - gestacao
+          - opcao_propria
+          - outro
+
+      - name: recebe_beneficio_social
+        type: bool
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: impacto_gestacao_trabalho
+        type: categorical
+        ml_class: OUT_TEMPORAL
+        required: true
+        categories:
+          - nao_afetou
+          - reduziu_jornada
+          - afastamento_temporario
+          - demitida
+          - pediu_demissao
+          - outro
+
+  saneamento:
+    variables:
+      - name: fonte_agua
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - rede_publica
+          - poco_nascente
+          - cisterna
+          - carro_pipa
+          - outra
+
+      - name: interrupcoes_agua
+        type: bool
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: esgotamento_sanitario
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - rede_coletora
+          - ceu_aberto
+          - fossa_septica
+          - outro
+
+      - name: frequencia_coleta_lixo
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - regular
+          - irregular
+          - nao_possui
+
+      - name: destino_lixo_sem_coleta
+        type: categorical
+        ml_class: IN
+        required: false
+        conditional: "frequencia_coleta_lixo != regular"
+        categories:
+          - aguarda_proxima_coleta
+          - queima
+          - enterra
+          - terreno_baldio
+          - outro
+
+      - name: problema_saude_agua
+        type: bool
+        ml_class: SENSITIVITY
+        required: true
+        categories: []
+
+      - name: cuidados_vetores
+        type: multiselect
+        ml_class: DESCRIPTIVE
+        required: true
+        exclusive: sem_cuidados
+        categories:
+          - elimina_agua_parada
+          - mantem_reservatorios_tampados
+          - usa_repelente
+          - usa_mosquiteiro_telas
+          - mantem_ambiente_limpo
+          - usa_inseticida
+          - sem_cuidados
+          - outro
+
+  saude:
+    variables:
+      - name: distancia_ubs
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - muito_proxima
+          - razoavelmente_proxima
+          - distante
+
+      - name: faltou_consulta
+        type: bool
+        ml_class: OUT_LEAKAGE
+        required: true
+        categories: []
+
+      - name: acesso_ubs
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - a_pe
+          - transporte_publico
+          - carro_moto
+          - outro
+
+      - name: cadastrada_ubs
+        type: bool
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: servicos_pre_natal
+        type: multiselect
+        ml_class: OUT_LEAKAGE
+        required: true
+        exclusive: nenhum_dos_listados
+        categories:
+          - consulta_medica
+          - consulta_enfermagem
+          - grupo_gestantes
+          - nenhum_dos_listados
+
+      - name: exames_pre_natal_completos
+        type: bool
+        ml_class: OUT_LEAKAGE
+        required: true
+        categories: []
+
+      - name: vacinas_em_dia
+        type: bool
+        ml_class: OUT_LEAKAGE
+        required: true
+        categories: []
+
+      - name: avaliacao_pre_natal
+        type: categorical
+        ml_class: OUT_LEAKAGE
+        required: true
+        categories:
+          - excelente
+          - bom
+          - regular
+          - ruim
+          - pessimo
+
+      - name: dificuldades_saude
+        type: multiselect
+        ml_class: IN
+        required: true
+        exclusive: sem_dificuldades
+        categories:
+          - dificuldade_agendamento
+          - demora_atendimento
+          - distancia
+          - falta_transporte
+          - horario_incompativel
+          - falta_profissional
+          - falta_exames
+          - sem_dificuldades
+          - outro
+
+  habitacao:
+    variables:
+      - name: tipo_moradia
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - casa
+          - apartamento
+          - comodo_unico
+          - outro
+
+      - name: material_moradia
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - alvenaria
+          - madeira
+          - mista
+          - outro
+
+      - name: numero_pessoas
+        type: int
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: numero_comodos
+        type: int
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: numero_dormitorios
+        type: int
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: itens_residencia
+        type: multiselect
+        ml_class: IN
+        required: true
+        exclusive: nenhum_dos_listados
+        categories:
+          - agua_encanada
+          - banheiro_interno
+          - cozinha_separada
+          - nenhum_dos_listados
+
+      - name: seguranca_residencia
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - muito_segura
+          - segura
+          - regular
+          - insegura
+          - muito_insegura
+
+      - name: melhorias_desejadas
+        type: multiselect
+        ml_class: DESCRIPTIVE
+        required: true
+        exclusive: sem_melhorias
+        categories:
+          - ampliacao_espaco
+          - reforma_estrutura
+          - melhorar_banheiro
+          - melhorar_ventilacao
+          - melhorar_instalacao_eletrica
+          - melhorar_abastecimento_agua
+          - melhorar_seguranca
+          - sem_melhorias
+          - outro
+
+      - name: facil_acesso_saude
+        type: bool
+        ml_class: SENSITIVITY
+        required: true
+        categories: []
+
+  alimentacao:
+    variables:
+      - name: refeicoes_por_dia
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - uma_duas
+          - tres
+          - quatro_mais
+
+      - name: deixou_de_comer_falta_dinheiro
+        type: bool
+        ml_class: IN
+        required: true
+        categories: []
+
+      - name: alimentos_consumidos
+        type: multiselect
+        ml_class: IN
+        required: true
+        exclusive: nenhum_dos_listados
+        categories:
+          - frutas_verduras
+          - carnes
+          - leite_derivados
+          - feijao_leguminosas
+          - nenhum_dos_listados
+
+      - name: fonte_alimentos
+        type: multiselect
+        ml_class: IN
+        required: true
+        categories:
+          - supermercado_feira
+          - horta_propria
+          - doacoes
+          - cesta_basica
+          - outro
+
+      - name: mudanca_alimentacao_gestacao
+        type: bool
+        ml_class: OUT_TEMPORAL
+        required: true
+        categories: []
+
+      - name: usa_suplementos
+        type: bool
+        ml_class: OUT_TEMPORAL
+        required: true
+        categories: []
+
+      - name: avaliacao_alimentacao
+        type: categorical
+        ml_class: IN
+        required: true
+        categories:
+          - muito_boa
+          - boa
+          - regular
+          - ruim

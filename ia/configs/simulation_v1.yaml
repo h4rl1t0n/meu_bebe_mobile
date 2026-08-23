@@ -1,0 +1,76 @@
+# =============================================================================
+# Configuração do cenário principal de simulação — CONGELADA
+# =============================================================================
+#
+# Registro (spec) do cenário principal do DGM (Data Generating Mechanism).
+# Fonte de verdade: docs/planejamento_dataset_sintetico.md, seções 11, 12 e 18.
+#
+# ⚠️ ESTA CONFIG NÃO GERA NENHUM DADO. É apenas o registro congelado dos
+#    parâmetros experimentais. A implementação do gerador (DGM) fica para uma
+#    fase posterior.
+#
+# ⚠️ Dado sintético NÃO representa dado clínico real e não deve ser
+#    interpretado como evidência de prevalência ou desempenho clínico.
+# =============================================================================
+
+version: "1.0"
+schema_version: "1.13"
+
+# --- Planejamento principal (§11) ---------------------------------------------
+seed: 42
+n_samples: 5000
+target_positive_rate: 0.25        # proporção sintética PLANEJADA de Y=1 (~25%).
+                                  # NÃO chamar de "prevalência".
+noise_sd: 0.50                    # U ~ Normal(0, noise_sd)
+
+# --- Fatores latentes internos do simulador (§12) ------------------------------
+# Não pertencem ao schema; não vão para o Flutter/API; não são features de ML.
+# Matriz de correlação (aproximadamente normal-padrão multivariada, moderada).
+latent_factors:
+  - Z_SES    # desvantagem socioeconômica sintética
+  - Z_LAB    # precariedade/limitações laborais sintéticas
+  - Z_TERR   # dificuldade territorial/geográfica sintética
+  - Z_INFRA  # precariedade habitacional/infraestrutura sintética
+  - Z_SERV   # dificuldades organizacionais/disponibilidade de serviços
+
+z_correlation_matrix:
+  #        SES   LAB   TERR  INFRA SERV
+  - [    1.00, 0.45, 0.25, 0.45, 0.10 ]
+  - [    0.45, 1.00, 0.20, 0.25, 0.10 ]
+  - [    0.25, 0.20, 1.00, 0.20, 0.25 ]
+  - [    0.45, 0.25, 0.20, 1.00, 0.10 ]
+  - [    0.10, 0.10, 0.25, 0.10, 1.00 ]
+
+# --- DGM do target sintético (§18) ---------------------------------------------
+# eta = alpha + 0.50*E + 0.55*R + 0.45*D + 0.55*T + 0.40*O + 0.40*W
+#             + 0.30*F + 0.25*H + 0.30*(R*F) + 0.35*(D*T) + U
+# p = sigmoid(eta); Y ~ Bernoulli(p)
+#
+# Os coeficientes são PARÂMETROS DE SIMULAÇÃO, não odds ratios.
+dgmgm:
+  # Fatores g_* (derivados de Q_full) — usados no DGM, não no modelo.
+  g_factors:
+    - { name: g_escolaridade,     coefficient: 0.50 }   # E
+    - { name: g_renda,            coefficient: 0.55 }   # R
+    - { name: g_distancia,        coefficient: 0.45 }   # D
+    - { name: g_transporte,       coefficient: 0.55 }   # T
+    - { name: g_organizacao,      coefficient: 0.40 }   # O
+    - { name: g_trabalho,         coefficient: 0.40 }   # W
+    - { name: g_privacao_alimentar, coefficient: 0.30 } # F
+    - { name: g_adensamento,      coefficient: 0.25 }   # H
+
+  # Interações (somente duas no cenário principal).
+  interactions:
+    - { name: I1, expression: "g_renda * g_privacao_alimentar", coefficient: 0.30 }
+    - { name: I2, expression: "g_distancia * g_transporte",      coefficient: 0.35 }
+
+  # Intercepto calibrado numericamente para que média(p_true) ≈ target_positive_rate.
+  intercept:
+    calibrated: true
+    target: "target_positive_rate"
+
+  # Termo de ruído.
+  noise:
+    distribution: normal
+    mean: 0.0
+    sd: 0.50

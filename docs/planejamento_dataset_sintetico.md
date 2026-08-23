@@ -771,6 +771,8 @@ Regras de exclusividade:
 - `sem_beneficios` não coexiste com benefícios.
 - `nenhum_dos_listados` não coexiste com itens positivos.
 - `sem_melhorias` não coexiste com melhorias.
+- `cuidados_vetores.sem_cuidados` não pode coexistir com nenhuma outra opção
+  de `cuidados_vetores`.
 
 ---
 
