@@ -1,0 +1,150 @@
+# =============================================================================
+# Training protocol v1 — protocolo EXPERIMENTAL de treinamento e avaliação
+# =============================================================================
+#
+# FASE 3F-A. Esta configuração CONGELA o desenho experimental (split, folds,
+# hiperparâmetros, métricas e regra de seleção) ANTES de qualquer resultado
+# preditivo real. NENHUM valor desta seção deve ser alterado após observar
+# desempenho na Fase 3F-B sem nova decisão metodológica + versionamento.
+#
+# ESTA FASE NÃO TREINA MODELOS NO DATASET PRINCIPAL.
+#
+# REGRA DE OURO DO TEST SET:
+#   O conjunto TEST (1000 registros) NÃO pode ser usado para escolher modelo,
+#   escolher hiperparâmetro, decidir class_weight, ajustar threshold, selecionar
+#   features, calibrar probabilidade, decidir preprocessing nem decidir o modelo
+#   vencedor. O TEST será aberto SOMENTE depois que o candidato tiver sido
+#   selecionado usando exclusivamente TRAIN + CV, e será avaliado UMA única vez.
+# =============================================================================
+
+version: "1.0"
+schema_version: "1.13"
+preprocessing_version: "1.0"
+
+target:
+  name: descontinuou_pre_natal
+
+# ---------------------------------------------------------------------------
+# Split principal (congelado): 80% treino / 20% teste, estratificado.
+# ---------------------------------------------------------------------------
+split:
+  test_size: 0.20
+  train_size: 0.80
+  stratified: true
+  shuffle: true
+  random_state: 42
+
+# ---------------------------------------------------------------------------
+# Cross-validation DENTRO dos 4000 registros de treino.
+# ---------------------------------------------------------------------------
+cross_validation:
+  type: StratifiedKFold
+  n_splits: 5
+  shuffle: true
+  random_state: 42
+
+# ---------------------------------------------------------------------------
+# Threshold de decisão (congelado; NÃO fazer threshold tuning nesta fase).
+# ---------------------------------------------------------------------------
+decision_threshold:
+  initial: 0.50
+  tuning: false
+
+# ---------------------------------------------------------------------------
+# Modelos candidatos (exatamente três). Não adicionar SVM/KNN/LightGBM/CatBoost/
+# Naive Bayes/Redes Neurais ao protocolo principal.
+# ---------------------------------------------------------------------------
+models:
+  - logistic_regression
+  - random_forest
+  - xgboost
+
+# ---------------------------------------------------------------------------
+# Hiperparâmetros iniciais CONGELADOS (sem tuning, sem search).
+# ---------------------------------------------------------------------------
+model_params:
+
+  logistic_regression:
+    penalty: "l2"
+    C: 1.0
+    solver: "lbfgs"
+    class_weight: "balanced"
+    max_iter: 2000
+
+  random_forest:
+    n_estimators: 500
+    criterion: "gini"
+    max_depth: null            # None -> sem limite
+    min_samples_split: 2
+    min_samples_leaf: 1
+    max_features: "sqrt"
+    class_weight: "balanced_subsample"
+    random_state: 42
+    n_jobs: -1
+
+  xgboost:
+    objective: "binary:logistic"
+    eval_metric: "logloss"
+    n_estimators: 300
+    learning_rate: 0.05
+    max_depth: 4
+    min_child_weight: 1
+    subsample: 0.80
+    colsample_bytree: 0.80
+    gamma: 0.0
+    reg_lambda: 1.0
+    tree_method: "hist"
+    random_state: 42
+    n_jobs: -1
+    verbosity: 0
+
+# ---------------------------------------------------------------------------
+# Estratégia de class imbalance (v1). NÃO usar SMOTE/ADASYN/oversampling/
+# undersampling/geração sintética/threshold tuning nesta fase.
+# ---------------------------------------------------------------------------
+imbalance_strategy:
+  logistic_regression: "class_weight=balanced"
+  random_forest: "class_weight=balanced_subsample"
+  xgboost: "scale_pos_weight calculado exclusivamente a partir do y usado naquele fit"
+
+# ---------------------------------------------------------------------------
+# Métricas CONGELADAS (antes de rodar qualquer modelo).
+# ---------------------------------------------------------------------------
+metrics:
+  threshold: 0.50
+  thresholded:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - confusion_matrix
+  threshold_independent:
+    - roc_auc
+    - pr_auc
+  calibration:
+    - brier_score
+    - calibration_curve
+
+# Definição canônica de PR-AUC (evita ambiguidade com Average Precision).
+pr_auc:
+  implementation: "auc(recall, precision) obtidos via precision_recall_curve"
+  average_precision: "diagnóstico adicional opcional, NUNCA chamado de PR-AUC"
+
+calibration:
+  n_bins: 10
+  strategy: "quantile"
+  recalibrate: false          # NÃO recalibrar nesta versão (somente diagnóstico)
+
+# ---------------------------------------------------------------------------
+# Regra de seleção do modelo (congelada; NÃO alterar após ver resultados).
+#   métrica principal: mean PR-AUC (5-fold CV no TRAIN)
+#   1º desempate: mean Recall
+#   2º desempate: mean F1
+# O TEST nunca é usado como desempate.
+# ---------------------------------------------------------------------------
+model_selection:
+  source: "5-fold CV exclusivamente sobre TRAIN"
+  primary_metric: "mean_pr_auc"
+  tiebreak:
+    - "mean_recall"
+    - "mean_f1"
