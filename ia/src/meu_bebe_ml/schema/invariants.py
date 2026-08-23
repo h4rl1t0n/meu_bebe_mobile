@@ -91,7 +91,7 @@ def check_empregado_conditionals(record: dict[str, Any]) -> list[str]:
     - ``empregado == true``  -> `tipo_emprego` e `beneficios_trabalho`
       obrigatórios e não vazios; `motivo_desemprego` não aplicável (null).
     - ``empregado == false`` -> `tipo_emprego` e `beneficios_trabalho` não
-      aplicáveis (null/vazio); `motivo_desemprego` obrigatório.
+      aplicáveis (`null`, e NÃO `[]`); `motivo_desemprego` obrigatório.
     - ``empregado == null``  -> ainda não respondido (não valida condicionais).
     """
     errors: list[str] = []
@@ -113,8 +113,8 @@ def check_empregado_conditionals(record: dict[str, Any]) -> list[str]:
     elif empregado is False:
         if tipo_emprego is not None:
             errors.append("empregado == false: tipo_emprego deve ser null")
-        if beneficios:  # lista não vazia
-            errors.append("empregado == false: beneficios_trabalho deve ser null/vazio")
+        if beneficios is not None:
+            errors.append("empregado == false: beneficios_trabalho deve ser null")
         if motivo is None:
             errors.append("empregado == false exige motivo_desemprego")
 

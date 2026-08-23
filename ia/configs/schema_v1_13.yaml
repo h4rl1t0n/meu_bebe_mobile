@@ -272,7 +272,7 @@ dimensions:
       - name: faltou_consulta
         type: bool
         ml_class: OUT_LEAKAGE
-        required: true
+        required: false
         categories: []
 
       - name: acesso_ubs
@@ -305,13 +305,13 @@ dimensions:
       - name: exames_pre_natal_completos
         type: bool
         ml_class: OUT_LEAKAGE
-        required: true
+        required: false
         categories: []
 
       - name: vacinas_em_dia
         type: bool
         ml_class: OUT_LEAKAGE
-        required: true
+        required: false
         categories: []
 
       - name: avaliacao_pre_natal

@@ -248,3 +248,63 @@ def test_mutating_record_does_not_affect_original() -> None:
     mutated["escolaridade"] = "invalido"
     assert validate_record(original) == []
     assert any("escolaridade" in e for e in validate_record(mutated))
+
+
+# ---------------------------------------------------------------------------
+# Booleanos opcionais (leakage): null permitido, chave obrigatória
+# ---------------------------------------------------------------------------
+
+def test_optional_leakage_bool_null_is_valid() -> None:
+    for field in ("faltou_consulta", "exames_pre_natal_completos", "vacinas_em_dia"):
+        record = make_valid_record()
+        record[field] = None
+        assert validate_record(record) == [], field
+
+
+def test_optional_leakage_bool_missing_key_is_invalid() -> None:
+    for field in ("faltou_consulta", "exames_pre_natal_completos", "vacinas_em_dia"):
+        record = make_valid_record()
+        del record[field]
+        errors = validate_record(record)
+        assert any(field in e for e in errors), field
+
+
+# ---------------------------------------------------------------------------
+# beneficios_trabalho — contrato null vs sem_beneficios
+# ---------------------------------------------------------------------------
+
+def _unemployed_record() -> dict:
+    record = make_valid_record()
+    record["empregado"] = False
+    record["tipo_emprego"] = None
+    record["trabalho_permite_pre_natal"] = None
+    record["ambiente_trabalho_seguro"] = None
+    record["tem_pausas_descanso"] = None
+    record["motivo_desemprego"] = "gestacao"
+    return record
+
+
+def test_empregado_false_beneficios_null_valid() -> None:
+    record = _unemployed_record()
+    record["beneficios_trabalho"] = None
+    assert validate_record(record) == []
+
+
+def test_empregado_false_beneficios_empty_list_invalid() -> None:
+    record = _unemployed_record()
+    record["beneficios_trabalho"] = []
+    errors = validate_record(record)
+    assert any("beneficios_trabalho" in e for e in errors)
+
+
+def test_empregado_false_beneficios_sem_beneficios_invalid() -> None:
+    record = _unemployed_record()
+    record["beneficios_trabalho"] = ["sem_beneficios"]
+    errors = validate_record(record)
+    assert any("beneficios_trabalho" in e for e in errors)
+
+
+def test_empregado_true_beneficios_sem_beneficios_valid() -> None:
+    record = make_valid_record()  # empregado == true, tipo_emprego == clt
+    record["beneficios_trabalho"] = ["sem_beneficios"]
+    assert validate_record(record) == []

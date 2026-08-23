@@ -124,6 +124,11 @@ def _validate_value(name: str, value: Any, spec: SchemaSpec) -> list[str]:
             elif value not in categories:
                 errors.append(f"{name}: categoria inválida {value!r}")
     elif vtype == "multiselect":
+        if value is None:
+            # `null` é permitido quando não aplicável (ex.: beneficios_trabalho
+            # com empregado == false); a obrigatoriedade/condicionalidade é
+            # validada separadamente em validate_required e nas invariantes.
+            return errors
         if not isinstance(value, list):
             errors.append(
                 f"{name} deve ser list[str], recebido {type(value).__name__}"

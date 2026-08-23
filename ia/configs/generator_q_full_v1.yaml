@@ -1,0 +1,574 @@
+# =============================================================================
+# Gerador sintético de Q_full — Parametrização experimental v1
+# =============================================================================
+#
+# IMPORTANTE: esta configuração é uma PARAMETRIZAÇÃO EXPERIMENTAL INICIAL.
+# NÃO representa prevalências brasileiras, frequências epidemiológicas reais,
+# estimativas de associação clínica nem parâmetros epidemiológicos.
+#
+# Cabeçalho congelado do cenário principal:
+version: "1.0"
+schema_version: "1.13"
+seed: 42
+n_samples: 5000
+
+# -----------------------------------------------------------------------------
+# Fatores latentes Z (matriz de correlação congelada em simulation_v1.yaml).
+# Este arquivo apenas declara a média (zero) e referencia o contrato congelado.
+# -----------------------------------------------------------------------------
+latent:
+  mean: [0.0, 0.0, 0.0, 0.0, 0.0]
+  names: [Z_SES, Z_LAB, Z_TERR, Z_INFRA, Z_SERV]
+
+# -----------------------------------------------------------------------------
+# Contextos internos (M_sim) derivados de Z. NUNCA entram em Q_full.
+# -----------------------------------------------------------------------------
+contexts:
+  C_LAB:
+    weights: { Z_SES: 0.55, Z_LAB: 0.45 }
+  C_INFRA:
+    weights: { Z_SES: 0.35, Z_INFRA: 0.65 }
+  C_ACCESS:
+    weights: { Z_SES: 0.20, Z_TERR: 0.55, Z_SERV: 0.25 }
+  C_FOOD:
+    weights: { Z_SES: 0.75, Z_INFRA: 0.25 }
+
+# -----------------------------------------------------------------------------
+# Convenção de sinais (resolvidos em código):
+#   z_ses/z_lab/z_terr/z_infra/z_serv  -> valores crus de Z (maior = mais adverso)
+#   c_lab/c_infra/c_access/c_food      -> contextos (maior = mais adverso)
+#   escolaridade_adv                   -> adversidade ordinal da escolaridade 0..1
+#   income_adv                         -> adversidade da faixa de renda latente 0..1
+#   distancia_adv                      -> adversidade da distância à UBS 0..1
+#   seguranca_adv                      -> adversidade da segurança 0..1
+#   n_pessoas_std                      -> (numero_pessoas - 1) / 7  (0..1)
+#
+# Em `logit_delta`, cada entrada é {sinal: coeficiente}; o deslocamento logit é
+# a soma de coeficiente * valor_do_sinal. Coeficiente positivo = aumenta a
+# probabilidade de `true` (ou da categoria) conforme o sinal cresce.
+# -----------------------------------------------------------------------------
+
+education:
+  escolaridade:
+    context: z_ses
+    strength: 0.90
+    base:
+      sem_instrucao: 0.04
+      fundamental_incompleto: 0.14
+      fundamental_completo: 0.12
+      medio_incompleto: 0.15
+      medio_completo: 0.28
+      superior_incompleto: 0.12
+      superior_completo: 0.15
+    severity:
+      sem_instrucao: 1.00
+      fundamental_incompleto: 0.83
+      fundamental_completo: 0.67
+      medio_incompleto: 0.50
+      medio_completo: 0.33
+      superior_incompleto: 0.17
+      superior_completo: 0.00
+  estuda_atualmente:
+    logit_delta: { z_ses: -0.20 }
+    base_by_escolaridade:
+      sem_instrucao: 0.08
+      fundamental_incompleto: 0.20
+      fundamental_completo: 0.15
+      medio_incompleto: 0.40
+      medio_completo: 0.15
+      superior_incompleto: 0.55
+      superior_completo: 0.08
+  situacao_estudos_gestacao:
+    interrompeu_base: 0.25
+    logit_delta: { z_ses: 0.35, z_lab: 0.25 }
+  dificuldades_educacao:
+    exclusive: sem_dificuldades
+    base:
+      falta_dinheiro: 0.18
+      distancia: 0.10
+      falta_transporte: 0.08
+      falta_vagas: 0.08
+      gravidez: 0.12
+      trabalho: 0.12
+      cuidado_filhos: 0.10
+      outro: 0.04
+    logit_delta:
+      falta_dinheiro: { z_ses: 0.60 }
+      distancia: { z_terr: 0.50 }
+      falta_transporte: { z_terr: 0.50, z_ses: 0.25 }
+      falta_vagas: { z_ses: 0.30 }
+      gravidez: { z_ses: 0.10 }
+      trabalho: { z_lab: 0.40 }
+      cuidado_filhos: { z_ses: 0.30 }
+      outro: {}
+    empregado_boost: { trabalho: 0.20 }
+  entende_orientacoes_saude:
+    base_true: 0.84
+    logit_delta: { z_ses: -0.30, escolaridade_adv: -0.30 }
+  fez_curso_qualificacao_profissional:
+    base_true: 0.38
+    logit_delta: { z_ses: -0.25, escolaridade_adv: -0.30 }
+    empregado_boost: 0.20
+
+work_income:
+  income_band:
+    context: z_ses
+    strength: 0.85
+    base:
+      ate_1_sm: 0.28
+      entre_1_2_sm: 0.32
+      entre_2_3_sm: 0.23
+      mais_3_sm: 0.17
+    severity:
+      ate_1_sm: 1.00
+      entre_1_2_sm: 0.67
+      entre_2_3_sm: 0.33
+      mais_3_sm: 0.00
+    mask_prob: 0.05
+  empregado:
+    base_true: 0.58
+    logit_delta: { z_ses: -0.30, z_lab: -0.30 }
+  tipo_emprego:
+    base:
+      clt: 0.50
+      autonomo: 0.25
+      informal: 0.25
+    severity:
+      clt: 0.00
+      autonomo: 0.45
+      informal: 1.00
+    context: c_lab
+    strength: 0.75
+  work_conditions:
+    trabalho_permite_pre_natal:
+      base_true: 0.72
+      logit_delta: { c_lab: -0.30 }
+      informal_reduction: 0.15
+    ambiente_trabalho_seguro:
+      base_true: 0.78
+      logit_delta: { c_lab: -0.30 }
+      informal_reduction: 0.15
+    tem_pausas_descanso:
+      base_true: 0.65
+      logit_delta: { c_lab: -0.30 }
+      informal_reduction: 0.15
+  beneficios_trabalho:
+    exclusive: sem_beneficios
+    logit_delta: { c_lab: -0.25 }
+    base:
+      clt:
+        auxilio_maternidade: 0.55
+        vale_transporte: 0.65
+        vale_alimentacao: 0.60
+      autonomo:
+        auxilio_maternidade: 0.15
+        vale_transporte: 0.10
+        vale_alimentacao: 0.10
+      informal:
+        auxilio_maternidade: 0.08
+        vale_transporte: 0.15
+        vale_alimentacao: 0.12
+  motivo_desemprego:
+    base:
+      dificuldade_encontrar_vaga: 0.30
+      problemas_saude: 0.12
+      cuidado_casa_filhos: 0.20
+      gestacao: 0.12
+      opcao_propria: 0.16
+      outro: 0.10
+    severity:
+      dificuldade_encontrar_vaga: 0.80
+      problemas_saude: 0.60
+      cuidado_casa_filhos: 0.70
+      gestacao: 0.50
+      opcao_propria: 0.00
+      outro: 0.30
+    context: z_lab
+    strength: 0.40
+  recebe_beneficio_social:
+    base_true: 0.22
+    logit_delta: { z_ses: 0.40 }
+  impacto_gestacao_trabalho:
+    base:
+      nao_afetou: 0.48
+      reduziu_jornada: 0.18
+      afastamento_temporario: 0.12
+      demitida: 0.06
+      pediu_demissao: 0.07
+      outro: 0.09
+    severity:
+      nao_afetou: 0.00
+      reduziu_jornada: 0.30
+      afastamento_temporario: 0.60
+      demitida: 1.00
+      pediu_demissao: 0.70
+      outro: 0.40
+    context: z_lab
+    strength: 0.50
+
+sanitation:
+  has_piped_water:
+    base_true: 0.88
+    logit_delta: { c_infra: -0.60 }
+  fonte_agua:
+    base_with_piped:
+      rede_publica: 0.75
+      poco_nascente: 0.12
+      cisterna: 0.05
+      carro_pipa: 0.03
+      outra: 0.05
+    base_without_piped:
+      rede_publica: 0.15
+      poco_nascente: 0.30
+      cisterna: 0.25
+      carro_pipa: 0.15
+      outra: 0.15
+    severity:
+      rede_publica: 0.00
+      poco_nascente: 0.40
+      cisterna: 0.70
+      carro_pipa: 1.00
+      outra: 0.50
+    context: c_infra
+    strength: 0.70
+  interrupcoes_agua:
+    base_true: 0.18
+    logit_delta: { c_infra: 0.50 }
+    fonte_boost:
+      carro_pipa: 0.50
+      cisterna: 0.40
+      outra: 0.30
+  esgotamento_sanitario:
+    base:
+      rede_coletora: 0.55
+      ceu_aberto: 0.07
+      fossa_septica: 0.32
+      outro: 0.06
+    severity:
+      rede_coletora: 0.00
+      fossa_septica: 0.50
+      ceu_aberto: 1.00
+      outro: 0.80
+    context: c_infra
+    strength: 0.60
+  frequencia_coleta_lixo:
+    base:
+      regular: 0.76
+      irregular: 0.18
+      nao_possui: 0.06
+    severity:
+      regular: 0.00
+      irregular: 0.50
+      nao_possui: 1.00
+    context: c_infra
+    strength: 0.70
+  destino_lixo_sem_coleta:
+    base_irregular:
+      aguarda_proxima_coleta: 0.55
+      queima: 0.18
+      enterra: 0.08
+      terreno_baldio: 0.10
+      outro: 0.09
+    base_nao_possui:
+      queima: 0.35
+      enterra: 0.20
+      terreno_baldio: 0.25
+      outro: 0.20
+  problema_saude_agua:
+    base_true: 0.08
+    logit_delta: { c_infra: 0.40 }
+    interrupcoes_boost: 0.40
+    fonte_boost:
+      carro_pipa: 0.50
+      cisterna: 0.40
+      outra: 0.30
+      poco_nascente: 0.20
+  cuidados_vetores:
+    exclusive: sem_cuidados
+    base:
+      elimina_agua_parada: 0.65
+      mantem_reservatorios_tampados: 0.65
+      usa_repelente: 0.45
+      usa_mosquiteiro_telas: 0.30
+      mantem_ambiente_limpo: 0.75
+      usa_inseticida: 0.25
+      outro: 0.04
+    logit_delta:
+      elimina_agua_parada: { z_ses: -0.15, escolaridade_adv: -0.15 }
+      mantem_reservatorios_tampados: { z_ses: -0.15, escolaridade_adv: -0.15 }
+      usa_repelente: { z_ses: -0.10 }
+      usa_mosquiteiro_telas: { z_ses: -0.10 }
+      mantem_ambiente_limpo: { z_ses: -0.10, escolaridade_adv: -0.10 }
+      usa_inseticida: { z_ses: -0.10 }
+      outro: {}
+
+health_access:
+  distancia_ubs:
+    base:
+      muito_proxima: 0.35
+      razoavelmente_proxima: 0.45
+      distante: 0.20
+    severity:
+      muito_proxima: 0.00
+      razoavelmente_proxima: 0.50
+      distante: 1.00
+    context: z_terr
+    strength: 0.90
+  acesso_ubs:
+    base_by_distancia:
+      muito_proxima:
+        a_pe: 0.70
+        transporte_publico: 0.12
+        carro_moto: 0.15
+        outro: 0.03
+      razoavelmente_proxima:
+        a_pe: 0.35
+        transporte_publico: 0.30
+        carro_moto: 0.30
+        outro: 0.05
+      distante:
+        a_pe: 0.10
+        transporte_publico: 0.40
+        carro_moto: 0.40
+        outro: 0.10
+    logit_delta:
+      a_pe: {}
+      transporte_publico: { z_ses: 0.30 }
+      carro_moto: { z_ses: -0.30 }
+      outro: {}
+  cadastrada_ubs:
+    base_true: 0.86
+    logit_delta: { z_terr: -0.25, z_serv: -0.25 }
+  dificuldades_saude:
+    exclusive: sem_dificuldades
+    base:
+      dificuldade_agendamento: 0.18
+      demora_atendimento: 0.25
+      distancia: 0.12
+      falta_transporte: 0.12
+      horario_incompativel: 0.15
+      falta_profissional: 0.12
+      falta_exames: 0.15
+      outro: 0.05
+    logit_delta:
+      dificuldade_agendamento: { z_serv: 0.40 }
+      demora_atendimento: { z_serv: 0.40 }
+      distancia: { distancia_adv: 0.60 }
+      falta_transporte: { z_terr: 0.40, z_ses: 0.30, distancia_adv: 0.30 }
+      horario_incompativel: { z_serv: 0.30, z_lab: 0.25 }
+      falta_profissional: { z_serv: 0.40 }
+      falta_exames: { z_serv: 0.40 }
+      outro: {}
+    horario_empregado_boost: 0.20
+  leakage:
+    faltou_consulta:
+      base_true: 0.18
+      logit_delta: { z_serv: 0.40 }
+      distancia_effect: 0.50
+      falta_transporte_boost: 0.40
+      barreira_boost: 0.25
+      # Parâmetro experimental de simulação (NÃO é taxa real de não resposta).
+      null_rate: 0.05
+    servicos_pre_natal:
+      exclusive: nenhum_dos_listados
+      base:
+        consulta_medica: 0.82
+        consulta_enfermagem: 0.70
+        grupo_gestantes: 0.25
+      logit_delta: { z_serv: -0.30 }
+    exames_pre_natal_completos:
+      base_true: 0.75
+      logit_delta: { z_serv: -0.35 }
+      barreira_boost: -0.20
+      null_rate: 0.05
+    vacinas_em_dia:
+      base_true: 0.78
+      logit_delta: { z_serv: -0.25, z_ses: -0.25 }
+      null_rate: 0.05
+    avaliacao_pre_natal:
+      base:
+        excelente: 0.18
+        bom: 0.42
+        regular: 0.25
+        ruim: 0.10
+        pessimo: 0.05
+      severity:
+        excelente: 0.00
+        bom: 0.25
+        regular: 0.50
+        ruim: 0.75
+        pessimo: 1.00
+      context: z_serv
+      strength: 0.60
+
+housing:
+  tipo_moradia:
+    base:
+      casa: 0.67
+      apartamento: 0.18
+      comodo_unico: 0.08
+      outro: 0.07
+    severity:
+      casa: 0.00
+      apartamento: 0.10
+      comodo_unico: 1.00
+      outro: 0.60
+    context: c_infra
+    strength: 0.60
+  material_moradia:
+    base:
+      alvenaria: 0.72
+      madeira: 0.14
+      mista: 0.10
+      outro: 0.04
+    severity:
+      alvenaria: 0.00
+      madeira: 0.70
+      mista: 0.50
+      outro: 0.90
+    context: c_infra
+    strength: 0.50
+  numero_pessoas:
+    base:
+      1: 0.07
+      2: 0.20
+      3: 0.25
+      4: 0.22
+      5: 0.14
+      6: 0.07
+      7: 0.03
+      8: 0.02
+    severity:
+      1: 0.00
+      2: 0.14
+      3: 0.29
+      4: 0.43
+      5: 0.57
+      6: 0.71
+      7: 0.86
+      8: 1.00
+    context: z_ses
+    strength: 0.50
+  density_target:
+    intercept: 1.4
+    c_infra_coef: 1.2
+    noise_sd: 0.35
+    clip_min: 0.9
+    clip_max: 4.0
+  extra_comodos:
+    min: 0
+    max: 3
+    c_infra_reduction: 0.5
+  itens_residencia:
+    exclusive: nenhum_dos_listados
+    banheiro_interno_base: 0.90
+    cozinha_separada_base: 0.90
+    logit_delta: { c_infra: -0.50 }
+    comodo_unico_cozinha_reduction: 0.40
+  seguranca_residencia:
+    base:
+      muito_segura: 0.12
+      segura: 0.38
+      regular: 0.30
+      insegura: 0.15
+      muito_insegura: 0.05
+    severity:
+      muito_segura: 0.00
+      segura: 0.25
+      regular: 0.50
+      insegura: 0.75
+      muito_insegura: 1.00
+    context: c_infra
+    strength: 0.50
+    z_ses_extra: 0.30
+  melhorias_desejadas:
+    exclusive: sem_melhorias
+    base:
+      ampliacao_espaco: 0.25
+      reforma_estrutura: 0.20
+      melhorar_banheiro: 0.20
+      melhorar_ventilacao: 0.18
+      melhorar_instalacao_eletrica: 0.15
+      melhorar_abastecimento_agua: 0.12
+      melhorar_seguranca: 0.15
+      outro: 0.05
+    boost:
+      ampliacao_espaco: { comodo_unico: 0.30, n_pessoas_high: 0.10 }
+      reforma_estrutura: { material_nao_alvenaria: 0.25 }
+      melhorar_banheiro: { no_banheiro_interno: 0.30 }
+      melhorar_ventilacao: { comodo_unico: 0.15 }
+      melhorar_instalacao_eletrica: {}
+      melhorar_abastecimento_agua: { no_agua_encanada: 0.40, interrupcoes_agua: 0.15 }
+      melhorar_seguranca: { seguranca_baixa: 0.25 }
+      outro: {}
+  facil_acesso_saude:
+    base_true: 0.75
+    logit_delta: { z_terr: -0.25, z_serv: -0.25 }
+    distancia_effect: 0.40
+    falta_transporte_boost: -0.40
+    barreira_boost: -0.20
+
+food:
+  refeicoes_por_dia:
+    base:
+      uma_duas: 0.15
+      tres: 0.52
+      quatro_mais: 0.33
+    severity:
+      uma_duas: 1.00
+      tres: 0.50
+      quatro_mais: 0.00
+    context: c_food
+    strength: 0.50
+    z_ses_extra: 0.20
+  deixou_de_comer_falta_dinheiro:
+    base_true: 0.12
+    logit_delta: { z_ses: 0.50, income_adv: 0.60, n_pessoas_std: 0.10 }
+  alimentos_consumidos:
+    exclusive: nenhum_dos_listados
+    base:
+      frutas_verduras: 0.66
+      carnes: 0.70
+      leite_derivados: 0.62
+      feijao_leguminosas: 0.82
+    logit_delta: { z_ses: -0.25 }
+    deixou_de_comer_reduction: 0.25
+  fonte_alimentos:
+    base:
+      supermercado_feira: 0.88
+      horta_propria: 0.12
+      doacoes: 0.07
+      cesta_basica: 0.10
+      outro: 0.05
+    logit_delta:
+      supermercado_feira: { z_ses: -0.30 }
+      horta_propria: {}
+      doacoes: { z_ses: 0.40 }
+      cesta_basica: { z_ses: 0.40 }
+      outro: {}
+    fallback_base:
+      supermercado_feira: 0.60
+      doacoes: 0.15
+      cesta_basica: 0.15
+      horta_propria: 0.05
+      outro: 0.05
+  mudanca_alimentacao_gestacao:
+    base_true: 0.55
+    logit_delta: { z_ses: 0.10 }
+  usa_suplementos:
+    base_true: 0.72
+    logit_delta: { z_ses: -0.20, z_serv: -0.20 }
+  avaliacao_alimentacao:
+    base:
+      muito_boa: 0.15
+      boa: 0.42
+      regular: 0.33
+      ruim: 0.10
+    severity:
+      muito_boa: 0.00
+      boa: 0.30
+      regular: 0.60
+      ruim: 1.00
+    context: z_ses
+    strength: 0.50
+    deixou_de_comer_effect: 0.40
