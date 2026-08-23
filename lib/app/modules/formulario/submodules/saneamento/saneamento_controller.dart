@@ -1,5 +1,6 @@
 import 'package:mobx/mobx.dart';
 
+import '../../catalog/saneamento_options.dart';
 import '../../models/saneamento/saneamento_model.dart';
 import 'saneamento_validator.dart';
 
@@ -9,46 +10,46 @@ class SaneamentoController = SaneamentoControllerBase with _$SaneamentoControlle
 
 abstract class SaneamentoControllerBase with Store {
   @observable
-  String fonteAgua = '';
+  FonteAgua? fonteAgua;
 
   @observable
-  String interrupcoesAgua = '';
+  bool interrupcoesAgua = false;
 
   @observable
-  String destinoEsgoto = '';
+  EsgotamentoSanitario? destinoEsgoto;
 
   @observable
-  String coletaLixo = '';
+  ColetaLixo? coletaLixo;
 
   @observable
   bool preocupacaoAgua = false;
 
   @observable
-  String cuidadosVetores = '';
+  String? cuidadosVetores;
 
   @observable
   bool isValid = false;
 
   @action
-  void setFonteAgua(String value) {
+  void setFonteAgua(FonteAgua? value) {
     fonteAgua = value;
     validate();
   }
 
   @action
-  void setInterrupcoesAgua(String value) {
+  void setInterrupcoesAgua(bool value) {
     interrupcoesAgua = value;
     validate();
   }
 
   @action
-  void setDestinoEsgoto(String value) {
+  void setDestinoEsgoto(EsgotamentoSanitario? value) {
     destinoEsgoto = value;
     validate();
   }
 
   @action
-  void setColetaLixo(String value) {
+  void setColetaLixo(ColetaLixo? value) {
     coletaLixo = value;
     validate();
   }
@@ -61,7 +62,7 @@ abstract class SaneamentoControllerBase with Store {
 
   @action
   void setCuidadosVetores(String value) {
-    cuidadosVetores = value;
+    cuidadosVetores = value.trim().isEmpty ? null : value;
     validate();
   }
 
@@ -69,17 +70,16 @@ abstract class SaneamentoControllerBase with Store {
   void validate() {
     isValid = SaneamentoValidator.isTabValid(
       fonteAgua: fonteAgua,
-      interrupcoesAgua: interrupcoesAgua,
       destinoEsgoto: destinoEsgoto,
       coletaLixo: coletaLixo,
     );
   }
 
   SaneamentoModel buildSaneamentoData() => SaneamentoModel(
-    fonteAgua: fonteAgua,
+    fonteAgua: fonteAgua?.code,
     interrupcoesAgua: interrupcoesAgua,
-    destinoEsgoto: destinoEsgoto,
-    coletaLixo: coletaLixo,
+    destinoEsgoto: destinoEsgoto?.code,
+    coletaLixo: coletaLixo?.code,
     preocupacaoAgua: preocupacaoAgua,
     cuidadosVetores: cuidadosVetores,
   );

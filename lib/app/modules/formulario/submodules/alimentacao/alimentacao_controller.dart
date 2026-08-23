@@ -1,5 +1,6 @@
 import 'package:mobx/mobx.dart';
 
+import '../../catalog/alimentacao_options.dart';
 import '../../models/alimentacao/alimentacao_model.dart';
 import 'alimentacao_validator.dart';
 
@@ -9,25 +10,16 @@ class AlimentacaoController = AlimentacaoControllerBase with _$AlimentacaoContro
 
 abstract class AlimentacaoControllerBase with Store {
   @observable
-  int refeicoesPorDia = 0;
+  RefeicoesPorDia? refeicoesPorDia;
 
   @observable
   bool insegurancaAlimentar = false;
 
   @observable
-  bool consomeFrutasVerduras = false;
+  ObservableList<AlimentoConsumido> alimentosConsumidos = ObservableList<AlimentoConsumido>();
 
   @observable
-  bool consomeCarnes = false;
-
-  @observable
-  bool consomeLeite = false;
-
-  @observable
-  bool consomeFeijao = false;
-
-  @observable
-  String fonteAlimentos = '';
+  FonteAlimentos? fonteAlimentos;
 
   @observable
   bool mudancaAlimentacaoGestacao = false;
@@ -36,13 +28,13 @@ abstract class AlimentacaoControllerBase with Store {
   bool usaSuplementos = false;
 
   @observable
-  String avaliacaoAlimentacao = '';
+  AvaliacaoAlimentacao? avaliacaoAlimentacao;
 
   @observable
   bool isValid = false;
 
   @action
-  void setRefeicoesPorDia(int value) {
+  void setRefeicoesPorDia(RefeicoesPorDia? value) {
     refeicoesPorDia = value;
     validate();
   }
@@ -54,31 +46,17 @@ abstract class AlimentacaoControllerBase with Store {
   }
 
   @action
-  void setConsomeFrutasVerduras(bool value) {
-    consomeFrutasVerduras = value;
+  void toggleAlimento(AlimentoConsumido alimento) {
+    if (alimentosConsumidos.contains(alimento)) {
+      alimentosConsumidos.remove(alimento);
+    } else {
+      alimentosConsumidos.add(alimento);
+    }
     validate();
   }
 
   @action
-  void setConsomeCarnes(bool value) {
-    consomeCarnes = value;
-    validate();
-  }
-
-  @action
-  void setConsomeLeite(bool value) {
-    consomeLeite = value;
-    validate();
-  }
-
-  @action
-  void setConsomeFeijao(bool value) {
-    consomeFeijao = value;
-    validate();
-  }
-
-  @action
-  void setFonteAlimentos(String value) {
+  void setFonteAlimentos(FonteAlimentos? value) {
     fonteAlimentos = value;
     validate();
   }
@@ -96,7 +74,7 @@ abstract class AlimentacaoControllerBase with Store {
   }
 
   @action
-  void setAvaliacaoAlimentacao(String value) {
+  void setAvaliacaoAlimentacao(AvaliacaoAlimentacao? value) {
     avaliacaoAlimentacao = value;
     validate();
   }
@@ -111,15 +89,12 @@ abstract class AlimentacaoControllerBase with Store {
   }
 
   AlimentacaoModel buildAlimentacaoData() => AlimentacaoModel(
-    refeicoesPorDia: refeicoesPorDia,
+    refeicoesPorDia: refeicoesPorDia?.code,
     insegurancaAlimentar: insegurancaAlimentar,
-    consomeFrutasVerduras: consomeFrutasVerduras,
-    consomeCarnes: consomeCarnes,
-    consomeLeite: consomeLeite,
-    consomeFeijao: consomeFeijao,
-    fonteAlimentos: fonteAlimentos,
+    alimentosConsumidos: alimentosConsumidos.map((a) => a.code).toList(),
+    fonteAlimentos: fonteAlimentos?.code,
     mudancaAlimentacaoGestacao: mudancaAlimentacaoGestacao,
     usaSuplementos: usaSuplementos,
-    avaliacaoAlimentacao: avaliacaoAlimentacao,
+    avaliacaoAlimentacao: avaliacaoAlimentacao?.code,
   );
 }

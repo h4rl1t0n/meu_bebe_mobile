@@ -1,35 +1,31 @@
+import '../../catalog/dss_schema.dart';
+
+/// Dimensão Habitação.
 class HabitacaoModel {
-  final String tipoMoradia;
+  final String? tipoMoradia;
   final int numeroPessoas;
   final int numeroComodos;
-  final bool temAguaEncanada;
-  final bool temBanheiro;
-  final bool temCozinhaSeparada;
-  final String segurancaEstrutural;
-  final String melhoriasDesejadas;
+  final List<String> itensResidencia;
+  final String? segurancaEstrutural;
+
+  /// Texto livre (relato qualitativo). NÃO entra no modelo tabular inicial —
+  /// preservado no JSON.
+  final String? melhoriasDesejadas;
   final bool facilAcessoSaude;
 
   const HabitacaoModel({
-    required this.tipoMoradia,
+    this.tipoMoradia,
     required this.numeroPessoas,
     required this.numeroComodos,
-    required this.temAguaEncanada,
-    required this.temBanheiro,
-    required this.temCozinhaSeparada,
-    required this.segurancaEstrutural,
-    required this.melhoriasDesejadas,
+    this.itensResidencia = const [],
+    this.segurancaEstrutural,
+    this.melhoriasDesejadas,
     required this.facilAcessoSaude,
   });
 
   factory HabitacaoModel.empty() => const HabitacaoModel(
-    tipoMoradia: '',
     numeroPessoas: 0,
     numeroComodos: 0,
-    temAguaEncanada: false,
-    temBanheiro: false,
-    temCozinhaSeparada: false,
-    segurancaEstrutural: '',
-    melhoriasDesejadas: '',
     facilAcessoSaude: false,
   );
 
@@ -37,33 +33,27 @@ class HabitacaoModel {
     'tipo_moradia': tipoMoradia,
     'numero_pessoas': numeroPessoas,
     'numero_comodos': numeroComodos,
-    'tem_agua_encanada': temAguaEncanada ? 1 : 0,
-    'tem_banheiro': temBanheiro ? 1 : 0,
-    'tem_cozinha_separada': temCozinhaSeparada ? 1 : 0,
-    'seguranca_estrutural': segurancaEstrutural,
+    'itens_residencia': itensResidencia,
+    'seguranca_residencia': segurancaEstrutural,
     'melhorias_desejadas': melhoriasDesejadas,
-    'facil_acesso_saude': facilAcessoSaude ? 1 : 0,
+    'facil_acesso_saude': facilAcessoSaude,
   };
 
   factory HabitacaoModel.fromMap(Map<String, dynamic> map) => HabitacaoModel(
-    tipoMoradia: map['tipo_moradia'] ?? '',
-    numeroPessoas: map['numero_pessoas'] ?? 0,
-    numeroComodos: map['numero_comodos'] ?? 0,
-    temAguaEncanada: (map['tem_agua_encanada'] ?? 0) == 1,
-    temBanheiro: (map['tem_banheiro'] ?? 0) == 1,
-    temCozinhaSeparada: (map['tem_cozinha_separada'] ?? 0) == 1,
-    segurancaEstrutural: map['seguranca_estrutural'] ?? '',
-    melhoriasDesejadas: map['melhorias_desejadas'] ?? '',
-    facilAcessoSaude: (map['facil_acesso_saude'] ?? 0) == 1,
+    tipoMoradia: map['tipo_moradia'] as String?,
+    numeroPessoas: (map['numero_pessoas'] ?? 0) as int,
+    numeroComodos: (map['numero_comodos'] ?? 0) as int,
+    itensResidencia: List<String>.from((map['itens_residencia'] as List?) ?? const []),
+    segurancaEstrutural: map['seguranca_residencia'] as String?,
+    melhoriasDesejadas: map['melhorias_desejadas'] as String?,
+    facilAcessoSaude: map['facil_acesso_saude'] == true,
   );
 
   HabitacaoModel copyWith({
     String? tipoMoradia,
     int? numeroPessoas,
     int? numeroComodos,
-    bool? temAguaEncanada,
-    bool? temBanheiro,
-    bool? temCozinhaSeparada,
+    List<String>? itensResidencia,
     String? segurancaEstrutural,
     String? melhoriasDesejadas,
     bool? facilAcessoSaude,
@@ -71,9 +61,7 @@ class HabitacaoModel {
     tipoMoradia: tipoMoradia ?? this.tipoMoradia,
     numeroPessoas: numeroPessoas ?? this.numeroPessoas,
     numeroComodos: numeroComodos ?? this.numeroComodos,
-    temAguaEncanada: temAguaEncanada ?? this.temAguaEncanada,
-    temBanheiro: temBanheiro ?? this.temBanheiro,
-    temCozinhaSeparada: temCozinhaSeparada ?? this.temCozinhaSeparada,
+    itensResidencia: itensResidencia ?? this.itensResidencia,
     segurancaEstrutural: segurancaEstrutural ?? this.segurancaEstrutural,
     melhoriasDesejadas: melhoriasDesejadas ?? this.melhoriasDesejadas,
     facilAcessoSaude: facilAcessoSaude ?? this.facilAcessoSaude,
@@ -90,22 +78,19 @@ class HabitacaoModel {
           other.tipoMoradia == tipoMoradia &&
           other.numeroPessoas == numeroPessoas &&
           other.numeroComodos == numeroComodos &&
-          other.temAguaEncanada == temAguaEncanada &&
-          other.temBanheiro == temBanheiro &&
-          other.temCozinhaSeparada == temCozinhaSeparada &&
+          DssSchema.listsEqual(other.itensResidencia, itensResidencia) &&
           other.segurancaEstrutural == segurancaEstrutural &&
           other.melhoriasDesejadas == melhoriasDesejadas &&
           other.facilAcessoSaude == facilAcessoSaude;
 
   @override
-  int get hashCode =>
-      tipoMoradia.hashCode ^
-      numeroPessoas.hashCode ^
-      numeroComodos.hashCode ^
-      temAguaEncanada.hashCode ^
-      temBanheiro.hashCode ^
-      temCozinhaSeparada.hashCode ^
-      segurancaEstrutural.hashCode ^
-      melhoriasDesejadas.hashCode ^
-      facilAcessoSaude.hashCode;
+  int get hashCode => Object.hash(
+    tipoMoradia,
+    numeroPessoas,
+    numeroComodos,
+    Object.hashAll(itensResidencia),
+    segurancaEstrutural,
+    melhoriasDesejadas,
+    facilAcessoSaude,
+  );
 }

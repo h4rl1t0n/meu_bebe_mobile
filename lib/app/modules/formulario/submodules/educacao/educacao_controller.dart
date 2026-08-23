@@ -1,5 +1,6 @@
 import 'package:mobx/mobx.dart';
 
+import '../../catalog/educacao_options.dart';
 import '../../models/educacao/educacao_model.dart';
 import 'educacao_validator.dart';
 
@@ -9,38 +10,35 @@ class EducacaoController = EducacaoControllerBase with _$EducacaoController;
 
 abstract class EducacaoControllerBase with Store {
   @observable
-  String escolaridade = '';
+  bool estuda = false;
 
   @observable
-  bool estuda = false;
+  Escolaridade? escolaridade;
 
   @observable
   bool interrompeuEstudos = false;
 
   @observable
-  String dificuldadesEscolares = '';
+  ObservableList<DificuldadeEducacao> dificuldadesEscolares = ObservableList<DificuldadeEducacao>();
 
   @observable
   bool entendeOrientacoes = false;
 
   @observable
-  String cursosExtracurriculares = '';
-
-  @observable
-  String expectativasEducacionais = '';
+  bool fezCursoExtracurricular = false;
 
   @observable
   bool isValid = false;
 
   @action
-  void setEscolaridade(String value) {
-    escolaridade = value;
+  void setEstuda(bool value) {
+    estuda = value;
     validate();
   }
 
   @action
-  void setEstuda(bool value) {
-    estuda = value;
+  void setEscolaridade(Escolaridade? value) {
+    escolaridade = value;
     validate();
   }
 
@@ -51,8 +49,12 @@ abstract class EducacaoControllerBase with Store {
   }
 
   @action
-  void setDificuldadesEscolares(String value) {
-    dificuldadesEscolares = value;
+  void toggleDificuldade(DificuldadeEducacao dificuldade) {
+    if (dificuldadesEscolares.contains(dificuldade)) {
+      dificuldadesEscolares.remove(dificuldade);
+    } else {
+      dificuldadesEscolares.add(dificuldade);
+    }
     validate();
   }
 
@@ -63,14 +65,8 @@ abstract class EducacaoControllerBase with Store {
   }
 
   @action
-  void setCursosExtracurriculares(String value) {
-    cursosExtracurriculares = value;
-    validate();
-  }
-
-  @action
-  void setExpectativasEducacionais(String value) {
-    expectativasEducacionais = value;
+  void setFezCursoExtracurricular(bool value) {
+    fezCursoExtracurricular = value;
     validate();
   }
 
@@ -81,13 +77,12 @@ abstract class EducacaoControllerBase with Store {
 
   EducacaoModel buildEducacaoData() {
     return EducacaoModel(
-      escolaridade: escolaridade,
       estuda: estuda,
+      escolaridade: escolaridade?.code,
       interrompeuEstudos: interrompeuEstudos,
-      dificuldadesEscolares: dificuldadesEscolares,
+      dificuldadesEducacao: dificuldadesEscolares.map((d) => d.code).toList(),
       entendeOrientacoes: entendeOrientacoes,
-      cursosExtracurriculares: cursosExtracurriculares,
-      expectativasEducacionais: expectativasEducacionais,
+      fezCursoExtracurricular: fezCursoExtracurricular,
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:mobx/mobx.dart';
 
+import '../../catalog/trabalho_options.dart';
 import '../../models/trabalho/trabalho_model.dart';
 import 'trabalho_validator.dart';
 
@@ -12,37 +13,31 @@ abstract class TrabalhoControllerBase with Store {
   bool empregado = false;
 
   @observable
-  String tipoEmprego = '';
+  TipoEmprego? tipoEmprego;
 
   @observable
-  String faixaRenda = '';
+  FaixaRenda? faixaRenda;
 
   @observable
-  bool permitePreNatal = false;
+  bool? permitePreNatal;
 
   @observable
-  bool ambienteSeguro = false;
+  bool? ambienteSeguro;
 
   @observable
-  bool temPausas = false;
+  bool? temPausas;
 
   @observable
-  bool recebeAuxilioMaternidade = false;
+  ObservableList<BeneficioTrabalho> beneficios = ObservableList<BeneficioTrabalho>();
 
   @observable
-  bool recebeValeTransporte = false;
+  MotivoDesemprego? motivoDesemprego;
 
   @observable
-  bool recebeValeAlimentacao = false;
+  bool? recebeBeneficioSocial;
 
   @observable
-  String motivoDesemprego = '';
-
-  @observable
-  bool recebeBeneficioSocial = false;
-
-  @observable
-  String impactoGestacaoTrabalho = '';
+  ImpactoGestacaoTrabalho? impactoGestacaoTrabalho;
 
   @observable
   bool isValid = false;
@@ -50,30 +45,26 @@ abstract class TrabalhoControllerBase with Store {
   @action
   void setEmpregado(bool value) {
     empregado = value;
-    if (!value) {
-      tipoEmprego = '';
-      faixaRenda = '';
-      permitePreNatal = false;
-      ambienteSeguro = false;
-      temPausas = false;
-      recebeAuxilioMaternidade = false;
-      recebeValeTransporte = false;
-      recebeValeAlimentacao = false;
+    if (value) {
+      motivoDesemprego = null;
     } else {
-      motivoDesemprego = '';
-      recebeBeneficioSocial = false;
+      tipoEmprego = null;
+      permitePreNatal = null;
+      ambienteSeguro = null;
+      temPausas = null;
+      beneficios.clear();
     }
     validate();
   }
 
   @action
-  void setTipoEmprego(String value) {
+  void setTipoEmprego(TipoEmprego? value) {
     tipoEmprego = value;
     validate();
   }
 
   @action
-  void setFaixaRenda(String value) {
+  void setFaixaRenda(FaixaRenda? value) {
     faixaRenda = value;
     validate();
   }
@@ -97,25 +88,17 @@ abstract class TrabalhoControllerBase with Store {
   }
 
   @action
-  void setRecebeAuxilioMaternidade(bool value) {
-    recebeAuxilioMaternidade = value;
+  void toggleBeneficio(BeneficioTrabalho beneficio) {
+    if (beneficios.contains(beneficio)) {
+      beneficios.remove(beneficio);
+    } else {
+      beneficios.add(beneficio);
+    }
     validate();
   }
 
   @action
-  void setRecebeValeTransporte(bool value) {
-    recebeValeTransporte = value;
-    validate();
-  }
-
-  @action
-  void setRecebeValeAlimentacao(bool value) {
-    recebeValeAlimentacao = value;
-    validate();
-  }
-
-  @action
-  void setMotivoDesemprego(String value) {
+  void setMotivoDesemprego(MotivoDesemprego? value) {
     motivoDesemprego = value;
     validate();
   }
@@ -127,7 +110,7 @@ abstract class TrabalhoControllerBase with Store {
   }
 
   @action
-  void setImpactoGestacaoTrabalho(String value) {
+  void setImpactoGestacaoTrabalho(ImpactoGestacaoTrabalho? value) {
     impactoGestacaoTrabalho = value;
     validate();
   }
@@ -140,17 +123,15 @@ abstract class TrabalhoControllerBase with Store {
   TrabalhoModel buildTrabalhoData() {
     return TrabalhoModel(
       empregado: empregado,
-      tipoEmprego: tipoEmprego,
-      faixaRenda: faixaRenda,
-      permitePreNatal: permitePreNatal,
-      ambienteSeguro: ambienteSeguro,
-      temPausas: temPausas,
-      recebeAuxilioMaternidade: recebeAuxilioMaternidade,
-      recebeValeTransporte: recebeValeTransporte,
-      recebeValeAlimentacao: recebeValeAlimentacao,
-      motivoDesemprego: motivoDesemprego,
+      tipoEmprego: tipoEmprego?.code,
+      faixaRenda: faixaRenda?.code,
+      permitePreNatal: empregado ? permitePreNatal : null,
+      ambienteSeguro: empregado ? ambienteSeguro : null,
+      temPausas: empregado ? temPausas : null,
+      beneficiosTrabalho: empregado ? beneficios.map((b) => b.code).toList() : null,
+      motivoDesemprego: motivoDesemprego?.code,
       recebeBeneficioSocial: recebeBeneficioSocial,
-      impactoGestacaoTrabalho: impactoGestacaoTrabalho,
+      impactoGestacaoTrabalho: impactoGestacaoTrabalho?.code,
     );
   }
 }

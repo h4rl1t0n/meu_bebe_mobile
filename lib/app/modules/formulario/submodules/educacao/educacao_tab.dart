@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../core/ui/theme/styles/design_tokens.dart';
+import '../../catalog/educacao_options.dart';
 import '../../widgets/item_tab_page.dart';
 import 'educacao_controller.dart';
 import 'educacao_validator.dart';
@@ -32,14 +33,17 @@ class _EducacaoTabState extends State<EducacaoTab> {
               onChanged: controller.setEstuda,
             ),
             SizedBox(height: Spacing.lg),
-            TextFormField(
+            DropdownButtonFormField<Escolaridade>(
               decoration: const InputDecoration(
                 labelText: 'Qual seu grau de escolaridade?',
                 border: OutlineInputBorder(),
-                hintText: 'Ex: Ensino Médio Completo',
               ),
+              initialValue: controller.escolaridade,
+              items: Escolaridade.values.map((Escolaridade value) {
+                return DropdownMenuItem<Escolaridade>(value: value, child: Text(value.label));
+              }).toList(),
+              onChanged: (val) => controller.setEscolaridade(val),
               validator: EducacaoValidator.escolaridade,
-              onChanged: controller.setEscolaridade,
             ),
             SizedBox(height: Spacing.lg),
             SwitchListTile(
@@ -48,14 +52,25 @@ class _EducacaoTabState extends State<EducacaoTab> {
               onChanged: controller.setInterrompeuEstudos,
             ),
             SizedBox(height: Spacing.lg),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Que dificuldades enfrenta no acesso à educação?',
-                border: OutlineInputBorder(),
-                hintText: 'Ex: Distância, custos, falta de vagas...',
-              ),
-              maxLines: 3,
-              onChanged: controller.setDificuldadesEscolares,
+            const Text('Que dificuldades enfrenta no acesso à educação?'),
+            SizedBox(height: Spacing.sm),
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 4.0,
+              children: DificuldadeEducacao.values.map((dificuldade) {
+                return Observer(
+                  builder: (_) {
+                    final isSelected = controller.dificuldadesEscolares.contains(dificuldade);
+                    return FilterChip(
+                      label: Text(dificuldade.label),
+                      selected: isSelected,
+                      onSelected: (bool selected) {
+                        controller.toggleDificuldade(dificuldade);
+                      },
+                    );
+                  },
+                );
+              }).toList(),
             ),
             SizedBox(height: Spacing.lg),
             SwitchListTile(
@@ -64,29 +79,14 @@ class _EducacaoTabState extends State<EducacaoTab> {
               onChanged: controller.setEntendeOrientacoes,
             ),
             SizedBox(height: Spacing.lg),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Faz ou fez algum curso extracurricular?',
-                border: OutlineInputBorder(),
-                hintText: 'Ex: Idiomas, informática, cursos profissionalizantes...',
-              ),
-              onChanged: controller.setCursosExtracurriculares,
-            ),
-            SizedBox(height: Spacing.lg),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Quais são suas expectativas/projetos educacionais?',
-                border: OutlineInputBorder(),
-                hintText: 'Ex: Concluir o ensino médio, entrar na faculdade...',
-              ),
-              maxLines: 3,
-              onChanged: controller.setExpectativasEducacionais,
+            SwitchListTile(
+              title: const Text('Faz ou fez algum curso extracurricular?'),
+              value: controller.fezCursoExtracurricular,
+              onChanged: controller.setFezCursoExtracurricular,
             ),
           ],
         ),
       ),
     );
   }
-
-  bool validateTab() => formKey.currentState?.validate() ?? false;
 }

@@ -1,5 +1,6 @@
 import 'package:mobx/mobx.dart';
 
+import '../../catalog/habitacao_options.dart';
 import '../../models/habitacao/habitacao_model.dart';
 import 'habitacao_validator.dart';
 
@@ -9,7 +10,7 @@ class HabitacaoController = HabitacaoControllerBase with _$HabitacaoController;
 
 abstract class HabitacaoControllerBase with Store {
   @observable
-  String tipoMoradia = '';
+  TipoMoradia? tipoMoradia;
 
   @observable
   int numeroPessoas = 0;
@@ -18,19 +19,13 @@ abstract class HabitacaoControllerBase with Store {
   int numeroComodos = 0;
 
   @observable
-  bool temAguaEncanada = false;
+  ObservableList<ItemResidencia> itensResidencia = ObservableList<ItemResidencia>();
 
   @observable
-  bool temBanheiro = false;
+  SegurancaResidencia? segurancaEstrutural;
 
   @observable
-  bool temCozinhaSeparada = false;
-
-  @observable
-  String segurancaEstrutural = '';
-
-  @observable
-  String melhoriasDesejadas = '';
+  String? melhoriasDesejadas;
 
   @observable
   bool facilAcessoSaude = false;
@@ -39,7 +34,7 @@ abstract class HabitacaoControllerBase with Store {
   bool isValid = false;
 
   @action
-  void setTipoMoradia(String value) {
+  void setTipoMoradia(TipoMoradia? value) {
     tipoMoradia = value;
     validate();
   }
@@ -57,32 +52,24 @@ abstract class HabitacaoControllerBase with Store {
   }
 
   @action
-  void setTemAguaEncanada(bool value) {
-    temAguaEncanada = value;
+  void toggleItemResidencia(ItemResidencia item) {
+    if (itensResidencia.contains(item)) {
+      itensResidencia.remove(item);
+    } else {
+      itensResidencia.add(item);
+    }
     validate();
   }
 
   @action
-  void setTemBanheiro(bool value) {
-    temBanheiro = value;
-    validate();
-  }
-
-  @action
-  void setTemCozinhaSeparada(bool value) {
-    temCozinhaSeparada = value;
-    validate();
-  }
-
-  @action
-  void setSegurancaEstrutural(String value) {
+  void setSegurancaEstrutural(SegurancaResidencia? value) {
     segurancaEstrutural = value;
     validate();
   }
 
   @action
   void setMelhoriasDesejadas(String value) {
-    melhoriasDesejadas = value;
+    melhoriasDesejadas = value.trim().isEmpty ? null : value;
     validate();
   }
 
@@ -102,13 +89,11 @@ abstract class HabitacaoControllerBase with Store {
   }
 
   HabitacaoModel buildHabitacaoData() => HabitacaoModel(
-    tipoMoradia: tipoMoradia,
+    tipoMoradia: tipoMoradia?.code,
     numeroPessoas: numeroPessoas,
     numeroComodos: numeroComodos,
-    temAguaEncanada: temAguaEncanada,
-    temBanheiro: temBanheiro,
-    temCozinhaSeparada: temCozinhaSeparada,
-    segurancaEstrutural: segurancaEstrutural,
+    itensResidencia: itensResidencia.map((i) => i.code).toList(),
+    segurancaEstrutural: segurancaEstrutural?.code,
     melhoriasDesejadas: melhoriasDesejadas,
     facilAcessoSaude: facilAcessoSaude,
   );

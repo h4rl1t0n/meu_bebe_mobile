@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../core/ui/theme/styles/text_styles.dart';
+import '../../catalog/saude_options.dart';
 import '../../widgets/item_tab_page.dart';
 import 'saude_controller.dart';
 import 'saude_validator.dart';
@@ -27,19 +28,17 @@ class _SaudeTabState extends State<SaudeTab> {
         builder: (_) => ItemTabPage(
           title: 'Saúde',
           children: [
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<DistanciaUBS>(
               decoration: const InputDecoration(
                 labelText: 'Há uma UBS próxima da sua casa?',
                 border: OutlineInputBorder(),
               ),
               validator: SaudeValidator.distanciaUBS,
-              initialValue: controller.distanciaUBS.isNotEmpty ? controller.distanciaUBS : null,
-              items: const [
-                DropdownMenuItem(value: 'Sim, muito próxima', child: Text('Sim, muito próxima')),
-                DropdownMenuItem(value: 'Sim, razoavelmente próxima', child: Text('Sim, razoavelmente próxima')),
-                DropdownMenuItem(value: 'Não, é distante', child: Text('Não, é distante')),
-              ],
-              onChanged: (v) => controller.setDistanciaUBS(v ?? ''),
+              initialValue: controller.distanciaUBS,
+              items: DistanciaUBS.values
+                  .map((e) => DropdownMenuItem<DistanciaUBS>(value: e, child: Text(e.label)))
+                  .toList(),
+              onChanged: (v) => controller.setDistanciaUBS(v),
             ),
             SizedBox(height: Spacing.lg),
             SwitchListTile(
@@ -51,26 +50,23 @@ class _SaudeTabState extends State<SaudeTab> {
               onChanged: controller.setFaltouConsulta,
             ),
             SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<AcessoUBS>(
               decoration: const InputDecoration(
                 labelText: 'Como você costuma chegar à UBS?',
                 border: OutlineInputBorder(),
               ),
               validator: SaudeValidator.acessibilidadeUBS,
-              initialValue: controller.acessibilidadeUBS.isNotEmpty ? controller.acessibilidadeUBS : null,
-              items: const [
-                DropdownMenuItem(value: 'A pé', child: Text('A pé')),
-                DropdownMenuItem(value: 'Transporte público', child: Text('Transporte público')),
-                DropdownMenuItem(value: 'Carro/moto', child: Text('Carro/moto')),
-                DropdownMenuItem(value: 'Outro', child: Text('Outro')),
-              ],
-              onChanged: (v) => controller.setAcessibilidadeUBS(v ?? ''),
+              initialValue: controller.acessibilidadeUBS,
+              items: AcessoUBS.values
+                  .map((e) => DropdownMenuItem<AcessoUBS>(value: e, child: Text(e.label)))
+                  .toList(),
+              onChanged: (v) => controller.setAcessibilidadeUBS(v),
             ),
             SizedBox(height: Spacing.lg),
-            if (controller.acessibilidadeUBS.isNotEmpty) ...[
+            if (controller.acessibilidadeUBS != null) ...[
               SwitchListTile(
                 title: const Text('Está cadastrada na UBS mais próxima?'),
-                value: controller.cadastradaUBS,
+                value: controller.cadastradaUBS ?? false,
                 onChanged: controller.setCadastradaUBS,
               ),
               SizedBox(height: Spacing.lg),
@@ -79,20 +75,12 @@ class _SaudeTabState extends State<SaudeTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Quais serviços de pré-natal você utiliza?', style: context.textStyles.subTitleSmallStyle),
-                CheckboxListTile(
-                  title: const Text('Consulta médica regular'),
-                  value: controller.preNatalMedico,
-                  onChanged: (v) => controller.setPreNatalMedico(v ?? false),
-                ),
-                CheckboxListTile(
-                  title: const Text('Consulta com enfermeiro'),
-                  value: controller.preNatalEnfermagem,
-                  onChanged: (v) => controller.setPreNatalEnfermagem(v ?? false),
-                ),
-                CheckboxListTile(
-                  title: const Text('Grupo de gestantes'),
-                  value: controller.participaGrupoGestantes,
-                  onChanged: (v) => controller.setParticipaGrupoGestantes(v ?? false),
+                ...ServicoPreNatal.values.map(
+                  (s) => CheckboxListTile(
+                    title: Text(s.label),
+                    value: controller.servicosPreNatal.contains(s),
+                    onChanged: (_) => controller.toggleServicoPreNatal(s),
+                  ),
                 ),
               ],
             ),
@@ -109,21 +97,17 @@ class _SaudeTabState extends State<SaudeTab> {
               onChanged: controller.setVacinasEmDia,
             ),
             SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<AvaliacaoPreNatal>(
               decoration: const InputDecoration(
                 labelText: 'Como avalia o atendimento de pré-natal?',
                 border: OutlineInputBorder(),
               ),
               validator: SaudeValidator.avaliacaoPreNatal,
-              initialValue: controller.avaliacaoPreNatal.isNotEmpty ? controller.avaliacaoPreNatal : null,
-              items: const [
-                DropdownMenuItem(value: 'Excelente', child: Text('Excelente')),
-                DropdownMenuItem(value: 'Bom', child: Text('Bom')),
-                DropdownMenuItem(value: 'Regular', child: Text('Regular')),
-                DropdownMenuItem(value: 'Ruim', child: Text('Ruim')),
-                DropdownMenuItem(value: 'Péssimo', child: Text('Péssimo')),
-              ],
-              onChanged: (v) => controller.setAvaliacaoPreNatal(v ?? ''),
+              initialValue: controller.avaliacaoPreNatal,
+              items: AvaliacaoPreNatal.values
+                  .map((e) => DropdownMenuItem<AvaliacaoPreNatal>(value: e, child: Text(e.label)))
+                  .toList(),
+              onChanged: (v) => controller.setAvaliacaoPreNatal(v),
             ),
             SizedBox(height: Spacing.lg),
             TextFormField(

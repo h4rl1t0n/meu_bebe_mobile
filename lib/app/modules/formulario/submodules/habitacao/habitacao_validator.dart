@@ -1,6 +1,8 @@
+import '../../catalog/habitacao_options.dart';
+
 class HabitacaoValidator {
-  static String? tipoMoradia(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
+  static String? tipoMoradia(TipoMoradia? value) {
+    if (value == null) return 'Campo obrigatório';
     return null;
   }
 
@@ -11,16 +13,16 @@ class HabitacaoValidator {
     return null;
   }
 
-  static String? segurancaEstrutural(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
+  static String? segurancaEstrutural(SegurancaResidencia? value) {
+    if (value == null) return 'Campo obrigatório';
     return null;
   }
 
   static bool isTabValid({
-    required String tipoMoradia,
+    required TipoMoradia? tipoMoradia,
     required int numeroPessoas,
-    required String segurancaEstrutural,
+    required SegurancaResidencia? segurancaEstrutural,
   }) {
-    return tipoMoradia.trim().isNotEmpty && numeroPessoas > 0 && segurancaEstrutural.trim().isNotEmpty;
+    return tipoMoradia != null && numeroPessoas > 0 && segurancaEstrutural != null;
   }
 }

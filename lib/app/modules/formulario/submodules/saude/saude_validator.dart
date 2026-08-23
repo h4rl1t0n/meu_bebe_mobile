@@ -1,24 +1,26 @@
+import '../../catalog/saude_options.dart';
+
 class SaudeValidator {
-  static String? distanciaUBS(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
+  static String? distanciaUBS(DistanciaUBS? value) {
+    if (value == null) return 'Campo obrigatório';
     return null;
   }
 
-  static String? acessibilidadeUBS(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
+  static String? acessibilidadeUBS(AcessoUBS? value) {
+    if (value == null) return 'Campo obrigatório';
     return null;
   }
 
-  static String? avaliacaoPreNatal(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
+  static String? avaliacaoPreNatal(AvaliacaoPreNatal? value) {
+    if (value == null) return 'Campo obrigatório';
     return null;
   }
 
   static bool isTabValid({
-    required String distanciaUBS,
-    required String acessibilidadeUBS,
-    required String avaliacaoPreNatal,
+    required DistanciaUBS? distanciaUBS,
+    required AcessoUBS? acessibilidadeUBS,
+    required AvaliacaoPreNatal? avaliacaoPreNatal,
   }) {
-    return distanciaUBS.trim().isNotEmpty && acessibilidadeUBS.trim().isNotEmpty && avaliacaoPreNatal.trim().isNotEmpty;
+    return distanciaUBS != null && acessibilidadeUBS != null && avaliacaoPreNatal != null;
   }
 }

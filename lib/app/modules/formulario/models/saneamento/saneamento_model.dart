@@ -1,50 +1,48 @@
+/// Dimensão Saneamento Básico.
 class SaneamentoModel {
-  final String fonteAgua;
-  final String interrupcoesAgua;
-  final String destinoEsgoto;
-  final String coletaLixo;
+  final String? fonteAgua;
+  final bool interrupcoesAgua;
+  final String? destinoEsgoto;
+  final String? coletaLixo;
   final bool preocupacaoAgua;
-  final String cuidadosVetores;
+
+  /// Texto livre (relato qualitativo). NÃO entra no modelo tabular inicial —
+  /// preservado no JSON.
+  final String? cuidadosVetores;
 
   const SaneamentoModel({
-    required this.fonteAgua,
+    this.fonteAgua,
     required this.interrupcoesAgua,
-    required this.destinoEsgoto,
-    required this.coletaLixo,
+    this.destinoEsgoto,
+    this.coletaLixo,
     required this.preocupacaoAgua,
-    required this.cuidadosVetores,
+    this.cuidadosVetores,
   });
 
-  factory SaneamentoModel.empty() => const SaneamentoModel(
-    fonteAgua: '',
-    interrupcoesAgua: '',
-    destinoEsgoto: '',
-    coletaLixo: '',
-    preocupacaoAgua: false,
-    cuidadosVetores: '',
-  );
+  factory SaneamentoModel.empty() =>
+      const SaneamentoModel(interrupcoesAgua: false, preocupacaoAgua: false);
 
   Map<String, dynamic> toMap() => {
     'fonte_agua': fonteAgua,
     'interrupcoes_agua': interrupcoesAgua,
-    'destino_esgoto': destinoEsgoto,
+    'esgotamento_sanitario': destinoEsgoto,
     'coleta_lixo': coletaLixo,
-    'preocupacao_agua': preocupacaoAgua ? 1 : 0,
+    'problema_saude_agua': preocupacaoAgua,
     'cuidados_vetores': cuidadosVetores,
   };
 
   factory SaneamentoModel.fromMap(Map<String, dynamic> map) => SaneamentoModel(
-    fonteAgua: map['fonte_agua'] ?? '',
-    interrupcoesAgua: map['interrupcoes_agua'] ?? '',
-    destinoEsgoto: map['destino_esgoto'] ?? '',
-    coletaLixo: map['coleta_lixo'] ?? '',
-    preocupacaoAgua: (map['preocupacao_agua'] ?? 0) == 1,
-    cuidadosVetores: map['cuidados_vetores'] ?? '',
+    fonteAgua: map['fonte_agua'] as String?,
+    interrupcoesAgua: map['interrupcoes_agua'] == true,
+    destinoEsgoto: map['esgotamento_sanitario'] as String?,
+    coletaLixo: map['coleta_lixo'] as String?,
+    preocupacaoAgua: map['problema_saude_agua'] == true,
+    cuidadosVetores: map['cuidados_vetores'] as String?,
   );
 
   SaneamentoModel copyWith({
     String? fonteAgua,
-    String? interrupcoesAgua,
+    bool? interrupcoesAgua,
     String? destinoEsgoto,
     String? coletaLixo,
     bool? preocupacaoAgua,
@@ -61,29 +59,27 @@ class SaneamentoModel {
   }
 
   @override
-  String toString() {
-    return 'SaneamentoModel(fonteAgua: $fonteAgua, destinoEsgoto: $destinoEsgoto, coletaLixo: $coletaLixo)';
-  }
+  String toString() =>
+      'SaneamentoModel(fonteAgua: $fonteAgua, destinoEsgoto: $destinoEsgoto, coletaLixo: $coletaLixo)';
 
   @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        other is SaneamentoModel &&
-            other.fonteAgua == fonteAgua &&
-            other.interrupcoesAgua == interrupcoesAgua &&
-            other.destinoEsgoto == destinoEsgoto &&
-            other.coletaLixo == coletaLixo &&
-            other.preocupacaoAgua == preocupacaoAgua &&
-            other.cuidadosVetores == cuidadosVetores;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SaneamentoModel &&
+          other.fonteAgua == fonteAgua &&
+          other.interrupcoesAgua == interrupcoesAgua &&
+          other.destinoEsgoto == destinoEsgoto &&
+          other.coletaLixo == coletaLixo &&
+          other.preocupacaoAgua == preocupacaoAgua &&
+          other.cuidadosVetores == cuidadosVetores;
 
   @override
-  int get hashCode {
-    return fonteAgua.hashCode ^
-        interrupcoesAgua.hashCode ^
-        destinoEsgoto.hashCode ^
-        coletaLixo.hashCode ^
-        preocupacaoAgua.hashCode ^
-        cuidadosVetores.hashCode;
-  }
+  int get hashCode => Object.hash(
+    fonteAgua,
+    interrupcoesAgua,
+    destinoEsgoto,
+    coletaLixo,
+    preocupacaoAgua,
+    cuidadosVetores,
+  );
 }

@@ -1,5 +1,6 @@
 import 'package:mobx/mobx.dart';
 
+import '../../catalog/saude_options.dart';
 import '../../models/saude/saude_model.dart';
 import 'saude_validator.dart';
 
@@ -9,25 +10,19 @@ class SaudeController = SaudeControllerBase with _$SaudeController;
 
 abstract class SaudeControllerBase with Store {
   @observable
-  String distanciaUBS = '';
+  DistanciaUBS? distanciaUBS;
 
   @observable
   bool faltouConsulta = false;
 
   @observable
-  String acessibilidadeUBS = '';
+  AcessoUBS? acessibilidadeUBS;
 
   @observable
-  bool cadastradaUBS = false;
+  bool? cadastradaUBS;
 
   @observable
-  bool preNatalMedico = false;
-
-  @observable
-  bool preNatalEnfermagem = false;
-
-  @observable
-  bool participaGrupoGestantes = false;
+  ObservableList<ServicoPreNatal> servicosPreNatal = ObservableList<ServicoPreNatal>();
 
   @observable
   bool examesPreNatalCompletos = false;
@@ -36,16 +31,16 @@ abstract class SaudeControllerBase with Store {
   bool vacinasEmDia = false;
 
   @observable
-  String avaliacaoPreNatal = '';
+  AvaliacaoPreNatal? avaliacaoPreNatal;
 
   @observable
-  String dificuldadesSaude = '';
+  String? dificuldadesSaude;
 
   @observable
   bool isValid = false;
 
   @action
-  void setDistanciaUBS(String value) {
+  void setDistanciaUBS(DistanciaUBS? value) {
     distanciaUBS = value;
     validate();
   }
@@ -57,10 +52,10 @@ abstract class SaudeControllerBase with Store {
   }
 
   @action
-  void setAcessibilidadeUBS(String value) {
+  void setAcessibilidadeUBS(AcessoUBS? value) {
     acessibilidadeUBS = value;
-    if (value.isEmpty) {
-      cadastradaUBS = false;
+    if (value == null) {
+      cadastradaUBS = null;
     }
     validate();
   }
@@ -72,20 +67,12 @@ abstract class SaudeControllerBase with Store {
   }
 
   @action
-  void setPreNatalMedico(bool value) {
-    preNatalMedico = value;
-    validate();
-  }
-
-  @action
-  void setPreNatalEnfermagem(bool value) {
-    preNatalEnfermagem = value;
-    validate();
-  }
-
-  @action
-  void setParticipaGrupoGestantes(bool value) {
-    participaGrupoGestantes = value;
+  void toggleServicoPreNatal(ServicoPreNatal servico) {
+    if (servicosPreNatal.contains(servico)) {
+      servicosPreNatal.remove(servico);
+    } else {
+      servicosPreNatal.add(servico);
+    }
     validate();
   }
 
@@ -102,14 +89,14 @@ abstract class SaudeControllerBase with Store {
   }
 
   @action
-  void setAvaliacaoPreNatal(String value) {
+  void setAvaliacaoPreNatal(AvaliacaoPreNatal? value) {
     avaliacaoPreNatal = value;
     validate();
   }
 
   @action
   void setDificuldadesSaude(String value) {
-    dificuldadesSaude = value;
+    dificuldadesSaude = value.trim().isEmpty ? null : value;
     validate();
   }
 
@@ -123,16 +110,14 @@ abstract class SaudeControllerBase with Store {
   }
 
   SaudeModel buildSaudeData() => SaudeModel(
-    distanciaUBS: distanciaUBS,
+    distanciaUBS: distanciaUBS?.code,
     faltouConsulta: faltouConsulta,
-    acessibilidadeUBS: acessibilidadeUBS,
-    cadastradaUBS: cadastradaUBS,
-    preNatalMedico: preNatalMedico,
-    preNatalEnfermagem: preNatalEnfermagem,
-    participaGrupoGestantes: participaGrupoGestantes,
+    acessoUBS: acessibilidadeUBS?.code,
+    cadastradaUBS: acessibilidadeUBS == null ? null : cadastradaUBS,
+    servicosPreNatal: servicosPreNatal.map((s) => s.code).toList(),
     examesPreNatalCompletos: examesPreNatalCompletos,
     vacinasEmDia: vacinasEmDia,
-    avaliacaoPreNatal: avaliacaoPreNatal,
+    avaliacaoPreNatal: avaliacaoPreNatal?.code,
     dificuldadesSaude: dificuldadesSaude,
   );
 }

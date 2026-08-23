@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../core/ui/theme/styles/text_styles.dart';
+import '../../catalog/alimentacao_options.dart';
 import '../../widgets/item_tab_page.dart';
 import 'alimentacao_controller.dart';
 import 'alimentacao_validator.dart';
@@ -31,15 +32,13 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Quantas refeições completas você faz por dia?', style: context.textStyles.subTitleSmallStyle),
-                RadioGroup<int>(
+                RadioGroup<RefeicoesPorDia>(
                   groupValue: controller.refeicoesPorDia,
-                  onChanged: (v) => controller.setRefeicoesPorDia(v ?? 0),
+                  onChanged: (v) => controller.setRefeicoesPorDia(v),
                   child: Column(
-                    children: const [
-                      RadioListTile<int>(title: Text('1-2 refeições'), value: 1),
-                      RadioListTile<int>(title: Text('3 refeições'), value: 3),
-                      RadioListTile<int>(title: Text('4 ou mais refeições'), value: 4),
-                    ],
+                    children: RefeicoesPorDia.values
+                        .map((e) => RadioListTile<RefeicoesPorDia>(title: Text(e.label), value: e))
+                        .toList(),
                   ),
                 ),
               ],
@@ -51,43 +50,31 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
               onChanged: controller.setInsegurancaAlimentar,
             ),
             SizedBox(height: Spacing.lg),
-            Text('Quais alimentos você consome regularmente?', style: context.textStyles.subTitleSmallStyle),
-            CheckboxListTile(
-              title: const Text('Frutas e verduras'),
-              value: controller.consomeFrutasVerduras,
-              onChanged: (v) => controller.setConsomeFrutasVerduras(v ?? false),
-            ),
-            CheckboxListTile(
-              title: const Text('Carnes (vermelha, frango ou peixe)'),
-              value: controller.consomeCarnes,
-              onChanged: (v) => controller.setConsomeCarnes(v ?? false),
-            ),
-            CheckboxListTile(
-              title: const Text('Leite e derivados'),
-              value: controller.consomeLeite,
-              onChanged: (v) => controller.setConsomeLeite(v ?? false),
-            ),
-            CheckboxListTile(
-              title: const Text('Feijão e outras leguminosas'),
-              value: controller.consomeFeijao,
-              onChanged: (v) => controller.setConsomeFeijao(v ?? false),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Quais alimentos você consome regularmente?', style: context.textStyles.subTitleSmallStyle),
+                ...AlimentoConsumido.values.map(
+                  (a) => CheckboxListTile(
+                    title: Text(a.label),
+                    value: controller.alimentosConsumidos.contains(a),
+                    onChanged: (_) => controller.toggleAlimento(a),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<FonteAlimentos>(
               decoration: const InputDecoration(
                 labelText: 'De onde vem os alimentos que você consome?',
                 border: OutlineInputBorder(),
               ),
               validator: AlimentacaoValidator.fonteAlimentos,
-              initialValue: controller.fonteAlimentos.isNotEmpty ? controller.fonteAlimentos : null,
-              items: const [
-                DropdownMenuItem(value: 'Supermercado/feira', child: Text('Supermercado/feira')),
-                DropdownMenuItem(value: 'Horta própria', child: Text('Horta própria')),
-                DropdownMenuItem(value: 'Doações', child: Text('Doações')),
-                DropdownMenuItem(value: 'Cesta básica', child: Text('Cesta básica')),
-                DropdownMenuItem(value: 'Outro', child: Text('Outro')),
-              ],
-              onChanged: (v) => controller.setFonteAlimentos(v ?? ''),
+              initialValue: controller.fonteAlimentos,
+              items: FonteAlimentos.values
+                  .map((e) => DropdownMenuItem<FonteAlimentos>(value: e, child: Text(e.label)))
+                  .toList(),
+              onChanged: (v) => controller.setFonteAlimentos(v),
             ),
             SizedBox(height: Spacing.lg),
             SwitchListTile(
@@ -109,19 +96,13 @@ class _AlimentacaoTabState extends State<AlimentacaoTab> {
                   'Como você avalia sua alimentação durante a gestação?',
                   style: context.textStyles.subTitleSmallStyle,
                 ),
-                RadioGroup<String>(
+                RadioGroup<AvaliacaoAlimentacao>(
                   groupValue: controller.avaliacaoAlimentacao,
-                  onChanged: (v) => controller.setAvaliacaoAlimentacao(v ?? ''),
+                  onChanged: (v) => controller.setAvaliacaoAlimentacao(v),
                   child: Column(
-                    children: const [
-                      RadioListTile<String>(
-                        title: Text('Muito boa - atende todas minhas necessidades'),
-                        value: 'Muito boa',
-                      ),
-                      RadioListTile<String>(title: Text('Boa - com algumas limitações'), value: 'Boa'),
-                      RadioListTile<String>(title: Text('Regular - poderia ser melhor'), value: 'Regular'),
-                      RadioListTile<String>(title: Text('Ruim - não atende minhas necessidades'), value: 'Ruim'),
-                    ],
+                    children: AvaliacaoAlimentacao.values
+                        .map((e) => RadioListTile<AvaliacaoAlimentacao>(title: Text(e.label), value: e))
+                        .toList(),
                   ),
                 ),
               ],

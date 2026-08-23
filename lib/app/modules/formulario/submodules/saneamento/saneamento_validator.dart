@@ -1,33 +1,21 @@
+import '../../catalog/saneamento_options.dart';
+
 class SaneamentoValidator {
-  static String? fonteAgua(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
+  static String? fonteAgua(FonteAgua? value) {
+    if (value == null) return 'Campo obrigatório';
     return null;
   }
 
-  static String? interrupcoesAgua(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
-    return null;
-  }
-
-  static String? destinoEsgoto(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
-    return null;
-  }
-
-  static String? coletaLixo(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
+  static String? coletaLixo(ColetaLixo? value) {
+    if (value == null) return 'Campo obrigatório';
     return null;
   }
 
   static bool isTabValid({
-    required String fonteAgua,
-    required String interrupcoesAgua,
-    required String destinoEsgoto,
-    required String coletaLixo,
+    required FonteAgua? fonteAgua,
+    required EsgotamentoSanitario? destinoEsgoto,
+    required ColetaLixo? coletaLixo,
   }) {
-    return fonteAgua.trim().isNotEmpty &&
-        interrupcoesAgua.trim().isNotEmpty &&
-        destinoEsgoto.trim().isNotEmpty &&
-        coletaLixo.trim().isNotEmpty;
+    return fonteAgua != null && destinoEsgoto != null && coletaLixo != null;
   }
 }

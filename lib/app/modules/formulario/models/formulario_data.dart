@@ -1,3 +1,4 @@
+import '../catalog/dss_schema.dart';
 import 'alimentacao/alimentacao_model.dart';
 import 'educacao/educacao_model.dart';
 import 'habitacao/habitacao_model.dart';
@@ -5,6 +6,11 @@ import 'saneamento/saneamento_model.dart';
 import 'saude/saude_model.dart';
 import 'trabalho/trabalho_model.dart';
 
+/// Consolida as seis dimensões do formulário DSS.
+///
+/// `toMap()` produz a representação canônica ANINHADA e versionada (a
+/// referência estável do contrato de dados); `toFlatMap()` produz a visão
+/// "flat" (`dimensao.campo`) para consumo direto por pipeline de ML/API.
 class FormularioData {
   final EducacaoModel educacao;
   final TrabalhoModel trabalho;
@@ -32,22 +38,40 @@ class FormularioData {
   );
 
   Map<String, dynamic> toMap() => {
-    ...educacao.toMap(),
-    ...trabalho.toMap(),
-    ...saneamento.toMap(),
-    ...saude.toMap(),
-    ...habitacao.toMap(),
-    ...alimentacao.toMap(),
+    'schema_version': DssSchema.schemaVersion,
+    'educacao': educacao.toMap(),
+    'trabalho': trabalho.toMap(),
+    'saneamento': saneamento.toMap(),
+    'saude': saude.toMap(),
+    'habitacao': habitacao.toMap(),
+    'alimentacao': alimentacao.toMap(),
   };
 
+  /// Visão plana (`dimensao.campo`) sem `schema_version` — útil para montar
+  /// uma linha de dataset. Os campos de múltipla escolha permanecem como
+  /// lista de códigos; a expansão one-hot é feita no pipeline, não aqui.
+  Map<String, dynamic> toFlatMap() {
+    final flat = <String, dynamic>{};
+    educacao.toMap().forEach((k, v) => flat['educacao.$k'] = v);
+    trabalho.toMap().forEach((k, v) => flat['trabalho.$k'] = v);
+    saneamento.toMap().forEach((k, v) => flat['saneamento.$k'] = v);
+    saude.toMap().forEach((k, v) => flat['saude.$k'] = v);
+    habitacao.toMap().forEach((k, v) => flat['habitacao.$k'] = v);
+    alimentacao.toMap().forEach((k, v) => flat['alimentacao.$k'] = v);
+    return flat;
+  }
+
   factory FormularioData.fromMap(Map<String, dynamic> map) => FormularioData(
-    educacao: EducacaoModel.fromMap(map),
-    trabalho: TrabalhoModel.fromMap(map),
-    saneamento: SaneamentoModel.fromMap(map),
-    saude: SaudeModel.fromMap(map),
-    habitacao: HabitacaoModel.fromMap(map),
-    alimentacao: AlimentacaoModel.fromMap(map),
+    educacao: EducacaoModel.fromMap(_sub(map, 'educacao')),
+    trabalho: TrabalhoModel.fromMap(_sub(map, 'trabalho')),
+    saneamento: SaneamentoModel.fromMap(_sub(map, 'saneamento')),
+    saude: SaudeModel.fromMap(_sub(map, 'saude')),
+    habitacao: HabitacaoModel.fromMap(_sub(map, 'habitacao')),
+    alimentacao: AlimentacaoModel.fromMap(_sub(map, 'alimentacao')),
   );
+
+  static Map<String, dynamic> _sub(Map<String, dynamic> map, String key) =>
+      Map<String, dynamic>.from((map[key] as Map?) ?? const {});
 
   FormularioData copyWith({
     EducacaoModel? educacao,

@@ -1,80 +1,68 @@
+import '../../catalog/dss_schema.dart';
+
+/// Dimensão Saúde.
+///
+/// `cadastradaUBS` é condicionada por `acessoUBS`: `null` quando o acesso à
+/// UBS ainda não foi informado.
 class SaudeModel {
-  final String distanciaUBS;
+  final String? distanciaUBS;
   final bool faltouConsulta;
-  final String acessibilidadeUBS;
-  final bool cadastradaUBS;
-  final bool preNatalMedico;
-  final bool preNatalEnfermagem;
-  final bool participaGrupoGestantes;
+  final String? acessoUBS;
+  final bool? cadastradaUBS;
+  final List<String> servicosPreNatal;
   final bool examesPreNatalCompletos;
   final bool vacinasEmDia;
-  final String avaliacaoPreNatal;
-  final String dificuldadesSaude;
+  final String? avaliacaoPreNatal;
+
+  /// Texto livre (relato qualitativo). NÃO entra no modelo tabular inicial —
+  /// preservado no JSON.
+  final String? dificuldadesSaude;
 
   const SaudeModel({
-    required this.distanciaUBS,
+    this.distanciaUBS,
     required this.faltouConsulta,
-    required this.acessibilidadeUBS,
-    required this.cadastradaUBS,
-    required this.preNatalMedico,
-    required this.preNatalEnfermagem,
-    required this.participaGrupoGestantes,
+    this.acessoUBS,
+    this.cadastradaUBS,
+    this.servicosPreNatal = const [],
     required this.examesPreNatalCompletos,
     required this.vacinasEmDia,
-    required this.avaliacaoPreNatal,
-    required this.dificuldadesSaude,
+    this.avaliacaoPreNatal,
+    this.dificuldadesSaude,
   });
 
-  factory SaudeModel.empty() => const SaudeModel(
-    distanciaUBS: '',
-    faltouConsulta: false,
-    acessibilidadeUBS: '',
-    cadastradaUBS: false,
-    preNatalMedico: false,
-    preNatalEnfermagem: false,
-    participaGrupoGestantes: false,
-    examesPreNatalCompletos: false,
-    vacinasEmDia: false,
-    avaliacaoPreNatal: '',
-    dificuldadesSaude: '',
-  );
+  factory SaudeModel.empty() =>
+      const SaudeModel(faltouConsulta: false, examesPreNatalCompletos: false, vacinasEmDia: false);
 
   Map<String, dynamic> toMap() => {
     'distancia_ubs': distanciaUBS,
-    'faltou_consulta': faltouConsulta ? 1 : 0,
-    'acessibilidade_ubs': acessibilidadeUBS,
-    'cadastrada_ubs': cadastradaUBS ? 1 : 0,
-    'pre_natal_medico': preNatalMedico ? 1 : 0,
-    'pre_natal_enfermagem': preNatalEnfermagem ? 1 : 0,
-    'participa_grupo_gestantes': participaGrupoGestantes ? 1 : 0,
-    'exames_pre_natal_completos': examesPreNatalCompletos ? 1 : 0,
-    'vacinas_em_dia': vacinasEmDia ? 1 : 0,
+    'faltou_consulta': faltouConsulta,
+    'acesso_ubs': acessoUBS,
+    'cadastrada_ubs': cadastradaUBS,
+    'servicos_pre_natal': servicosPreNatal,
+    'exames_pre_natal_completos': examesPreNatalCompletos,
+    'vacinas_em_dia': vacinasEmDia,
     'avaliacao_pre_natal': avaliacaoPreNatal,
     'dificuldades_saude': dificuldadesSaude,
   };
 
   factory SaudeModel.fromMap(Map<String, dynamic> map) => SaudeModel(
-    distanciaUBS: map['distancia_ubs'] ?? '',
-    faltouConsulta: (map['faltou_consulta'] ?? 0) == 1,
-    acessibilidadeUBS: map['acessibilidade_ubs'] ?? '',
-    cadastradaUBS: (map['cadastrada_ubs'] ?? 0) == 1,
-    preNatalMedico: (map['pre_natal_medico'] ?? 0) == 1,
-    preNatalEnfermagem: (map['pre_natal_enfermagem'] ?? 0) == 1,
-    participaGrupoGestantes: (map['participa_grupo_gestantes'] ?? 0) == 1,
-    examesPreNatalCompletos: (map['exames_pre_natal_completos'] ?? 0) == 1,
-    vacinasEmDia: (map['vacinas_em_dia'] ?? 0) == 1,
-    avaliacaoPreNatal: map['avaliacao_pre_natal'] ?? '',
-    dificuldadesSaude: map['dificuldades_saude'] ?? '',
+    distanciaUBS: map['distancia_ubs'] as String?,
+    faltouConsulta: map['faltou_consulta'] == true,
+    acessoUBS: map['acesso_ubs'] as String?,
+    cadastradaUBS: map['cadastrada_ubs'] as bool?,
+    servicosPreNatal: List<String>.from((map['servicos_pre_natal'] as List?) ?? const []),
+    examesPreNatalCompletos: map['exames_pre_natal_completos'] == true,
+    vacinasEmDia: map['vacinas_em_dia'] == true,
+    avaliacaoPreNatal: map['avaliacao_pre_natal'] as String?,
+    dificuldadesSaude: map['dificuldades_saude'] as String?,
   );
 
   SaudeModel copyWith({
     String? distanciaUBS,
     bool? faltouConsulta,
-    String? acessibilidadeUBS,
+    String? acessoUBS,
     bool? cadastradaUBS,
-    bool? preNatalMedico,
-    bool? preNatalEnfermagem,
-    bool? participaGrupoGestantes,
+    List<String>? servicosPreNatal,
     bool? examesPreNatalCompletos,
     bool? vacinasEmDia,
     String? avaliacaoPreNatal,
@@ -82,11 +70,9 @@ class SaudeModel {
   }) => SaudeModel(
     distanciaUBS: distanciaUBS ?? this.distanciaUBS,
     faltouConsulta: faltouConsulta ?? this.faltouConsulta,
-    acessibilidadeUBS: acessibilidadeUBS ?? this.acessibilidadeUBS,
+    acessoUBS: acessoUBS ?? this.acessoUBS,
     cadastradaUBS: cadastradaUBS ?? this.cadastradaUBS,
-    preNatalMedico: preNatalMedico ?? this.preNatalMedico,
-    preNatalEnfermagem: preNatalEnfermagem ?? this.preNatalEnfermagem,
-    participaGrupoGestantes: participaGrupoGestantes ?? this.participaGrupoGestantes,
+    servicosPreNatal: servicosPreNatal ?? this.servicosPreNatal,
     examesPreNatalCompletos: examesPreNatalCompletos ?? this.examesPreNatalCompletos,
     vacinasEmDia: vacinasEmDia ?? this.vacinasEmDia,
     avaliacaoPreNatal: avaliacaoPreNatal ?? this.avaliacaoPreNatal,
@@ -103,27 +89,24 @@ class SaudeModel {
       other is SaudeModel &&
           other.distanciaUBS == distanciaUBS &&
           other.faltouConsulta == faltouConsulta &&
-          other.acessibilidadeUBS == acessibilidadeUBS &&
+          other.acessoUBS == acessoUBS &&
           other.cadastradaUBS == cadastradaUBS &&
-          other.preNatalMedico == preNatalMedico &&
-          other.preNatalEnfermagem == preNatalEnfermagem &&
-          other.participaGrupoGestantes == participaGrupoGestantes &&
+          DssSchema.listsEqual(other.servicosPreNatal, servicosPreNatal) &&
           other.examesPreNatalCompletos == examesPreNatalCompletos &&
           other.vacinasEmDia == vacinasEmDia &&
           other.avaliacaoPreNatal == avaliacaoPreNatal &&
           other.dificuldadesSaude == dificuldadesSaude;
 
   @override
-  int get hashCode =>
-      distanciaUBS.hashCode ^
-      faltouConsulta.hashCode ^
-      acessibilidadeUBS.hashCode ^
-      cadastradaUBS.hashCode ^
-      preNatalMedico.hashCode ^
-      preNatalEnfermagem.hashCode ^
-      participaGrupoGestantes.hashCode ^
-      examesPreNatalCompletos.hashCode ^
-      vacinasEmDia.hashCode ^
-      avaliacaoPreNatal.hashCode ^
-      dificuldadesSaude.hashCode;
+  int get hashCode => Object.hash(
+    distanciaUBS,
+    faltouConsulta,
+    acessoUBS,
+    cadastradaUBS,
+    Object.hashAll(servicosPreNatal),
+    examesPreNatalCompletos,
+    vacinasEmDia,
+    avaliacaoPreNatal,
+    dificuldadesSaude,
+  );
 }

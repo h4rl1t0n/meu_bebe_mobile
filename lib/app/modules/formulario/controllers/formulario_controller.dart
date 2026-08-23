@@ -1,12 +1,18 @@
 import 'package:mobx/mobx.dart';
 
+import '../catalog/alimentacao_options.dart';
+import '../catalog/educacao_options.dart';
+import '../catalog/habitacao_options.dart';
+import '../catalog/saneamento_options.dart';
+import '../catalog/saude_options.dart';
+import '../catalog/trabalho_options.dart';
 import '../models/formulario_data.dart';
+import '../submodules/alimentacao/alimentacao_controller.dart';
 import '../submodules/educacao/educacao_controller.dart';
-import '../submodules/trabalho/trabalho_controller.dart';
+import '../submodules/habitacao/habitacao_controller.dart';
 import '../submodules/saneamento/saneamento_controller.dart';
 import '../submodules/saude/saude_controller.dart';
-import '../submodules/habitacao/habitacao_controller.dart';
-import '../submodules/alimentacao/alimentacao_controller.dart';
+import '../submodules/trabalho/trabalho_controller.dart';
 
 part 'formulario_controller.g.dart';
 
@@ -43,13 +49,13 @@ abstract class FormularioControllerBase with Store {
 
   @computed
   FormularioData get consolidatedData => FormularioData(
-        educacao: educacaoCtrl.buildEducacaoData(),
-        trabalho: trabalhoCtrl.buildTrabalhoData(),
-        saneamento: saneamentoCtrl.buildSaneamentoData(),
-        saude: saudeCtrl.buildSaudeData(),
-        habitacao: habitacaoCtrl.buildHabitacaoData(),
-        alimentacao: alimentacaoCtrl.buildAlimentacaoData(),
-      );
+    educacao: educacaoCtrl.buildEducacaoData(),
+    trabalho: trabalhoCtrl.buildTrabalhoData(),
+    saneamento: saneamentoCtrl.buildSaneamentoData(),
+    saude: saudeCtrl.buildSaudeData(),
+    habitacao: habitacaoCtrl.buildHabitacaoData(),
+    alimentacao: alimentacaoCtrl.buildAlimentacaoData(),
+  );
 
   @action
   void proximo() {
@@ -114,80 +120,92 @@ abstract class FormularioControllerBase with Store {
     return [
       {
         'categoria': 'Educação',
-        'Escolaridade': data.educacao.escolaridade,
-        'Estuda atualmente': data.educacao.estuda ? 'Sim' : 'Não',
-        'Interrompeu estudos pela gestação': data.educacao.interrompeuEstudos ? 'Sim' : 'Não',
-        'Dificuldades de acesso à educação': data.educacao.dificuldadesEscolares,
-        'Entende orientações de saúde': data.educacao.entendeOrientacoes ? 'Sim' : 'Não',
-        'Cursos extracurriculares': data.educacao.cursosExtracurriculares,
-        'Expectativas educacionais': data.educacao.expectativasEducacionais,
+        'Escolaridade': _label(data.educacao.escolaridade, Escolaridade.labelOf),
+        'Estuda atualmente': _simNao(data.educacao.estuda),
+        'Interrompeu estudos pela gestação': _simNao(data.educacao.interrompeuEstudos),
+        'Dificuldades de acesso à educação': _join(data.educacao.dificuldadesEducacao, DificuldadeEducacao.labelOf),
+        'Entende orientações de saúde': _simNao(data.educacao.entendeOrientacoes),
+        'Curso extracurricular': _simNao(data.educacao.fezCursoExtracurricular),
       },
       {
         'categoria': 'Trabalho e Renda',
-        'Está empregada': data.trabalho.empregado ? 'Sim' : 'Não',
+        'Está empregada': _simNao(data.trabalho.empregado),
+        'Faixa de renda familiar': _label(data.trabalho.faixaRenda, FaixaRenda.labelOf),
         if (data.trabalho.empregado) ...{
-          'Tipo de emprego': data.trabalho.tipoEmprego,
-          'Faixa de renda': data.trabalho.faixaRenda,
-          'Permite pré-natal': data.trabalho.permitePreNatal ? 'Sim' : 'Não',
-          'Ambiente seguro': data.trabalho.ambienteSeguro ? 'Sim' : 'Não',
-          'Tem pausas adequadas': data.trabalho.temPausas ? 'Sim' : 'Não',
-          'Auxílio-maternidade': data.trabalho.recebeAuxilioMaternidade ? 'Sim' : 'Não',
-          'Vale-transporte': data.trabalho.recebeValeTransporte ? 'Sim' : 'Não',
-          'Vale-alimentação': data.trabalho.recebeValeAlimentacao ? 'Sim' : 'Não',
+          'Tipo de emprego': _label(data.trabalho.tipoEmprego, TipoEmprego.labelOf),
+          'Permite pré-natal': _simNaoNullable(data.trabalho.permitePreNatal),
+          'Ambiente seguro': _simNaoNullable(data.trabalho.ambienteSeguro),
+          'Tem pausas adequadas': _simNaoNullable(data.trabalho.temPausas),
+          'Benefícios': _joinNullable(data.trabalho.beneficiosTrabalho, BeneficioTrabalho.labelOf),
         } else ...{
-          'Motivo desemprego': data.trabalho.motivoDesemprego,
-          'Recebe benefício social': data.trabalho.recebeBeneficioSocial ? 'Sim' : 'Não',
+          'Motivo desemprego': _label(data.trabalho.motivoDesemprego, MotivoDesemprego.labelOf),
         },
-        'Impacto da gestação no trabalho': data.trabalho.impactoGestacaoTrabalho,
+        'Recebe benefício social': _simNaoNullable(data.trabalho.recebeBeneficioSocial),
+        'Impacto da gestação no trabalho': _label(data.trabalho.impactoGestacaoTrabalho, ImpactoGestacaoTrabalho.labelOf),
       },
       {
         'categoria': 'Saneamento Básico',
-        'Fonte de água': data.saneamento.fonteAgua,
-        'Interrupções de água': data.saneamento.interrupcoesAgua,
-        'Destino do esgoto': data.saneamento.destinoEsgoto,
-        'Coleta de lixo': data.saneamento.coletaLixo,
-        'Problema de saúde por água': data.saneamento.preocupacaoAgua ? 'Sim' : 'Não',
-        'Cuidados contra vetores': data.saneamento.cuidadosVetores,
+        'Fonte de água': _label(data.saneamento.fonteAgua, FonteAgua.labelOf),
+        'Interrupções de água': _simNao(data.saneamento.interrupcoesAgua),
+        'Destino do esgoto': _label(data.saneamento.destinoEsgoto, EsgotamentoSanitario.labelOf),
+        'Coleta de lixo': _label(data.saneamento.coletaLixo, ColetaLixo.labelOf),
+        'Problema de saúde por água': _simNao(data.saneamento.preocupacaoAgua),
+        'Cuidados contra vetores': data.saneamento.cuidadosVetores ?? 'Não informado',
       },
       {
         'categoria': 'Saúde',
-        'Distância da UBS': data.saude.distanciaUBS,
-        'Faltou consulta': data.saude.faltouConsulta ? 'Sim' : 'Não',
-        'Como chega à UBS': data.saude.acessibilidadeUBS,
-        'Cadastrada na UBS': data.saude.cadastradaUBS ? 'Sim' : 'Não',
-        'Pré-natal médico': data.saude.preNatalMedico ? 'Sim' : 'Não',
-        'Pré-natal enfermagem': data.saude.preNatalEnfermagem ? 'Sim' : 'Não',
-        'Grupo de gestantes': data.saude.participaGrupoGestantes ? 'Sim' : 'Não',
-        'Exames completos': data.saude.examesPreNatalCompletos ? 'Sim' : 'Não',
-        'Vacinas em dia': data.saude.vacinasEmDia ? 'Sim' : 'Não',
-        'Avaliação do pré-natal': data.saude.avaliacaoPreNatal,
-        'Dificuldades de acesso à saúde': data.saude.dificuldadesSaude,
+        'Distância da UBS': _label(data.saude.distanciaUBS, DistanciaUBS.labelOf),
+        'Faltou consulta': _simNao(data.saude.faltouConsulta),
+        'Como chega à UBS': _label(data.saude.acessoUBS, AcessoUBS.labelOf),
+        'Cadastrada na UBS': _simNaoNullable(data.saude.cadastradaUBS),
+        'Serviços de pré-natal': _join(data.saude.servicosPreNatal, ServicoPreNatal.labelOf),
+        'Exames completos': _simNao(data.saude.examesPreNatalCompletos),
+        'Vacinas em dia': _simNao(data.saude.vacinasEmDia),
+        'Avaliação do pré-natal': _label(data.saude.avaliacaoPreNatal, AvaliacaoPreNatal.labelOf),
+        'Dificuldades de acesso à saúde': data.saude.dificuldadesSaude ?? 'Não informado',
       },
       {
         'categoria': 'Habitação',
-        'Tipo de moradia': data.habitacao.tipoMoradia,
+        'Tipo de moradia': _label(data.habitacao.tipoMoradia, TipoMoradia.labelOf),
         'Nº de pessoas na casa': data.habitacao.numeroPessoas.toString(),
         'Nº de cômodos': data.habitacao.numeroComodos.toString(),
-        'Água encanada': data.habitacao.temAguaEncanada ? 'Sim' : 'Não',
-        'Banheiro interno': data.habitacao.temBanheiro ? 'Sim' : 'Não',
-        'Cozinha separada': data.habitacao.temCozinhaSeparada ? 'Sim' : 'Não',
-        'Segurança estrutural': data.habitacao.segurancaEstrutural,
-        'Melhorias desejadas': data.habitacao.melhoriasDesejadas,
-        'Fácil acesso à saúde': data.habitacao.facilAcessoSaude ? 'Sim' : 'Não',
+        'Itens da residência': _join(data.habitacao.itensResidencia, ItemResidencia.labelOf),
+        'Segurança estrutural': _label(data.habitacao.segurancaEstrutural, SegurancaResidencia.labelOf),
+        'Melhorias desejadas': data.habitacao.melhoriasDesejadas ?? 'Não informado',
+        'Fácil acesso à saúde': _simNao(data.habitacao.facilAcessoSaude),
       },
       {
         'categoria': 'Alimentação',
-        'Refeições por dia': data.alimentacao.refeicoesPorDia.toString(),
-        'Insegurança alimentar': data.alimentacao.insegurancaAlimentar ? 'Sim' : 'Não',
-        'Consome frutas/verduras': data.alimentacao.consomeFrutasVerduras ? 'Sim' : 'Não',
-        'Consome carnes': data.alimentacao.consomeCarnes ? 'Sim' : 'Não',
-        'Consome leite': data.alimentacao.consomeLeite ? 'Sim' : 'Não',
-        'Consome feijão': data.alimentacao.consomeFeijao ? 'Sim' : 'Não',
-        'Origem dos alimentos': data.alimentacao.fonteAlimentos,
-        'Mudança na gestação': data.alimentacao.mudancaAlimentacaoGestacao ? 'Sim' : 'Não',
-        'Usa suplementos': data.alimentacao.usaSuplementos ? 'Sim' : 'Não',
-        'Avaliação da alimentação': data.alimentacao.avaliacaoAlimentacao,
+        'Refeições por dia': _label(data.alimentacao.refeicoesPorDia, RefeicoesPorDia.labelOf),
+        'Insegurança alimentar': _simNao(data.alimentacao.insegurancaAlimentar),
+        'Alimentos consumidos': _join(data.alimentacao.alimentosConsumidos, AlimentoConsumido.labelOf),
+        'Origem dos alimentos': _label(data.alimentacao.fonteAlimentos, FonteAlimentos.labelOf),
+        'Mudança na gestação': _simNao(data.alimentacao.mudancaAlimentacaoGestacao),
+        'Usa suplementos': _simNao(data.alimentacao.usaSuplementos),
+        'Avaliação da alimentação': _label(data.alimentacao.avaliacaoAlimentacao, AvaliacaoAlimentacao.labelOf),
       },
     ];
+  }
+
+  String _simNao(bool value) => value ? 'Sim' : 'Não';
+
+  String _simNaoNullable(bool? value) {
+    if (value == null) return 'Não informado';
+    return value ? 'Sim' : 'Não';
+  }
+
+  String _label(String? code, String Function(String?) labelOf) {
+    if (code == null || code.isEmpty) return 'Não informado';
+    return labelOf(code);
+  }
+
+  String _join(List<String> codes, String Function(String?) labelOf) {
+    if (codes.isEmpty) return 'Nenhuma';
+    return codes.map((c) => labelOf(c)).join(', ');
+  }
+
+  String _joinNullable(List<String>? codes, String Function(String?) labelOf) {
+    if (codes == null || codes.isEmpty) return 'Não informado';
+    return codes.map((c) => labelOf(c)).join(', ');
   }
 }
