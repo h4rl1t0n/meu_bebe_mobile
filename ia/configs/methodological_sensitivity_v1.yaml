@@ -1,0 +1,74 @@
+# =============================================================================
+# Methodological sensitivity v1 — ANÁLISE DE SENSIBILIDADE METODOLÓGICA
+# (FASE 3G-B2) — análise secundária.
+# =============================================================================
+#
+# Duas trilhas INDEPENDENTES e secundárias, que NÃO substituem as Fases
+# 3F-A / 3F-B / 3G-A / 3G-B1 (o experimento principal permanece congelado):
+#
+#   3G-B2A  sensibilidade ao CONJUNTO DE VARIÁVEIS: baseline X_model (34
+#           features brutas) × X_sens (36 = X_model + problema_saude_agua +
+#           facil_acesso_saude). O modelo é o Random Forest congelado; a
+#           comparação usa EXCLUSIVAMENTE o OOF do TREINAMENTO (4000 registros)
+#           e os mesmos 5 folds congelados.
+#
+#   3G-B2B  sensibilidade à TAXA MÉDIA DE PROBABILIDADE SIMULADA do desfecho:
+#           cenários sintéticos experimentais com taxa média de probabilidade
+#           alvo de 15 % / 25 % / 35 % (NÃO são prevalências reais; são taxas
+#           médias de probabilidade simulada). Altera APENAS o intercepto alpha;
+#           os coeficientes/transformações/interações/forma logística/ruído
+#           permanecem congelados. Realização secundária via números aleatórios
+#           comuns (CRN) para comparabilidade pareada.
+#
+# REGRA DE OURO DO TEST SET (mantida): o TEST não é aberto e nenhuma decisão o
+# utiliza. Nenhuma seleção de modelo é feita nesta fase; nenhuma recalibração.
+# =============================================================================
+
+version: "1.0"
+analysis_type: "secondary_methodological_sensitivity"
+model: "random_forest"
+
+# Número esperado de registros (TREINAMENTO congelado) e de folds.
+n_expected: 4000
+n_folds: 5
+
+# ---------------------------------------------------------------------------
+# Trilhas de sensibilidade metodológica (independentes).
+# ---------------------------------------------------------------------------
+tracks:
+  feature_set:
+    enabled: true
+    baseline: "X_model"
+    sensitivity: "X_sens"
+  outcome_base_rate:
+    enabled: true
+    # Taxas médias de probabilidade simulada alvo (NÃO prevalências reais).
+    target_mean_probabilities: [0.15, 0.25, 0.35]
+
+# ---------------------------------------------------------------------------
+# Avaliação (fonte, folds, threshold de referência).
+# ---------------------------------------------------------------------------
+evaluation:
+  source: "TRAIN_OOF"
+  folds: "frozen_v1"
+  threshold_reference: 0.50
+
+# Seleção de modelo NÃO é feita nesta fase.
+selection:
+  enabled: false
+
+# Uso do TEST explicitamente proibido nesta fase.
+test_usage:
+  allowed: false
+
+# Recalibração explicitamente desativada nesta fase.
+recalibration:
+  enabled: false
+
+# ---------------------------------------------------------------------------
+# Realização secundária da trilha B2B (números aleatórios comuns — CRN).
+# ---------------------------------------------------------------------------
+monte_carlo:
+  noise_seed: 4241
+  outcome_seed: 4242
+  noise_sd: 0.50

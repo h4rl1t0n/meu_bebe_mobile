@@ -96,26 +96,43 @@ def _category_label(category: str, token: str) -> str:
     return category
 
 
-def resolve_spec(
-    config: PreprocessingConfig | None = None, schema: SchemaSpec | None = None
+def _resolve(
+    cfg: PreprocessingConfig,
+    schema: SchemaSpec,
+    *,
+    boolean_required: tuple[str, ...],
+    target_set: frozenset[str],
+    expected_cardinality: int,
+    label: str,
 ) -> ResolvedSpec:
-    """Resolve config + schema em uma especificação validada e imutável."""
-    cfg = config or load_preprocessing_config()
-    schema = schema or load_schema()
+    """Resolve config + schema para um conjunto-alvo (X_MODEL ou X_SENS).
 
-    # 1) União dos grupos == X_MODEL, disjuntos, cardinalidade 34.
-    fields = cfg.all_fields_in_order()
+    A única diferença entre X_MODEL e X_SENS é o grupo ``boolean_required``:
+    X_SENS acrescenta as 2 variáveis SENSITIVITY (bool obrigatórios) ao grupo.
+    Os demais grupos (boolean_structural, numeric, ordinal, nominal, multiselect)
+    permanecem idênticos.
+    """
+    fields = (
+        tuple(boolean_required)
+        + cfg.boolean_structural
+        + cfg.numeric
+        + tuple(f.name for f in cfg.ordinal)
+        + tuple(f.name for f in cfg.nominal)
+        + tuple(f.name for f in cfg.multiselect)
+    )
+
+    # 1) União dos grupos == target_set, disjuntos, cardinalidade esperada.
     as_set = set(fields)
     if len(fields) != len(as_set):
-        raise ValueError("grupos não são mutuamente disjuntos (campo duplicado)")
-    if as_set != set(constants.X_MODEL):
-        extra = as_set - set(constants.X_MODEL)
-        missing = set(constants.X_MODEL) - as_set
+        raise ValueError(f"grupos não são mutuamente disjuntos (campo duplicado) em {label}")
+    if as_set != target_set:
+        extra = as_set - target_set
+        missing = target_set - as_set
         raise ValueError(
-            f"união dos grupos != X_MODEL: extras={sorted(extra)} faltando={sorted(missing)}"
+            f"união dos grupos != {label}: extras={sorted(extra)} faltando={sorted(missing)}"
         )
-    if len(fields) != constants.X_MODEL.__len__():
-        raise ValueError("cardinalidade != 34")
+    if len(fields) != expected_cardinality:
+        raise ValueError(f"cardinalidade != {expected_cardinality}")
 
     token = cfg.not_applicable_token
     ordinal_order = {f.name: f.order for f in cfg.ordinal}
@@ -146,7 +163,7 @@ def resolve_spec(
 
     spec = ResolvedSpec(
         config=cfg,
-        boolean_required=cfg.boolean_required,
+        boolean_required=tuple(boolean_required),
         boolean_structural=cfg.boolean_structural,
         numeric=cfg.numeric,
         ordinal_order=ordinal_order,
@@ -158,7 +175,7 @@ def resolve_spec(
     names, source = _resolve_feature_names(spec)
     return ResolvedSpec(
         config=cfg,
-        boolean_required=cfg.boolean_required,
+        boolean_required=tuple(boolean_required),
         boolean_structural=cfg.boolean_structural,
         numeric=cfg.numeric,
         ordinal_order=ordinal_order,
@@ -166,4 +183,44 @@ def resolve_spec(
         multiselect=spec.multiselect,
         feature_names=names,
         source_map=source,
+    )
+
+
+def resolve_spec(
+    config: PreprocessingConfig | None = None, schema: SchemaSpec | None = None
+) -> ResolvedSpec:
+    """Resolve config + schema em uma especificação validada e imutável (X_MODEL)."""
+    cfg = config or load_preprocessing_config()
+    schema = schema or load_schema()
+    return _resolve(
+        cfg,
+        schema,
+        boolean_required=cfg.boolean_required,
+        target_set=frozenset(constants.X_MODEL),
+        expected_cardinality=len(constants.X_MODEL),
+        label="X_MODEL",
+    )
+
+
+def resolve_x_sens_spec(
+    config: PreprocessingConfig | None = None, schema: SchemaSpec | None = None
+) -> ResolvedSpec:
+    """Resolve config + schema para X_SENS (36 campos brutos -> 98 features).
+
+    X_SENS = X_MODEL (34) + SENSITIVITY (2: ``problema_saude_agua`` e
+    ``facil_acesso_saude``). As 2 variáveis SENSITIVITY são booleanas
+    obrigatórias (schema DSS 1.13), portanto juntam-se ao grupo
+    ``boolean_required`` (8 -> 10 campos; 96 -> 98 features). Nada de X_MODEL é
+    alterado: este é um preprocessor SEPARADO, usado apenas na trilha B2A.
+    """
+    cfg = config or load_preprocessing_config()
+    schema = schema or load_schema()
+    boolean_required = tuple(cfg.boolean_required) + tuple(constants.SENSITIVITY)
+    return _resolve(
+        cfg,
+        schema,
+        boolean_required=boolean_required,
+        target_set=frozenset(constants.X_SENS),
+        expected_cardinality=len(constants.X_SENS),
+        label="X_SENS",
     )

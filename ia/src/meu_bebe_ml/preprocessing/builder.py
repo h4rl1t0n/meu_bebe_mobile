@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from sklearn.compose import ColumnTransformer
 
-from .contract import ResolvedSpec, resolve_spec
+from .contract import ResolvedSpec, resolve_spec, resolve_x_sens_spec
 from .transformers import (
     BooleanRequiredEncoder,
     MultiSelectBinarizerTransformer,
@@ -34,9 +34,8 @@ from .transformers import (
 )
 
 
-def build_x_model_preprocessor(spec: ResolvedSpec | None = None) -> ColumnTransformer:
-    """Constrói o ``ColumnTransformer`` do preprocessing v1 (não ajustado)."""
-    spec = spec or resolve_spec()
+def _build_preprocessor(spec: ResolvedSpec) -> ColumnTransformer:
+    """Constrói o ``ColumnTransformer`` a partir de uma especificação resolvida."""
     token = spec.config.not_applicable_token
 
     ordinal_fields = list(spec.ordinal_order.keys())
@@ -86,3 +85,18 @@ def build_x_model_preprocessor(spec: ResolvedSpec | None = None) -> ColumnTransf
         remainder="drop",
         verbose_feature_names_out=False,
     )
+
+
+def build_x_model_preprocessor(spec: ResolvedSpec | None = None) -> ColumnTransformer:
+    """Constrói o ``ColumnTransformer`` do preprocessing v1 (X_MODEL, não ajustado)."""
+    return _build_preprocessor(spec or resolve_spec())
+
+
+def build_x_sens_preprocessor(spec: ResolvedSpec | None = None) -> ColumnTransformer:
+    """Constrói o ``ColumnTransformer`` do preprocessing X_SENS (36 -> 98 features).
+
+    Preprocessor SEPARADO, usado apenas na trilha B2A (conjunto de variáveis de
+    sensibilidade). Acrescenta ``problema_saude_agua`` e ``facil_acesso_saude``
+    ao grupo ``boolean_required``; nada do X_MODEL é alterado.
+    """
+    return _build_preprocessor(spec or resolve_x_sens_spec())

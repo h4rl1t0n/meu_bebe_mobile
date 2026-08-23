@@ -8,7 +8,7 @@ NÃO escala, NÃO faz feature selection e NÃO cria features dependentes do targ
 
 from __future__ import annotations
 
-from .builder import build_x_model_preprocessor
+from .builder import build_x_model_preprocessor, build_x_sens_preprocessor
 from .config import (
     GROUP_ORDER,
     MultiselectField,
@@ -21,6 +21,7 @@ from .contract import (
     NOT_APPLICABLE_FEATURE_SUFFIX,
     ResolvedSpec,
     resolve_spec,
+    resolve_x_sens_spec,
 )
 from .diagnostics import check_structural_nulls, load_x_y
 from .transformers import (
@@ -47,8 +48,10 @@ __all__ = [
     "ResolvedSpec",
     "StructuralBooleanEncoder",
     "build_x_model_preprocessor",
+    "build_x_sens_preprocessor",
     "check_structural_nulls",
     "load_preprocessing_config",
     "load_x_y",
     "resolve_spec",
+    "resolve_x_sens_spec",
 ]
