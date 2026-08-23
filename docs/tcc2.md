@@ -392,20 +392,22 @@ trabalhos futuros.
 10. IV-DSS calculado no pipeline analítico.
 
 ### ⚠️ Decisões pendentes
+
 adas; a consolidar)
 
-1. Ministério da Saúde. *Atenção ao pré-natal de baixo risco*. Cadernos de
+1. Ministério da Saúde. _Atenção ao pré-natal de baixo risco_. Cadernos de
    Atenção Básica nº 32, 2013.
-2. Ministério da Saúde. *Pré-natal*. gov.br.
-3. World Health Organization. *WHO recommendations on antenatal care for a
-   positive pregnancy experience*. 2016.
-4. OECD/JRC. *Handbook on Constructing Composite Indicators: Methodology and
-   User Guide*. 2008.
-5. Ayres, J. R. C. M. et al. *O conceito de vulnerabilidade e as práticas de
-   saúde: novas perspectivas e desafios*.
-6. Fiocruz. *Determinantes Sociais da Saúde* (portal DSS-Brasil).
-7. IPEA. *Atlas da Vulnerabilidade Social (IVS)*. **[VALIDAR NA LITERATURA]**.
-8. SEADE. *Índice Paulista de Vulnerabilidade Social (IPVS)*.
+2. Ministério da Saúde. _Pré-natal_. gov.br.
+3. World Health Organization. _WHO recommendations on antenatal care for a
+   positive pregnancy experience_. 2016.
+4. OECD/JRC. _Handbook on Constructing Composite Indicators: Methodology and
+   User Guide_. 2008.
+5. Ayres, J. R. C. M. et al. _O conceito de vulnerabilidade e as práticas de
+   saúde: novas perspectivas e desafios_.
+6. Fiocruz. _Determinantes Sociais da Saúde_ (portal DSS-Brasil).
+7. IPEA. _Atlas da Vulnerabilidade Social (IVS)_. **[VALIDAR NA LITERATURA]**.
+8. SEADE. _Índice Paulista de Vulnerabilidade Social (IPVS)_ NA LITERATURA]**.
+8. SEADE. _Índice Paulista de Vulnerabilidade Social (IPVS)_.
    **[VALIDAR NA LITERATURA]**.
 
 ---
