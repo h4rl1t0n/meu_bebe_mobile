@@ -1,0 +1,155 @@
+# =============================================================================
+# Preprocessing v1 — contrato de ENCODING de X_MODEL (34 variáveis) para ML
+# =============================================================================
+#
+# Configuração VERSIONADA do pré-processamento (FASE 3E). NÃO é o schema de
+# dados (schema_v1_13.yaml); apenas declara COMO as 34 variáveis brutas de
+# X_MODEL são codificadas em features numéricas para scikit-learn.
+#
+# Princípios (docs):
+#   - categorias/ordens CONGELADAS — nunca aprendidas do dataset;
+#   - NÃO usa Y, M_sim, IV-DSS, g_*, Z_*, C_* nem OUT_*;
+#   - NÃO imputa, NÃO escala, NÃO faz feature selection;
+#   - NÃO cria features dependentes do target;
+#   - null estrutural é representado EXPLICITAMENTE (nunca vira 0/nao);
+#   - `nao_informar` é categoria observada legítima (não é NaN, não é ordinal).
+#
+# A união dos grupos abaixo é EXATAMENTE X_MODEL (34) e eles são mutuamente
+# disjuntos. Os testes de contrato garantem isso.
+# =============================================================================
+
+version: "1.0"
+schema_version: "1.13"
+feature_set: "X_MODEL"
+raw_feature_count: 34
+
+# Token usado para representar categoria/estado "não aplicável" (null estrutural).
+not_applicable_token: "__not_applicable__"
+
+groups:
+
+  # ---------------------------------------------------------------------------
+  # 1. Booleanos OBRIGATÓRIOS (8) — true->1, false->0, null é inválido.
+  # ---------------------------------------------------------------------------
+  boolean_required:
+    kind: boolean_required
+    fields:
+      - estuda_atualmente
+      - entende_orientacoes_saude
+      - fez_curso_qualificacao_profissional
+      - empregado
+      - recebe_beneficio_social
+      - interrupcoes_agua
+      - cadastrada_ubs
+      - deixou_de_comer_falta_dinheiro
+
+  # ---------------------------------------------------------------------------
+  # 2. Booleanos com NULL ESTRUTURAL (3) — condicionais a `empregado == true`.
+  #    true->[1,0]; false->[0,0]; null->[0,1]  (value, not_applicable).
+  # ---------------------------------------------------------------------------
+  boolean_structural:
+    kind: boolean_structural
+    fields:
+      - trabalho_permite_pre_natal
+      - ambiente_trabalho_seguro
+      - tem_pausas_descanso
+
+  # ---------------------------------------------------------------------------
+  # 3. Numéricos (3) — mantidos como float64, sem transformação nesta fase.
+  # ---------------------------------------------------------------------------
+  numeric:
+    kind: numeric
+    fields:
+      - numero_pessoas
+      - numero_comodos
+      - numero_dormitorios
+
+  # ---------------------------------------------------------------------------
+  # 4. Ordinais (6) — OrdinalEncoder com ordem SEMÂNTICA congelada.
+  #    Os inteiros são apenas codificação; NÃO são scores/weights do IV-DSS.
+  # ---------------------------------------------------------------------------
+  ordinal:
+    kind: ordinal
+    fields:
+      - name: escolaridade
+        order:
+          - sem_instrucao
+          - fundamental_incompleto
+          - fundamental_completo
+          - medio_incompleto
+          - medio_completo
+          - superior_incompleto
+          - superior_completo
+      - name: frequencia_coleta_lixo
+        order:
+          - nao_possui
+          - irregular
+          - regular
+      - name: distancia_ubs
+        order:
+          - muito_proxima
+          - razoavelmente_proxima
+          - distante
+      - name: seguranca_residencia
+        order:
+          - muito_insegura
+          - insegura
+          - regular
+          - segura
+          - muito_segura
+      - name: refeicoes_por_dia
+        order:
+          - uma_duas
+          - tres
+          - quatro_mais
+      - name: avaliacao_alimentacao
+        order:
+          - ruim
+          - regular
+          - boa
+          - muito_boa
+
+  # ---------------------------------------------------------------------------
+  # 5. Nominais (8) — OneHotEncoder com categorias FIXAS do schema.
+  #    `structural_null: true` => null vira categoria `__not_applicable__`.
+  # ---------------------------------------------------------------------------
+  nominal:
+    kind: nominal
+    fields:
+      - name: tipo_emprego
+        structural_null: true
+      - name: faixa_renda
+        structural_null: false
+      - name: fonte_agua
+        structural_null: false
+      - name: esgotamento_sanitario
+        structural_null: false
+      - name: destino_lixo_sem_coleta
+        structural_null: true
+      - name: acesso_ubs
+        structural_null: false
+      - name: tipo_moradia
+        structural_null: false
+      - name: material_moradia
+        structural_null: false
+
+  # ---------------------------------------------------------------------------
+  # 6. Multiselect (6) — multi-hot com vocabulário FIXO do schema.
+  #    `structural_null: true` (beneficios_trabalho) => gera feature
+  #    `<campo>__not_applicable` além das categorias canônicas.
+  # ---------------------------------------------------------------------------
+  multiselect:
+    kind: multiselect
+    fields:
+      - name: dificuldades_educacao
+        structural_null: false
+      - name: beneficios_trabalho
+        structural_null: true
+      - name: dificuldades_saude
+        structural_null: false
+      - name: itens_residencia
+        structural_null: false
+      - name: alimentos_consumidos
+        structural_null: false
+      - name: fonte_alimentos
+        structural_null: false
