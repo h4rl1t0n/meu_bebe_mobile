@@ -1,0 +1,38 @@
+# =============================================================================
+# Calibration & stability v1 — ANÁLISE SECUNDÁRIA DIAGNÓSTICA (FASE 3G-B1)
+# =============================================================================
+#
+# Análise EXCLUSIVAMENTE DIAGNÓSTICA da calibração e da estabilidade das
+# probabilidades out-of-fold do Random Forest, usando somente as predições OOF
+# do TREINAMENTO (data/processed/cv_oof_predictions_v1.csv, 4000 registros) e
+# os metadados congelados dos folds.
+#
+# NÃO recalibra o modelo. NÃO usa o TEST. NÃO seleciona threshold. NÃO altera
+# nenhum artefato oficial das Fases 3F-A / 3F-B / 3G-A.
+#
+# REGRA DE OURO DO TEST SET (mantida): o TEST não é aberto e nenhuma decisão o
+# utiliza. Nenhum modelo recalibrado é gerado nesta fase.
+# =============================================================================
+
+version: "1.0"
+analysis_type: "secondary_diagnostic"
+model: "random_forest"
+source: "OOF_TRAIN"
+n_expected: 4000
+n_folds: 5
+
+# Diagnóstico de calibração (somente leitura; NÃO recalibrar).
+calibration:
+  n_bins: 10
+  strategy: "quantile"
+
+# Recalibração explicitamente desativada nesta fase (apenas medir).
+recalibration:
+  enabled: false
+
+# Uso do TEST explicitamente proibido nesta fase.
+test_usage:
+  allowed: false
+
+# Threshold primário de referência (o do protocolo congelado; NÃO alterar).
+primary_threshold_reference: 0.50
