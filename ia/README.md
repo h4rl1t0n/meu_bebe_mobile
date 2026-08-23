@@ -1,3 +1,4 @@
+
 # Meu Bebê — Componente de IA/ML (`ia/`)
 
 Componente de **inteligência artificial / aprendizado de máquina** do projeto
