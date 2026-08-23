@@ -1,0 +1,62 @@
+# =============================================================================
+# Interpretability v1 — INTERPRETABILIDADE PÓS-HOC DO RANDOM FOREST (FASE 3H)
+# por PERMUTATION IMPORTANCE OOF — análise SECUNDÁRIA e DESCRITIVA.
+# =============================================================================
+#
+# Responde: "quais variáveis brutas de X_MODEL apresentam maior importância
+# preditiva para o Random Forest, medida pela perda de desempenho após permutação
+# nas porções de validação out-of-fold?".
+#
+# É uma análise pós-hoc, secundária, exclusivamente TRAIN/OOF, descritiva e NÃO
+# causal. NÃO substitui as Fases 3F-A / 3F-B / 3G-A / 3G-B1 / 3G-B2 (o
+# experimento principal permanece congelado).
+#
+# REGRA DE OURO DO TEST SET (mantida): o TEST (1000 registros) não é aberto e
+# nenhuma decisão o utiliza. Nenhuma seleção de modelo/feature/threshold, nenhum
+# tuning e nenhuma recalibração ocorrem aqui.
+# =============================================================================
+
+version: "1.0"
+analysis_type: "secondary_posthoc_interpretability"
+model: "random_forest"
+
+# Conjunto de variáveis ANALISADO: X_MODEL (34 variáveis brutas -> 96 features).
+feature_set: "X_model"
+
+# Fonte da avaliação: exclusivamente as predições OOF do TREINAMENTO congelado.
+source: "TRAIN_OOF"
+
+# Número esperado de registros (TREINAMENTO congelado) e de folds.
+n_expected: 4000
+folds: 5
+
+# ---------------------------------------------------------------------------
+# Permutation importance (marginal, por variável bruta).
+# ---------------------------------------------------------------------------
+permutation:
+  n_repeats: 20
+  seed: 314159
+
+# Métrica primária de importância (perda de desempenho após permutação).
+primary_importance_metric: "pr_auc"
+
+# Métricas secundárias (também calculadas, de forma descritiva).
+secondary_metrics:
+  - "roc_auc"
+  - "brier"
+
+# Uso do TEST explicitamente proibido nesta fase.
+test_usage:
+  allowed: false
+
+# Seleção de modelo NÃO é feita nesta fase.
+model_selection:
+  enabled: false
+
+# Seleção de features NÃO é feita nesta fase.
+feature_selection:
+  enabled: false
+
+# Recalibração explicitamente desativada nesta fase.
+recalibration:
+  enabled: false
