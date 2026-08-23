@@ -160,7 +160,7 @@ descontinuidade.
 
 #### 4.3.1 Definição conceitual
 
-```
+```text
           DSS
            │
            ├──→ IV-DSS
@@ -186,7 +186,7 @@ a _"qual a propensão à descontinuidade do pré-natal?"_.
 
 #### 4.3.3 Fórmula
 
-```
+```text
 D_d     = (1 / |I_d|) · Σ_{i ∈ I_d} v_i
 
 IV-DSS  = (1/6) · Σ_{d=1}^{6} D_d
@@ -222,11 +222,11 @@ A **agregação geométrica** `IV-DSS_geo = (Π D_d)^{1/6}` poderá ser usada co
 
 ### 4.4 Modelagem dos dados
 
-Contrato de dados canônico e versionado (`schema_version = '1.0'`), com códigos
+Contrato de dados canônico e versionado (`schema_version = '1.13'`), com códigos
 canônicos (`snake_case`) separados dos rótulos de UI. `FormularioData.toMap()`
-(aninhado, versionado) e `toFlatMap()` (`dimensao.campo`). Os cinco campos de
-texto livre são preservados como qualitativos e **não entram** no modelo tabular
-nem no índice.
+(aninhado, versionado) e `toFlatMap()` (`dimensao.campo`). O schema possui seis
+dimensões e 48 variáveis, todas estruturadas (booleanas, categóricas por código,
+múltipla escolha por código ou numéricas) — **sem campos de texto livre**.
 
 ### 4.5 Definição operacional da variável-alvo
 
@@ -245,7 +245,7 @@ nem no índice.
 
 Fluxo (seed fixa, gerador versionado):
 
-```
+```text
 Geração dos DSS (X)
       │
       ├──→ cálculo do IV-DSS        (variável derivada de X)
@@ -253,7 +253,7 @@ Geração dos DSS (X)
       └──→ escore latente de risco → probabilidade → Y = descontinuou_pre_natal
 ```
 
-- **X** = variáveis dos DSS (tabulares, sem texto livre e sem leakage);
+- **X** = variáveis dos DSS (tabulares, sem leakage);
 - **IV-DSS** = variável **derivada** de X (função determinística);
 - **Y** = descontinuidade do pré-natal.
 
@@ -277,7 +277,6 @@ leakage):
 
 O IV-DSS é construído **exclusivamente** a partir de determinantes sociais e
 condições de vulnerabilidade, nunca de informações do próprio acompanhamento.
-Os cinco campos de texto livre também ficam de fora do índice e do modelo.
 
 ### 4.8 Modelos de aprendizado de máquina
 
@@ -383,49 +382,12 @@ trabalhos futuros.
 1. Variável-alvo `descontinuou_pre_natal ∈ {0,1}` (0 = ≥6 consultas; 1 = <6).
 2. Rótulo externo ao formulário (processo probabilístico).
 3. Leakage: 5 variáveis excluídas de features e do índice.
-4. 5 campos de texto livre excluídos do índice e do modelo tabular.
-5. IV-DSS: pesos iguais (1/6), escala [0,1], média aritmética.
-6. IV-DSS descritivo (não é feature do ML).
-7. Ordem de geração: `DSS → (IV-DSS) ∥ (escore latente → Y)`.
-8. Agregação geométrica = análise de sensibilidade.
-9. ~5.000 registros, ~25% de prevalência.
-10. IV-DSS calculado no pipeline analítico.
-
-### ⚠️ Decisões pendentes
-
-adas; a consolidar)
-
-1. Ministério da Saúde. _Atenção ao pré-natal de baixo risco_. Cadernos de
-   Atenção Básica nº 32, 2013.
-2. Ministério da Saúde. _Pré-natal_. gov.br.
-3. World Health Organization. _WHO recommendations on antenatal care for a
-   positive pregnancy experience_. 2016.
-4. OECD/JRC. _Handbook on Constructing Composite Indicators: Methodology and
-   User Guide_. 2008.
-5. Ayres, J. R. C. M. et al. _O conceito de vulnerabilidade e as práticas de
-   saúde: novas perspectivas e desafios_.
-6. Fiocruz. _Determinantes Sociais da Saúde_ (portal DSS-Brasil).
-7. IPEA. _Atlas da Vulnerabilidade Social (IVS)_. **[VALIDAR NA LITERATURA]**.
-8. SEADE. _Índice Paulista de Vulnerabilidade Social (IPVS)_ NA LITERATURA]**.
-8. SEADE. _Índice Paulista de Vulnerabilidade Social (IPVS)_.
-   **[VALIDAR NA LITERATURA]**.
-
----
-
-## Apêndice — Decisões congeladas e pendentes
-
-### 🔒 Decisões congeladas
-
-1. Variável-alvo `descontinuou_pre_natal ∈ {0,1}` (0 = ≥6 consultas; 1 = <6).
-2. Rótulo externo ao formulário (processo probabilístico).
-3. Leakage: 5 variáveis excluídas de features e do índice.
-4. 5 campos de texto livre excluídos do índice e do modelo tabular.
-5. IV-DSS: pesos iguais (1/6), escala [0,1], média aritmética.
-6. IV-DSS descritivo (não é feature do ML).
-7. Ordem de geração: `DSS → (IV-DSS) ∥ (escore latente → Y)`.
-8. Agregação geométrica = análise de sensibilidade.
-9. ~5.000 registros, ~25% de prevalência.
-10. IV-DSS calculado no pipeline analítico.
+4. IV-DSS: pesos iguais (1/6), escala [0,1], média aritmética.
+5. IV-DSS descritivo (não é feature do ML).
+6. Ordem de geração: `DSS → (IV-DSS) ∥ (escore latente → Y)`.
+7. Agregação geométrica = análise de sensibilidade.
+8. ~5.000 registros, ~25% de prevalência.
+9. IV-DSS calculado no pipeline analítico.
 
 ### ⚠️ Decisões pendentes
 
@@ -433,6 +395,8 @@ adas; a consolidar)
 - `acesso_ubs` (incluir ou excluir do índice).
 - `usa_suplementos` e `mudanca_alimentacao_gestacao` (possível consequência da
   adesão).
+- `situacao_estudos_gestacao` e `impacto_gestacao_trabalho` (possível
+  consequência da própria gestação — variáveis temporais).
 - `faixa_renda = nao_informar` (imputar 0.5 vs. omitir).
 - Limiar do adensamento habitacional.
 - Valores finais de alguns escores nominais.
