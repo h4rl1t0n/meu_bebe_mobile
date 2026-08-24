@@ -1,9 +1,11 @@
-# Integração Flutter ↔ API DSS — Fundação (FASE 5A)
+# Integração Flutter ↔ API DSS — Fundação (5A) e Fluxo do Formulário (5B)
 
-> Documentação técnica da camada de fundação que prepara o app Flutter para
-> consumir `POST /api/v1/risk-estimate` via **Dio**, sem alterar o fluxo visual
-> do questionário. Esta fase **não** conecta o botão final, **não** exibe
-> resultado, **não** classifica probabilidade e **não** persiste nada.
+> Documentação técnica da integração do app Flutter com
+> `POST /api/v1/risk-estimate` via **Dio**. A **FASE 5A** entregou a fundação
+> (client, modelos, repositório); a **FASE 5B** conectou o fluxo real do
+> formulário à estimativa. A apresentação visual da probabilidade (tela de
+> resultado) permanece **deferida para a FASE 5C**: nada aqui classifica
+> probabilidade, aplica threshold ou persiste a estimativa.
 
 O contrato de referência é `api/API_CONTRACT_V1.md` (congelado). Nada nesta
 fase altera `api/` nem `ia/`.
@@ -24,8 +26,8 @@ fase altera `api/` nem `ia/`.
 8. Privacidade de logging (somente no cliente da API DSS).
 9. Documentação técnica (este arquivo).
 
-**Fora de escopo (FASE 5B+):** chamada a partir do botão final; loading visual;
-tela/modal de resultado; navegação; interpretação da probabilidade;
+**Fora de escopo (FASE 5C+):** tela/modal de resultado; apresentação visual da
+probabilidade; navegação pós-resultado; interpretação da probabilidade;
 classificação baixo/médio/alto; limiar (threshold); persistência da estimativa;
 retry automático; autenticação; mudanças na API.
 
@@ -50,6 +52,9 @@ lib/app/repositories/risk_estimate/
     risk_estimate_repository.dart                    → contrato (abstract)
     risk_estimate_repository_impl.dart               → implementação Dio (DSS)
 lib/app/modules/core/core_module.dart                → DI (registro)
+lib/app/modules/formulario/controllers/formulario_controller.dart → orquestra o envio (FASE 5B)
+lib/app/modules/formulario/formulario_module.dart      → importa CoreModule (resolve o repositório)
+lib/app/modules/formulario/formulario_page.dart        → botão "Confirmar e Enviar" (FASE 5B)
 ```
 
 Há **dois clientes HTTP independentes**:
@@ -220,7 +225,42 @@ global. O `DioForNative` global continua servindo apenas o backend/login.
 
 ---
 
-## 9. Testes (determinísticos, sem API real)
+## 9. Fluxo do formulário (FASE 5B)
+
+O botão **"Confirmar e Enviar"** (última etapa do `FormularioPage`) agora dispara
+a estimativa real, por meio da arquitetura Controller → Repository (sem camada
+de Service — `login` é o único caso que usa Service, por persistir o token):
+
+```
+FormularioPage (botão)            → valida, mostra resumo
+   └─ FormularioController        → guarda estado (MobX) e orquestra
+        └─ RiskEstimateRepository → POST /api/v1/risk-estimate (Dio)
+             └─ RiskEstimateResponseModel | RiskEstimateFailure
+```
+
+**Estado MobX no `FormularioController`** (reusa o `PageStatus` já existente):
+
+| Membro           | Tipo                        | Papel                                          |
+| ---------------- | --------------------------- | ---------------------------------------------- |
+| `status`         | `PageStatus`                | `initial / loading / success / error`          |
+| `loading`        | `bool` (computed)           | `status == PageStatus.loading` (retro-compat UI) |
+| `riskEstimate`   | `RiskEstimateResponseModel?`| resultado **tipado** (target/model/notice) p/ 5C |
+| `error`          | `String?`                   | mensagem amigável (nunca `DioException`)       |
+
+`enviarFormulario()`: bloqueia submissão concorrente (`if (loading) return`),
+define `loading`, **limpa o erro anterior**, usa `consolidatedData`
+(`FormularioData`, **não** `toFlatMap()`), chama o repositório **uma única vez**
+e armazena `riskEstimate` (sucesso) ou `error` (falha). **Sem** navegação,
+**sem** dialog de resultado, **sem** classificação, **sem** threshold, **sem**
+retry automático, **sem** persistência. Nova tentativa explícita é permitida.
+
+A UI desabilita o botão durante `loading` (proteção contra duplo envio) e
+reage ao resultado via `Observer`; em sucesso apenas exibe a mensagem de
+confirmação, mantendo o resultado em estado para a FASE 5C.
+
+---
+
+## 10. Testes (determinísticos, sem API real)
 
 Cobertura em `test/risk_estimate/` e `test/core/rest_client/`:
 
@@ -235,11 +275,17 @@ Cobertura em `test/risk_estimate/` e `test/core/rest_client/`:
 | `risk_estimate_rest_client_test.dart`     | DSS: `API_BASE_URL`, timeouts 10/15/15, headers JSON, `PrivacyLogInterceptor` (sem `LogInterceptor`/`AuthInterceptor`), `validateStatus` 2xx |
 | `clients_isolation_test.dart`             | bases independentes; `API_BASE_URL` não altera `RestClient`; `API_BASE_URL` vazia sem fallback |
 
+Cobertura da FASE 5B em `test/formulario/controllers/`:
+
+| Arquivo                          | Cobre                                                              |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `formulario_controller_test.dart` | estado inicial; loading; sucesso (probability preservada); resposta completa; falha; duplo envio (`callCount == 1`); retry explícito após erro; sem retry automático; entrega `FormularioData` (não `toFlatMap`) |
+
 Nenhum teste usa `localhost`/`10.0.2.2` ou a API real.
 
 ---
 
-## 10. Como executar a verificação
+## 11. Como executar a verificação
 
 ```bash
 flutter analyze                                   # sem novos issues
@@ -250,7 +296,7 @@ git diff -- api/ && git diff -- ia/               # devem ser vazios
 
 ---
 
-## 11. Notas de segurança / conformidade
+## 12. Notas de segurança / conformidade
 
 - `ApiConfig` pode ser sobrescrito em testes para uma URL determinística.
 - A ausência de `--dart-define=API_BASE_URL` deixa a base URL vazia ⇒ o

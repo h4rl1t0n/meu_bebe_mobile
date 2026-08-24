@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/constants/images.dart';
 import '../../core/helpers/messages.dart';
+import '../../enum/page_status.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/design_tokens.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
@@ -27,7 +28,14 @@ class FormularioPage extends StatefulWidget {
 class _FormularioPageState extends State<FormularioPage> {
   late final FormularioController controller;
 
-  static const _stepTitles = ['Educação', 'Trabalho', 'Saneamento', 'Saúde', 'Habitação', 'Alimentação'];
+  static const _stepTitles = [
+    'Educação',
+    'Trabalho',
+    'Saneamento',
+    'Saúde',
+    'Habitação',
+    'Alimentação',
+  ];
 
   @override
   void initState() {
@@ -44,14 +52,21 @@ class _FormularioPageState extends State<FormularioPage> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50),
           child: Observer(
-            builder: (_) => StepperHeader(currentStep: controller.currentStep, stepTitles: _stepTitles),
+            builder: (_) => StepperHeader(
+              currentStep: controller.currentStep,
+              stepTitles: _stepTitles,
+            ),
           ),
         ),
       ),
       body: Container(
         padding: EdgeInsets.all(Spacing.sm),
         decoration: BoxDecoration(
-          image: DecorationImage(opacity: .05, fit: BoxFit.contain, image: AssetImage(Images.mother)),
+          image: DecorationImage(
+            opacity: .05,
+            fit: BoxFit.contain,
+            image: AssetImage(Images.mother),
+          ),
         ),
         child: Observer(
           builder: (_) => IndexedStack(
@@ -67,7 +82,9 @@ class _FormularioPageState extends State<FormularioPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Observer(builder: (_) => _buildNavigation(controller.currentStep)),
+      bottomNavigationBar: Observer(
+        builder: (_) => _buildNavigation(controller.currentStep),
+      ),
     );
   }
 
@@ -141,8 +158,14 @@ class _FormularioPageState extends State<FormularioPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Resumo do Formulário', style: context.textStyles.titleSmallStyle),
-                  IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(ctx)),
+                  Text(
+                    'Resumo do Formulário',
+                    style: context.textStyles.titleSmallStyle,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
                 ],
               ),
             ),
@@ -154,10 +177,14 @@ class _FormularioPageState extends State<FormularioPage> {
                 itemBuilder: (_, index) {
                   final section = summary[index];
                   final categoria = section['categoria'] as String;
-                  final items = Map<String, String>.from(section)..remove('categoria');
+                  final items = Map<String, String>.from(section)
+                    ..remove('categoria');
 
                   return Card(
-                    margin: EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.xs),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: Spacing.md,
+                      vertical: Spacing.xs,
+                    ),
                     child: Padding(
                       padding: EdgeInsets.all(Spacing.lg),
                       child: Column(
@@ -165,10 +192,14 @@ class _FormularioPageState extends State<FormularioPage> {
                         children: [
                           Text(
                             categoria,
-                            style: context.textStyles.subTitleStyle.copyWith(color: context.colors.primary500),
+                            style: context.textStyles.subTitleStyle.copyWith(
+                              color: context.colors.primary500,
+                            ),
                           ),
                           SizedBox(height: Spacing.sm),
-                          ...items.entries.map((e) => _buildSummaryItem(e.key, e.value)),
+                          ...items.entries.map(
+                            (e) => _buildSummaryItem(e.key, e.value),
+                          ),
                         ],
                       ),
                     ),
@@ -180,25 +211,40 @@ class _FormularioPageState extends State<FormularioPage> {
               padding: EdgeInsets.all(Spacing.lg),
               child: SizedBox(
                 width: double.infinity,
-                child: StatefulBuilder(
-                  builder: (context, setLocalState) {
+                child: Observer(
+                  builder: (_) {
                     return ElevatedButton.icon(
                       onPressed: controller.loading
                           ? null
                           : () async {
-                              setLocalState(() {});
-                              final ok = await controller.enviarFormulario();
-                              if (ok && ctx.mounted) {
+                              await controller.enviarFormulario();
+                              if (!ctx.mounted) return;
+                              if (controller.status == PageStatus.success) {
                                 Navigator.pop(ctx);
                                 if (mounted) {
-                                  Messages.showSuccess('Formulário enviado com sucesso!');
+                                  Messages.showSuccess(
+                                    'Formulário enviado com sucesso!',
+                                  );
                                 }
+                              } else {
+                                Messages.showError(
+                                  controller.error ??
+                                      'Não foi possível enviar o formulário.',
+                                );
                               }
                             },
                       icon: controller.loading
-                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : const Icon(Icons.check_circle),
-                      label: Text(controller.loading ? 'Enviando...' : 'Confirmar e Enviar'),
+                      label: Text(
+                        controller.loading
+                            ? 'Enviando...'
+                            : 'Confirmar e Enviar',
+                      ),
                     );
                   },
                 ),
@@ -215,9 +261,14 @@ class _FormularioPageState extends State<FormularioPage> {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: RichText(
         text: TextSpan(
-          style: context.textStyles.textStyle.copyWith(color: context.colors.onSurface),
+          style: context.textStyles.textStyle.copyWith(
+            color: context.colors.onSurface,
+          ),
           children: [
-            TextSpan(text: '$label: ', style: context.textStyles.buttonTextStyle),
+            TextSpan(
+              text: '$label: ',
+              style: context.textStyles.buttonTextStyle,
+            ),
             TextSpan(text: value.isNotEmpty ? value : 'Não informado'),
           ],
         ),
