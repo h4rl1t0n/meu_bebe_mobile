@@ -24,8 +24,7 @@ final class RiskEstimateDioExceptionMapper {
       DioExceptionType.connectionError => const ConnectionFailure(),
       DioExceptionType.badCertificate => const ConnectionFailure(),
       DioExceptionType.cancel => const RequestCancelledFailure(),
-      DioExceptionType.badResponse ||
-      DioExceptionType.unknown => const CommunicationFailure(),
+      DioExceptionType.badResponse || DioExceptionType.unknown => const CommunicationFailure(),
     };
   }
 
@@ -33,9 +32,7 @@ final class RiskEstimateDioExceptionMapper {
     final status = response.statusCode ?? 0;
 
     if (status == 422) {
-      final details =
-          ApiErrorModel.tryParse(response.data)?.details ??
-          const <ApiErrorDetailModel>[];
+      final details = ApiErrorModel.tryParse(response.data)?.details ?? const <ApiErrorDetailModel>[];
       return ValidationFailure(details: details);
     }
 
