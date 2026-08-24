@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.13",
+  "educacao": {
+    "estuda_atualmente": true,
+    "escolaridade": "medio_incompleto",
+    "situacao_estudos_gestacao": "nao_interrompeu",
+    "dificuldades_educacao": ["falta_dinheiro"],
+    "entende_orientacoes_saude": true,
+    "fez_curso_qualificacao_profissional": false
+  },
+  "trabalho": {
+    "empregado": true,
+    "tipo_emprego": "informal",
+    "faixa_renda": "entre_1_2_sm",
+    "trabalho_permite_pre_natal": true,
+    "ambiente_trabalho_seguro": false,
+    "tem_pausas_descanso": false,
+    "beneficios_trabalho": ["vale_alimentacao", "vale_transporte"],
+    "motivo_desemprego": null,
+    "recebe_beneficio_social": true,
+    "impacto_gestacao_trabalho": "reduziu_jornada"
+  },
+  "saneamento": {
+    "fonte_agua": "poco_nascente",
+    "interrupcoes_agua": true,
+    "esgotamento_sanitario": "fossa_septica",
+    "frequencia_coleta_lixo": "regular",
+    "destino_lixo_sem_coleta": null,
+    "problema_saude_agua": true,
+    "cuidados_vetores": ["elimina_agua_parada", "mantem_reservatorios_tampados"]
+  },
+  "saude": {
+    "distancia_ubs": "razoavelmente_proxima",
+    "faltou_consulta": true,
+    "acesso_ubs": "transporte_publico",
+    "cadastrada_ubs": true,
+    "servicos_pre_natal": ["consulta_medica", "grupo_gestantes"],
+    "exames_pre_natal_completos": true,
+    "vacinas_em_dia": true,
+    "avaliacao_pre_natal": "regular",
+    "dificuldades_saude": ["demora_atendimento"]
+  },
+  "habitacao": {
+    "tipo_moradia": "casa",
+    "material_moradia": "mista",
+    "numero_pessoas": 4,
+    "numero_comodos": 4,
+    "numero_dormitorios": 2,
+    "itens_residencia": ["agua_encanada", "banheiro_interno"],
+    "seguranca_residencia": "regular",
+    "melhorias_desejadas": ["melhorar_ventilacao"],
+    "facil_acesso_saude": false
+  },
+  "alimentacao": {
+    "refeicoes_por_dia": "quatro_mais",
+    "deixou_de_comer_falta_dinheiro": true,
+    "alimentos_consumidos": ["frutas_verduras", "feijao_leguminosas", "carnes"],
+    "fonte_alimentos": ["supermercado_feira", "horta_propria"],
+    "mudanca_alimentacao_gestacao": true,
+    "usa_suplementos": false,
+    "avaliacao_alimentacao": "regular"
+  }
+}
