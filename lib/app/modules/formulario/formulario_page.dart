@@ -17,6 +17,7 @@ import 'submodules/habitacao/habitacao_tab.dart';
 import 'submodules/saneamento/saneamento_tab.dart';
 import 'submodules/saude/saude_tab.dart';
 import 'submodules/trabalho/trabalho_tab.dart';
+import 'widgets/risk_estimate_result_sheet.dart';
 
 class FormularioPage extends StatefulWidget {
   const FormularioPage({super.key});
@@ -220,10 +221,12 @@ class _FormularioPageState extends State<FormularioPage> {
                               await controller.enviarFormulario();
                               if (!ctx.mounted) return;
                               if (controller.status == PageStatus.success) {
+                                final estimate = controller.riskEstimate;
                                 Navigator.pop(ctx);
-                                if (mounted) {
-                                  Messages.showSuccess(
-                                    'Formulário enviado com sucesso!',
+                                if (estimate != null && mounted) {
+                                  await showRiskEstimateResultSheet(
+                                    context,
+                                    estimate,
                                   );
                                 }
                               } else {

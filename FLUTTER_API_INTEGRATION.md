@@ -1,11 +1,11 @@
-# Integração Flutter ↔ API DSS — Fundação (5A) e Fluxo do Formulário (5B)
+# Integração Flutter ↔ API DSS — Fundação (5A), Fluxo do Formulário (5B) e Apresentação Visual (5C)
 
 > Documentação técnica da integração do app Flutter com
 > `POST /api/v1/risk-estimate` via **Dio**. A **FASE 5A** entregou a fundação
 > (client, modelos, repositório); a **FASE 5B** conectou o fluxo real do
-> formulário à estimativa. A apresentação visual da probabilidade (tela de
-> resultado) permanece **deferida para a FASE 5C**: nada aqui classifica
-> probabilidade, aplica threshold ou persiste a estimativa.
+> formulário à estimativa; a **FASE 5C** apresentou a probabilidade visualmente
+> de maneira **não classificatória** (bottom sheet de resultado). Nada aqui
+> classifica probabilidade, aplica threshold ou persiste a estimativa.
 
 O contrato de referência é `api/API_CONTRACT_V1.md` (congelado). Nada nesta
 fase altera `api/` nem `ia/`.
@@ -26,10 +26,15 @@ fase altera `api/` nem `ia/`.
 8. Privacidade de logging (somente no cliente da API DSS).
 9. Documentação técnica (este arquivo).
 
-**Fora de escopo (FASE 5C+):** tela/modal de resultado; apresentação visual da
-probabilidade; navegação pós-resultado; interpretação da probabilidade;
-classificação baixo/médio/alto; limiar (threshold); persistência da estimativa;
-retry automático; autenticação; mudanças na API.
+**Implementado (FASE 5C):** apresentação visual da probabilidade em um
+`showModalBottomSheet` de resultado (sem rota nova), com o percentual em
+destaque, o rótulo semântico e o `notice` metodológico sempre visível. A
+apresentação é **não classificatória**: sem threshold, sem cores de severidade e
+sem mutação do `double` original.
+
+**Fora de escopo (permanente):** interpretação da probabilidade; classificação
+baixo/médio/alto; limiar (threshold); persistência da estimativa; retry
+automático; autenticação; mudanças na API.
 
 ---
 
@@ -55,6 +60,8 @@ lib/app/modules/core/core_module.dart                → DI (registro)
 lib/app/modules/formulario/controllers/formulario_controller.dart → orquestra o envio (FASE 5B)
 lib/app/modules/formulario/formulario_module.dart      → importa CoreModule (resolve o repositório)
 lib/app/modules/formulario/formulario_page.dart        → botão "Confirmar e Enviar" (FASE 5B)
+lib/app/modules/formulario/widgets/
+    risk_estimate_result_sheet.dart                    → bottom sheet de resultado (FASE 5C)
 ```
 
 Há **dois clientes HTTP independentes**:
@@ -255,12 +262,36 @@ e armazena `riskEstimate` (sucesso) ou `error` (falha). **Sem** navegação,
 retry automático, **sem** persistência. Nova tentativa explícita é permitida.
 
 A UI desabilita o botão durante `loading` (proteção contra duplo envio) e
-reage ao resultado via `Observer`; em sucesso apenas exibe a mensagem de
-confirmação, mantendo o resultado em estado para a FASE 5C.
+reage ao resultado via `Observer`: em **sucesso**, fecha o sheet de resumo e
+abre o sheet de resultado (FASE 5C); em **falha**, mantém a mensagem amigável de
+erro (sem apresentar resultado anterior). O resultado fica em estado no
+controller; **não** há reset do formulário nem persistência.
 
 ---
 
-## 10. Testes (determinísticos, sem API real)
+## 10. Apresentação visual da estimativa (FASE 5C)
+
+O resultado é apresentado em um `showModalBottomSheet` de resultado
+(`lib/app/modules/formulario/widgets/risk_estimate_result_sheet.dart`), sem rota
+nova e sem dois sheets simultâneos: o sheet de resumo fecha e o de resultado
+abre na sequência. O conteúdo é **não classificatório**:
+
+- Título **"Estimativa de acompanhamento"** (nunca "diagnóstico" nem "risco").
+- `probability * 100` formatada como percentual pt-BR com **1 casa decimal**
+  (ex.: `0.238` → `"23,8%"`), em cor **constante** (`primary500`) — sem variação
+  de cor por valor.
+- Rótulo semântico: **"Probabilidade estimada de descontinuidade do
+  acompanhamento pré-natal"**.
+- `notice` exibida **na íntegra** em um card informativo sempre visível.
+- Botão **"Entendi"** fecha apenas o sheet de resultado (sem reset do
+  formulário; o resultado permanece em estado no controller).
+
+Não há classificação (baixo/médio/alto), threshold (`>= 0.5` / `> 0.5`), cor de
+severidade, diagnóstico ou afirmação de certeza: `0,0%` não é "sem risco" e
+`100,0%` não é "certeza". A formatação é **somente visual** — o `double`
+original em `result.probability` permanece intacto.
+
+## 11. Testes (determinísticos, sem API real)
 
 Cobertura em `test/risk_estimate/` e `test/core/rest_client/`:
 
@@ -281,11 +312,17 @@ Cobertura da FASE 5B em `test/formulario/controllers/`:
 | -------------------------------- | ------------------------------------------------------------------ |
 | `formulario_controller_test.dart` | estado inicial; loading; sucesso (probability preservada); resposta completa; falha; duplo envio (`callCount == 1`); retry explícito após erro; sem retry automático; entrega `FormularioData` (não `toFlatMap`) |
 
+Cobertura da FASE 5C em `test/formulario/widgets/`:
+
+| Arquivo                                  | Cobre                                                              |
+| ---------------------------------------- | ------------------------------------------------------------------ |
+| `risk_estimate_result_sheet_test.dart`   | formatação (`0.238→"23,8%"`, `0.0→"0,0%"`, `1.0→"100,0%"`, arredondamento só visual); não mutação do `double`; percentual + rótulo semântico; `notice` não hardcoded; ausência de classificação; `0,0%` sem "sem risco"; `100,0%` sem "certeza"; botão "Entendi" fecha o sheet |
+
 Nenhum teste usa `localhost`/`10.0.2.2` ou a API real.
 
 ---
 
-## 11. Como executar a verificação
+## 12. Como executar a verificação
 
 ```bash
 flutter analyze                                   # sem novos issues
@@ -296,7 +333,7 @@ git diff -- api/ && git diff -- ia/               # devem ser vazios
 
 ---
 
-## 12. Notas de segurança / conformidade
+## 13. Notas de segurança / conformidade
 
 - `ApiConfig` pode ser sobrescrito em testes para uma URL determinística.
 - A ausência de `--dart-define=API_BASE_URL` deixa a base URL vazia ⇒ o
