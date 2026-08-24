@@ -5,8 +5,10 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
+from meu_bebe_api.config import Settings
 from meu_bebe_api.contracts.dss import DssPayload
 from meu_bebe_api.main import create_app
+from meu_bebe_api.ml.runtime import ModelRuntime
 
 
 def make_valid_payload() -> dict:
@@ -76,22 +78,33 @@ def make_valid_payload() -> dict:
     }
 
 
+def make_dss_payload() -> DssPayload:
+    """``DssPayload`` válido (objeto tipado) a partir do payload canônico."""
+    return DssPayload.model_validate(make_valid_payload())
+
+
 @pytest.fixture
-def client() -> TestClient:
-    app = create_app()
+def settings_no_load() -> Settings:
+    """Settings SEM carregar o modelo (rápido para a maioria dos testes)."""
+    return Settings(model_load_on_startup=False, _env_file=None)
+
+
+@pytest.fixture
+def client(settings_no_load: Settings) -> TestClient:
+    app = create_app(settings_no_load)
     with TestClient(app) as c:
         yield c
 
 
 @pytest.fixture
-def client_with_validation_route() -> TestClient:
+def client_with_validation_route(settings_no_load: Settings) -> TestClient:
     """Cliente com uma rota SOMENTE DE TESTE que valida um ``DssPayload``.
 
     A rota ``/_test/validate`` NÃO existe no app de produção — ela serve
     apenas para exercitar o handler de 422 (RequestValidationError) sem criar
     um endpoint público ``/validate``.
     """
-    app = create_app()
+    app = create_app(settings_no_load)
 
     @app.post("/_test/validate")
     def _test_validate(payload: DssPayload) -> dict[str, bool]:
@@ -99,3 +112,15 @@ def client_with_validation_route() -> TestClient:
 
     with TestClient(app) as c:
         yield c
+
+
+@pytest.fixture(scope="session")
+def real_runtime() -> ModelRuntime:
+    """Runtime carregado com o modelo REAL (uma única vez por sessão de testes).
+
+    Requer o artefato congelado em ``ia/artifacts/models/`` (presente no
+    monorepo). Usado apenas pelos testes de integração/inferência.
+    """
+    runtime = ModelRuntime(Settings(model_load_on_startup=False, _env_file=None))
+    runtime.load()
+    return runtime

@@ -28,6 +28,14 @@ class Settings(BaseSettings):
     app_log_level: str = "INFO"
     app_docs_enabled: bool = True
 
+    # Caminhos do artefato de ML (FASE 4B). São RELATIVOS à raiz de ``api/`` e
+    # resolvidos de forma independente do CWD (ver ``ml.artifact``). O artefato
+    # NÃO é copiado para ``api/``: continua em ``ia/artifacts/models/``.
+    model_artifact_path: str = "../ia/artifacts/models/selected_model_v1.joblib"
+    model_manifest_path: str = "../ia/artifacts/models/selected_model_v1_manifest.json"
+    # Se ``false``, o app sobe sem carregar o modelo (``/ready`` responde 503).
+    model_load_on_startup: bool = True
+
 
 @lru_cache
 def get_settings() -> Settings:
