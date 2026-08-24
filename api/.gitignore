@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtualenv (separado de ia/.venv)
+.venv/
+venv/
+
+# Testes / cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Ambiente local (nunca versionar .env; usar .env.example)
+.env
+
+# Editores
+.vscode/
+.idea/

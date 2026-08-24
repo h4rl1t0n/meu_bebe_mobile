@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meu-bebe-api"
+version = "0.1.0"
+description = "API Python do projeto Meu Bebê (contrato HTTP/DSS — FASE 4A)."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary (uso acadêmico — TCC IFAM)" }
+authors = [{ name = "Harliton Martins" }]
+keywords = ["dss", "prenatal", "api", "fastapi", "tcc"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Development Status :: 2 - Pre-Alpha",
+]
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "httpx>=0.27",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
