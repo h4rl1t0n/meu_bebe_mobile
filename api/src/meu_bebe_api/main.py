@@ -1,13 +1,14 @@
-"""Fábrica da aplicação FastAPI (FASE 4B).
+"""Fábrica da aplicação FastAPI (FASE 4C).
 
 - ``GET /health`` (liveness): sempre 200, sem depender do modelo.
 - ``GET /ready`` (readiness): 200 se o modelo carregou; 503 ``MODEL_NOT_READY``.
-- O prefixo ``/api/v1`` fica RESERVADO para endpoints funcionais versionados
-  futuros (nenhum endpoint público de previsão é registrado — FASE 4C).
+- ``POST /api/v1/risk-estimate`` (funcional): estimativa probabilística
+  experimental (FASE 4C).
 
 O modelo é carregado no lifespan (``asynccontextmanager``) quando
 ``model_load_on_startup=true``; em falha o app SOBE mesmo assim (FAIL-CLOSED
-apenas no ``/ready``), pois a liveness não pode crashar por causa do modelo.
+apenas no ``/ready`` e no endpoint funcional), pois a liveness não pode
+crashar por causa do modelo.
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ from fastapi import FastAPI
 from . import __version__
 from .api.health import router as health_router
 from .api.ready import router as ready_router
+from .api.router import api_v1_router
 from .config import Settings, get_settings
 from .core.exception_handlers import register_exception_handlers
 from .ml.errors import ModelError
@@ -40,11 +42,15 @@ _DESCRIPTION = (
 async def lifespan(app: FastAPI):
     """Registra o runtime e carrega o modelo (se habilitado).
 
-    O runtime é SEMPRE registrado (mesmo sem load) para que ``/ready`` responda
-    ``503`` de forma determinística. Falha de load NÃO impede o app de subir.
+    O runtime é SEMPRE registrado (mesmo sem load) para que ``/ready`` e o
+    endpoint funcional respondam ``503`` de forma determinística. Falha de load
+    NÃO impede o app de subir. Um runtime pode ser injetado via
+    ``create_app(runtime=...)`` (testes usam um fake sem carregar o modelo real).
     """
     settings: Settings = app.state.settings
-    runtime = ModelRuntime(settings)
+    runtime = getattr(app.state, "runtime_override", None)
+    if runtime is None:
+        runtime = ModelRuntime(settings)
     app.state.model_runtime = runtime
 
     if settings.model_load_on_startup:
@@ -56,8 +62,11 @@ async def lifespan(app: FastAPI):
     yield
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
-    """Constrói a aplicação (permitindo injeção de settings em testes)."""
+def create_app(
+    settings: Settings | None = None,
+    runtime: ModelRuntime | None = None,
+) -> FastAPI:
+    """Constrói a aplicação (permitindo injeção de settings/runtime em testes)."""
     settings = settings or get_settings()
 
     docs_enabled = settings.app_docs_enabled
@@ -73,13 +82,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # Configuração disponível via ``app.state`` para o lifespan e as rotas.
     app.state.settings = settings
+    # Runtime injetado (testes). Se ``None``, o lifespan cria o runtime real.
+    app.state.runtime_override = runtime
 
     # Liveness (infraestrutura) + readiness (modelo), ambos na RAIZ.
     app.include_router(health_router)
     app.include_router(ready_router)
 
-    # O prefixo /api/v1 fica RESERVADO para endpoints funcionais versionados
-    # futuros. Nenhum endpoint é registrado sob ele nesta fase.
+    # Endpoint funcional versionado (FASE 4C) sob /api/v1.
+    app.include_router(api_v1_router)
+
     register_exception_handlers(app)
     return app
 
