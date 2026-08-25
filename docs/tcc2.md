@@ -46,14 +46,15 @@ propensão à descontinuidade do acompanhamento pré-natal?_
 
 O diferencial/proposta do sistema é **integrar, em uma mesma solução**, a coleta
 de informações relacionadas aos Determinantes Sociais da Saúde e um módulo de
-acompanhamento do pré-natal, com **armazenamento local** das informações de
-acompanhamento (funcionamento offline). O aplicativo coleta os DSS e oferece o
-acompanhamento do pré-natal; a **estimativa experimental por aprendizado de
-máquina** é integrada via API; e o **IV-DSS** é calculado atualmente no pipeline
-analítico Python, fora da interface e da API operacional. Assim, o sistema e o
-pipeline analítico associado permitem tanto **caracterizar** a vulnerabilidade
-social (via índice) quanto **estimar** a propensão à descontinuidade (via
-modelo).
+acompanhamento do pré-natal. **No estado atual do protótipo**, os dados desse
+módulo permanecem em **persistência local**; como **evolução definida para o
+trabalho**, prevê-se sua integração a uma **API** para persistência e
+gerenciamento dos dados. O eixo DSS já consome via API a **estimativa
+experimental por aprendizado de máquina**, enquanto o **IV-DSS** é calculado no
+pipeline analítico Python, fora da interface e da API operacional. Assim, o
+sistema e o pipeline analítico associado permitem tanto **caracterizar** a
+vulnerabilidade social (via índice) quanto **estimar** a propensão à
+descontinuidade (via modelo).
 
 ### 1.4 Objetivos
 
@@ -130,8 +131,9 @@ propensão** à **descontinuidade do acompanhamento pré-natal**.
 2. Construir um **Índice de Vulnerabilidade dos DSS (IV-DSS)**, baseado nas
    dimensões investigadas, para caracterizar o nível de vulnerabilidade social
    dos perfis representados no dataset sintético.
-3. Desenvolver o aplicativo Flutter com o questionário DSS e o módulo de
-   acompanhamento do pré-natal (armazenamento local/offline).
+3. Desenvolver o aplicativo Flutter com o questionário dos Determinantes Sociais
+   da Saúde e o módulo de acompanhamento do pré-natal, integrando este último a
+   uma API para persistência e gerenciamento dos dados.
 4. Definir a variável-alvo experimental utilizada no estudo sintético,
    distinguindo-a da futura operacionalização longitudinal com dados reais.
 5. Gerar um dataset sintético reproduzível (seed fixa), com dependências
@@ -140,7 +142,10 @@ propensão** à **descontinuidade do acompanhamento pré-natal**.
 6. Aplicar e avaliar técnicas de aprendizado de máquina para estimar a propensão
    à descontinuidade do acompanhamento pré-natal.
 7. Avaliar os modelos por métricas adequadas a classes desbalanceadas.
-8. Integrar aplicativo, API e modelo no fluxo Flutter → API → ML.
+8. Integrar o questionário dos Determinantes Sociais da Saúde ao serviço de API
+   e ao modelo de aprendizado de máquina, estabelecendo o fluxo Flutter → API →
+   ML para obtenção da estimativa experimental de propensão à descontinuidade do
+   acompanhamento pré-natal.
 
 ---
 
