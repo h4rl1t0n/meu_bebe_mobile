@@ -1,0 +1,57 @@
+"""Erros de domínio (FASE 8D) — códigos estáveis.
+
+``DomainError`` segue o mesmo padrão de ``AuthError`` (8C): código, mensagem
+sanitizada (nunca dado pessoal/segredo) e HTTP status. O handler em
+``core.exception_handlers`` mapeia ``<500`` → plano ``{code, message, details}``
+e ``>=500`` → ``{"error": {...}}``.
+
+Códigos mínimos (seção 22 do plano). ``DATABASE_UNAVAILABLE`` é REUTILIZADO da
+auth (mesmo erro de infraestrutura, sem duplicar código).
+"""
+
+from __future__ import annotations
+
+from ..auth.errors import DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE
+
+PROFILE_NOT_FOUND = "PROFILE_NOT_FOUND"
+PROFILE_ALREADY_EXISTS = "PROFILE_ALREADY_EXISTS"
+PREGNANCY_NOT_FOUND = "PREGNANCY_NOT_FOUND"
+ACTIVE_PREGNANCY_ALREADY_EXISTS = "ACTIVE_PREGNANCY_ALREADY_EXISTS"
+PREGNANCY_REOPEN_NOT_ALLOWED = "PREGNANCY_REOPEN_NOT_ALLOWED"
+DOMAIN_ERROR = "DOMAIN_ERROR"
+
+PROFILE_NOT_FOUND_MESSAGE = "Perfil de gestante não encontrado."
+PROFILE_ALREADY_EXISTS_MESSAGE = "Perfil de gestante já cadastrado."
+PREGNANCY_NOT_FOUND_MESSAGE = "Gestação não encontrada."
+ACTIVE_PREGNANCY_ALREADY_EXISTS_MESSAGE = "Já existe uma gestação ativa."
+PREGNANCY_REOPEN_NOT_ALLOWED_MESSAGE = "Não é permitido reabrir uma gestação encerrada."
+DOMAIN_ERROR_MESSAGE = "Falha ao processar a solicitação."
+
+# Reexporta o erro de infraestrutura compartilhado com a auth (seção 22).
+__all__ = [
+    "DATABASE_UNAVAILABLE",
+    "DATABASE_UNAVAILABLE_MESSAGE",
+    "PROFILE_NOT_FOUND",
+    "PROFILE_NOT_FOUND_MESSAGE",
+    "PROFILE_ALREADY_EXISTS",
+    "PROFILE_ALREADY_EXISTS_MESSAGE",
+    "PREGNANCY_NOT_FOUND",
+    "PREGNANCY_NOT_FOUND_MESSAGE",
+    "ACTIVE_PREGNANCY_ALREADY_EXISTS",
+    "ACTIVE_PREGNANCY_ALREADY_EXISTS_MESSAGE",
+    "PREGNANCY_REOPEN_NOT_ALLOWED",
+    "PREGNANCY_REOPEN_NOT_ALLOWED_MESSAGE",
+    "DOMAIN_ERROR",
+    "DOMAIN_ERROR_MESSAGE",
+    "DomainError",
+]
+
+
+class DomainError(Exception):
+    """Erro de domínio mapeado a um envelope HTTP estável."""
+
+    def __init__(self, code: str, message: str, status_code: int) -> None:
+        super().__init__(message)
+        self.code = code
+        self.message = message
+        self.status_code = status_code

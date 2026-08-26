@@ -1,8 +1,9 @@
 """Testes da Base declarativa única (FASE 8B).
 
 Garantem que ``Base.metadata`` é a metadata oficial (usada pelo Alembic) e que
-a ``naming_convention`` de constraints está aplicada. A FASE 8C adiciona as duas
-primeiras entidades de domínio (``users`` e ``auth_refresh_sessions``).
+a ``naming_convention`` de constraints está aplicada. A FASE 8C adiciona
+``users`` e ``auth_refresh_sessions``; a FASE 8D adiciona ``gestantes`` e
+``gestacoes``.
 """
 
 from __future__ import annotations
@@ -16,9 +17,14 @@ def test_base_metadata_is_sqlalchemy_metadata() -> None:
     assert isinstance(Base.metadata, MetaData)
 
 
-def test_base_metadata_contains_only_auth_domain_tables() -> None:
-    """As ÚNICAS tabelas de domínio são as duas da FASE 8C (identidade/auth)."""
-    assert set(Base.metadata.tables) == {"users", "auth_refresh_sessions"}
+def test_base_metadata_contains_only_domain_tables() -> None:
+    """As ÚNICAS tabelas de domínio são as quatro (8C + 8D)."""
+    assert set(Base.metadata.tables) == {
+        "users",
+        "auth_refresh_sessions",
+        "gestantes",
+        "gestacoes",
+    }
 
 
 def test_naming_convention_is_applied() -> None:

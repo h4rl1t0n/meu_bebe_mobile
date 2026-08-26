@@ -16,6 +16,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from ..auth.errors import AuthError
 from ..contracts.errors import ErrorDetail, ErrorResponse
+from ..domain.errors import DomainError
 
 
 def _validation_details(exc: RequestValidationError) -> list[ErrorDetail]:
@@ -70,7 +71,18 @@ async def auth_error_handler(request: Request, exc: AuthError) -> JSONResponse:
     return JSONResponse(status_code=exc.status_code, content=content)
 
 
+async def domain_error_handler(request: Request, exc: DomainError) -> JSONResponse:
+    """Envelope de erro de domínio (FASE 8D) — mesmo padrão do ``AuthError``."""
+    body = ErrorResponse(code=exc.code, message=exc.message, details=[])
+    if exc.status_code >= 500:
+        content = {"error": body.model_dump()}
+    else:
+        content = body.model_dump()
+    return JSONResponse(status_code=exc.status_code, content=content)
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
     app.add_exception_handler(AuthError, auth_error_handler)
+    app.add_exception_handler(DomainError, domain_error_handler)

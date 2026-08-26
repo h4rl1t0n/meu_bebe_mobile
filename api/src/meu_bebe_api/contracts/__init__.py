@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from .dss import DSS_SCHEMA_VERSION, DssPayload
 from .errors import ErrorDetail, ErrorResponse
+from .gestacao import GestacaoResponse, GestacaoWrite
+from .gestante import GestanteResponse, GestanteWrite
 from .risk_estimate import (
     EXPERIMENTAL_ESTIMATE_NOTICE,
     EXPERIMENTAL_TARGET,
@@ -24,4 +26,8 @@ __all__ = [
     "RiskEstimateModelMetadata",
     "RiskEstimateResponse",
     "RiskEstimateResult",
+    "GestanteResponse",
+    "GestanteWrite",
+    "GestacaoResponse",
+    "GestacaoWrite",
 ]
