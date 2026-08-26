@@ -69,7 +69,16 @@ async def lifespan(app: FastAPI):
     app.state.engine = engine
     app.state.session_factory = build_session_factory(engine)
 
-    yield
+    try:
+        yield
+    finally:
+        # FASE 8B-AUDIT L-1: encerramento explícito dos recursos de
+        # persistência no shutdown (devolve/descarta as conexões do pool).
+        # Sem Engine (``DATABASE_URL`` ausente), ``engine`` é ``None`` e o
+        # shutdown segue normalmente (ML runtime e DB runtime permanecem
+        # independentes).
+        if engine is not None:
+            engine.dispose()
 
 
 def create_app(

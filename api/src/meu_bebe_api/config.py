@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from pydantic import ValidationInfo, field_validator
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine.url import make_url
 
@@ -21,6 +21,9 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
+        # 8B-AUDIT M-2: não ecoar o valor de entrada (ex.: DATABASE_URL com
+        # credenciais) em ``ValidationError`` — a URL pode conter senha.
+        hide_input_in_errors=True,
     )
 
     app_name: str = "meu-bebe-api"
@@ -52,24 +55,30 @@ class Settings(BaseSettings):
 
     @field_validator("database_url", "test_database_url")
     @classmethod
-    def _validate_database_url(
-        cls, value: str | None, info: ValidationInfo
-    ) -> str | None:
-        """Valida apenas o FORMATO da URL (não abre conexão).
+    def _validate_database_url(cls, value: str | None) -> str | None:
+        """Valida apenas a CONFIGURAÇÃO da URL (não abre conexão).
 
-        ``None``/vazio → subsistema inerte/sem teste (sem erro). URL não vazia e
-        sintaticamente inválida → erro de CONFIGURAÇÃO (falha previsível na
-        inicialização), distinto de indisponibilidade do PostgreSQL em runtime.
+        Stack congelada: PostgreSQL + psycopg 3 (``postgresql+psycopg://``).
+        ``None``/vazio → subsistema inerte/sem teste (sem erro). Qualquer outro
+        dialeto/driver é erro de CONFIGURAÇÃO (fail-fast), distinto da
+        indisponibilidade do PostgreSQL em runtime.
+
+        As mensagens são GENÉRICAS e NUNCA interpolam a URL recebida (evita
+        expor username/password num ``ValidationError`` — ver 8B-AUDIT M-2).
         """
         if value is None or value == "":
             return None
         try:
-            make_url(value)
-        except Exception as exc:  # noqa: BLE001 — vira erro de configuração
-            field = info.field_name.upper()
+            url = make_url(value)
+        except Exception:  # noqa: BLE001 — vira erro de configuração genérico
             raise ValueError(
-                f"{field} inválida (formato SQLAlchemy): {exc!s}"
-            ) from exc
+                "URL de banco inválida (formato SQLAlchemy)."
+            ) from None
+        if url.drivername != "postgresql+psycopg":
+            raise ValueError(
+                "URL de banco incompatível: esperado PostgreSQL com driver "
+                "psycopg (postgresql+psycopg://)."
+            )
         return value
 
 
