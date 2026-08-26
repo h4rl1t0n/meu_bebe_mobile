@@ -53,6 +53,22 @@ class Settings(BaseSettings):
     # de teste configurado (os testes de integração PostgreSQL são pulados).
     test_database_url: str | None = None
 
+    # FASE 8C — autenticação (JWT). ``jwt_secret`` ausente/vazio = auth INERTE
+    # (endpoints respondem 503 AUTH_NOT_CONFIGURED), mesmo padrão fail-closed do
+    # ``database_url``. NUNCA hardcodar nem logar o segredo (seção 17 do plano).
+    jwt_secret: str | None = None
+    jwt_algorithm: str = "HS256"
+    access_token_ttl_seconds: int = 900
+    refresh_token_ttl_seconds: int = 2592000
+
+    @field_validator("jwt_algorithm")
+    @classmethod
+    def _validate_jwt_algorithm(cls, value: str) -> str:
+        """Apenas HS256 (decisão 8C-PLAN §6). Não suporta algoritmos fracos."""
+        if value != "HS256":
+            raise ValueError("Algoritmo JWT não suportado: esperado HS256.")
+        return value
+
     @field_validator("database_url", "test_database_url")
     @classmethod
     def _validate_database_url(cls, value: str | None) -> str | None:

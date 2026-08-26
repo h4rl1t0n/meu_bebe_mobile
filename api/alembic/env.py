@@ -17,6 +17,11 @@ from sqlalchemy import create_engine, pool
 from meu_bebe_api.config import get_settings
 from meu_bebe_api.db.base import Base
 
+# FASE 8C — importa os models para registrar as tabelas em ``Base.metadata``
+# (``target_metadata``). Sem este import, o autogenerate enxergaria metadata
+# vazia.
+import meu_bebe_api.models  # noqa: E402,F401
+
 config = context.config
 
 if config.config_file_name is not None:

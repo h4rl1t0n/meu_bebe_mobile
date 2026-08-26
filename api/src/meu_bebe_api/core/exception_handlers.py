@@ -14,6 +14,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from ..auth.errors import AuthError
 from ..contracts.errors import ErrorDetail, ErrorResponse
 
 
@@ -55,6 +56,21 @@ async def http_exception_handler(
     return JSONResponse(status_code=exc.status_code, content=body.model_dump())
 
 
+async def auth_error_handler(request: Request, exc: AuthError) -> JSONResponse:
+    """Envelope de erro de autenticação (FASE 8C).
+
+    401/403/409 → formato plano ``{code, message, details}`` (como o 422);
+    500/503 → ``{"error": {...}}`` (mesmo envelope do ``/ready``/``/risk-estimate``).
+    """
+    body = ErrorResponse(code=exc.code, message=exc.message, details=[])
+    if exc.status_code >= 500:
+        content = {"error": body.model_dump()}
+    else:
+        content = body.model_dump()
+    return JSONResponse(status_code=exc.status_code, content=content)
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+    app.add_exception_handler(AuthError, auth_error_handler)

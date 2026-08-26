@@ -23,6 +23,9 @@ dependencies = [
     "pydantic-settings>=2.3",
     "sqlalchemy>=2.0",
     "psycopg[binary]>=3.2",
+    "pwdlib[argon2]>=0.3",
+    "PyJWT>=2.13",
+    "email-validator>=2.3",
 ]
 
 [project.optional-dependencies]
