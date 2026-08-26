@@ -552,8 +552,9 @@ modelo é uma **probabilidade de descontinuidade**, apresentada **não** como
 diagnóstico. A integração foi **implementada e validada** (seções 4.1 e 5.9).
 Adicionalmente, a **infraestrutura de persistência** do backend foi submetida a
 um procedimento de validação técnica próprio, contra **PostgreSQL real**, cobrindo
-conexão, sessão, transação, rollback e encerramento de recursos (detalhado em
-5.9).
+conexão, sessão, transação, rollback e encerramento de recursos. A **autenticação**
+(backend) foi submetida a **testes automatizados** e a um **smoke HTTP** real
+(detalhado em 5.9).
 
 > **Nota (continuidade com o trabalho predecessor).** O TCC predecessor (Rafael
 > Moutinho Kanda, 2025) desenvolveu o aplicativo e os experimentos de aprendizado **não
@@ -639,10 +640,12 @@ A camada de apresentação é construída com **flutter_modular + MobX**, com
 contratos de dados canônicos versionados.
 
 O backend conta, adicionalmente, com uma **infraestrutura de persistência** já
-**implementada e validada**, ainda que **não utilizada** pelo módulo de
-acompanhamento — que permanece em **SQLite local** (seção 4.4). Essa
-infraestrutura organiza o acesso ao banco de dados relacional em uma camada
-própria da API, com ciclo de vida centralizado:
+**implementada e validada**, que recebeu a sua **primeira funcionalidade real
+conectada** — a **autenticação** (seção 4.5), com as tabelas `users` e
+`auth_refresh_sessions` no PostgreSQL. O módulo de acompanhamento, por sua vez,
+permanece em **SQLite local** (seção 4.4). Essa infraestrutura organiza o acesso
+ao banco de dados relacional em uma camada própria da API, com ciclo de vida
+centralizado:
 
 ```text
                  ┌──────────────────────┐
@@ -667,10 +670,12 @@ própria da API, com ciclo de vida centralizado:
 ```
 
 O ramo da esquerda representa o **fluxo DSS atual** (já operacional). O ramo da
-direita representa a **infraestrutura de persistência** disponível — e, nesta
-etapa, **ainda não conectada** a entidades de acompanhamento: não há tabelas de
-domínio nem persistência de consultas, exames, vacinas, medicamentos, gestações
-ou planos de parto. Essa infraestrutura emprega os seguintes componentes:
+direita representa a **infraestrutura de persistência**, que nesta etapa já
+suporta a **autenticação** — a primeira funcionalidade conectada ao banco. A
+**migration `0001`** criou as duas primeiras tabelas reais (`users` e
+`auth_refresh_sessions`); ainda **não** há, contudo, persistência das entidades do
+acompanhamento pré-natal (consultas, exames, vacinas, medicamentos, gestações ou
+plano de parto). Essa infraestrutura emprega os seguintes componentes:
 
 | Componente | Tecnologia     | Função                                      |
 | ---------- | -------------- | ------------------------------------------- |
@@ -680,13 +685,14 @@ ou planos de parto. Essa infraestrutura emprega os seguintes componentes:
 | Banco      | PostgreSQL 16  | persistência central futura                 |
 | Migrações  | Alembic        | controle da evolução do esquema             |
 
-A arquitetura aqui descrita corresponde ao **estado implementado** — incluindo a
-**infraestrutura de persistência** do backend, pronta para receber as entidades de
-domínio em fases posteriores. Distingue-se, portanto, a **API DSS atual** (que
-recebe a estimativa experimental, stateless) da futura **API CRUD do
-acompanhamento pré-natal** — cuja infraestrutura de persistência **já existe**,
-mas cujas entidades, autenticação e operações CRUD permanecem **ainda não
-implementadas** (seção 4.7).
+A arquitetura aqui descrita corresponde ao **estado implementado**. Além da
+**infraestrutura de persistência** (PostgreSQL, SQLAlchemy e Alembic), o backend
+já conta com **autenticação real** — cadastro, login, access/refresh token,
+logout e consulta do usuário autenticado (`/auth/me`) — persistida nas tabelas
+`users` e `auth_refresh_sessions` (seção 4.5). Distingue-se, portanto, a **API DSS
+atual** (que recebe a estimativa experimental, stateless) da futura **API CRUD do
+acompanhamento pré-natal**, cujas **entidades de domínio** (GESTANTE, GESTAÇÃO e
+demais) e operações CRUD permanecem **ainda não implementadas** (seção 4.7).
 
 ### 4.2 Eixo 1 — Questionário dos DSS
 
@@ -765,29 +771,46 @@ SQLite existentes, nem offline-first, sincronização ou cache distribuído
 
 ### 4.5 Autenticação e estado atual do DSS
 
-O aplicativo possui uma **tela visual de login**; entretanto, **não existe um
-fluxo funcional completo de autenticação e sessão**. O botão "Entrar" atualmente
-navega sem autenticar de fato; o botão "Criar nova conta" direciona ao
-questionário DSS e **não** cria conta. Existe código parcial/legado de
-autenticação (repositório de usuário, serviço de login e armazenamento de token),
-mas ele **não** compõe um sistema real completo de autenticação/sessão.
+A **autenticação** foi **implementada no backend** (FastAPI) e é a primeira
+funcionalidade persistente conectada à infraestrutura de banco de dados da API.
 
-O fluxo DSS atual é **stateless** do ponto de vista da API: **não** exige login,
-**não** envia token e **não** possui identificador de usuária/gestante/gestação;
-a API **não** persiste a avaliação.
+**Backend — implementado.** A API expõe os endpoints de autenticação sob o
+prefixo `/api/v1/auth`:
 
-> O item "Sair" da aba Perfil atualmente corresponde a navegação para a tela de
-> login, e **não** a um logout autenticado real. Da mesma forma, **Notificações**
-> e parte das **Configurações** ainda não representam subsistemas persistentes
-> completos.
+- `POST /api/v1/auth/register` — cadastro do usuário, com **e-mail normalizado**
+  e **senha com hash Argon2id** (nunca armazenada em claro), devolvendo os tokens
+  de acesso e de renovação;
+- `POST /api/v1/auth/login` — autenticação por e-mail e senha, com respostas
+  equivalentes para e-mail inexistente e senha incorreta (anti-enumeração);
+- `POST /api/v1/auth/refresh` — renovação do par de tokens, com **rotação
+  simples** (a sessão utilizada é revogada e uma nova é emitida);
+- `POST /api/v1/auth/logout` — revogação da sessão de renovação (o token de
+  acesso permanece válido até sua expiração curta);
+- `GET /api/v1/auth/me` — devolve o usuário autenticado a partir do token de
+  acesso.
 
-A arquitetura futura aprovada prevê **autenticação real** — cadastro, login,
-sessão, token de acesso e token de renovação, com hash de senha moderno — e a
-relação `USER ↔ GESTANTE`, com **autorização por ownership**. Distinguem-se
-**autenticação** (quem é a usuária) de **autorização** (quais registros ela pode
-acessar); o CPF, quando utilizado, pertence ao perfil da gestante e **não** é
-chave primária nem login automático. Tudo isso permanece **planejado**, e **não**
-implementado (seção 4.7).
+O **usuário persistente** (`USER`) contém apenas **identidade/autenticação** —
+identificador UUID, e-mail, hash de senha, flag de atividade e timestamps — e
+**não** contém dados clínicos/pessoais da gestante (nome, CPF, CNS, nascimento ou
+histórico obstétrico), que pertencem ao futuro domínio `GESTANTE` (seção 4.7). As
+**sessões de renovação** são persistidas em `AUTH_REFRESH_SESSION`, guardando
+apenas identificadores e metadados — nunca o token em claro. Os tokens são **JWT
+(HS256)**, com **separação obrigatória** entre token de **acesso** (15 minutos) e
+token de **renovação** (30 dias). A criação dessas tabelas corresponde à
+**primeira migration real** do Alembic (`0001`).
+
+**Flutter — ainda não integrado.** A tela atual de login do aplicativo **não** é
+conectada à nova API: os botões "Entrar" e "Criar nova conta" ainda navegam sem
+autenticar de fato, e o item "Sair" da aba Perfil ainda corresponde a navegação
+para a tela de login — **não** a um logout autenticado real. O armazenamento
+seguro de tokens e a integração do aplicativo com os endpoints acima permanecem
+**etapa futura** (seção 4.7).
+
+O fluxo DSS atual é **stateless** e **independente da autenticação**: o endpoint
+`POST /api/v1/risk-estimate` **não** exige login, **não** envia token, **não**
+possui identificador de usuária/gestante/gestação e **não** persiste a avaliação.
+A autenticação **não** é aplicada globalmente — apenas nas rotas que a exigem — e
+sua indisponibilidade **não** afeta o fluxo de inferência DSS.
 
 ### 4.6 Onde o IV-DSS é calculado
 
@@ -803,11 +826,12 @@ explícita:
 ### 4.7 Arquitetura futura aprovada (evolução planejada)
 
 A arquitetura descrita até aqui corresponde ao **estado atual implementado** — o
-módulo de acompanhamento do pré-natal persiste localmente em SQLite, e o fluxo
-DSS utiliza a API apenas para a estimativa experimental, de forma **stateless**. A
-seguir apresenta-se a **arquitetura futura aprovada**, **planejada mas ainda não
-implementada**, que estabelece a direção de evolução da persistência e da
-identidade do acompanhamento pré-natal.
+módulo de acompanhamento do pré-natal persiste localmente em SQLite, o fluxo DSS
+utiliza a API apenas para a estimativa experimental (de forma **stateless**), e o
+backend já conta com **autenticação real** (seção 4.5), com as tabelas `users` e
+`auth_refresh_sessions` criadas pela **migration `0001`**. A seguir apresenta-se a
+**arquitetura futura aprovada**, **parcialmente implementada**, que estabelece a
+direção de evolução do domínio de acompanhamento pré-natal.
 
 Conceitualmente, o domínio evoluirá para as seguintes entidades e relacionamentos:
 
@@ -838,8 +862,10 @@ referencial formal** (chaves estrangeiras), **timestamps** e identificadores
 **UUID v4** para as novas entidades persistentes. **A infraestrutura de
 persistência correspondente já foi implementada e validada** — PostgreSQL 16,
 SQLAlchemy 2.x em modo **síncrono** e Alembic configurado (seções 4.1 e 5.9);
-permanecem **futuras** a criação das **entidades de domínio**, as **migrations**
-de domínio, a **autenticação** e o **CRUD** do acompanhamento. A adoção do modo
+permanecem **futuras** as **entidades de domínio do acompanhamento** (GESTANTE,
+GESTAÇÃO e demais), as **migrations** dessas entidades e o **CRUD** do
+acompanhamento. A **autenticação** (`USER` e `AUTH_REFRESH_SESSION`) **já foi
+implementada** (seções 4.5 e 5.9). A adoção do modo
 **síncrono** decorreu da adequação às características desta solução — endpoints
 síncronos, ausência de demanda concreta por I/O concorrente intenso, menor
 complexidade de implementação e maior simplicidade em transações, testes e
@@ -848,11 +874,13 @@ inferior em geral. O **CPF**, quando utilizado, pertence ao perfil da gestante e
 **não** é chave primária nem credencial de login automática.
 
 A API/backend passará a ser a **fonte de verdade** do acompanhamento pré-natal,
-com **autenticação** (cadastro, login e sessão) e **autorização por ownership**,
-aplicada pelo caminho `USER → GESTANTE → GESTACAO → recurso`, para impedir o
-acesso a registros de outra usuária. Distinguem-se, assim, **autenticação**
-("quem é a usuária") de **autorização** ("quais registros ela pode acessar");
-trata-se de **controle de propriedade/autorização**, e **não** de "multi-tenancy".
+com **autorização por ownership** aplicada pelo caminho
+`USER → GESTANTE → GESTACAO → recurso`, para impedir o acesso a registros de
+outra usuária — sobre a **autenticação já implementada** (seção 4.5). Distinguem-se,
+assim, **autenticação** ("quem é a usuária") — **já implementada** no backend — de
+**autorização** ("quais registros ela pode acessar"), que depende do domínio
+`GESTANTE`/`GESTACAO` e permanece **futura**; trata-se de **controle de
+propriedade/autorização**, e **não** de "multi-tenancy".
 
 A transição do SQLite para a API será **incremental, feature por feature**: cada
 recurso migra da implementação local para a implementação REST, validado de ponta
@@ -861,10 +889,13 @@ haverá, nesta etapa, migração automática dos registros SQLite existentes, ne
 offline-first, sincronização ou cache distribuído; essas capacidades poderão ser
 avaliadas apenas posteriormente.
 
-> **Não implementado ainda.** Esta subseção registra uma arquitetura **aprovada e
-> planejada**, e **não** deve ser lida como descrição do estado atual nem como
-> resultado de implementação. O fluxo DSS (`POST /api/v1/risk-estimate`) permanece
-> inalterado: stateless, sem autenticação e sem persistência operacional.
+> **Parcialmente implementado.** Esta subseção registra uma arquitetura **aprovada**,
+> da qual a **autenticação** (`USER` e `AUTH_REFRESH_SESSION`) já foi **implementada
+> e validada** no backend (seções 4.5 e 5.9); as demais entidades de domínio
+> (GESTANTE, GESTAÇÃO e recursos do acompanhamento) permanecem **planejadas**, e
+> **não** devem ser lidas como resultado de implementação. O fluxo DSS
+> (`POST /api/v1/risk-estimate`) permanece inalterado: stateless, sem autenticação e
+> sem persistência operacional.
 
 ---
 
@@ -1011,11 +1042,25 @@ Além disso, a **infraestrutura de persistência** do backend foi validada contr
 **PostgreSQL real** (bancos locais `meu_bebe` e `meu_bebe_test`). Foram
 verificados: a abertura de conexão; o teste de conectividade (`SELECT 1`); a
 criação e o encerramento de sessões do SQLAlchemy; a execução de transação e o
-respectivo **rollback**; o acesso do **Alembic** ao banco (com **zero revisions**
-de domínio); a ausência de **tabelas residuais**; e o descarte explícito do
-**engine** no encerramento da aplicação. A suíte de testes da API encerrou com
-**202 testes aprovados** e **nenhum pulado**. Reitera-se que esses testes validam
-a **infraestrutura de software**, e **não** a validade clínica do modelo de ML.
+respectivo **rollback**; o acesso do **Alembic** ao banco; a ausência de **tabelas
+residuais**; e o descarte explícito do **engine** no encerramento da aplicação.
+
+Sobre essa infraestrutura, a **autenticação** foi implementada e submetida a
+**validação técnica/funcional** — **não** de segurança de produção, validade
+clínica ou maturidade industrial. A **primeira migration real** do Alembic
+(`0001`) cria as tabelas `users` e `auth_refresh_sessions`, com `upgrade` e
+`downgrade` reversíveis, conferidos contra **PostgreSQL real**. Foram
+implementados o **usuário persistente** (`USER`, com hash **Argon2id**), as
+**sessões de renovação persistentes** (`AUTH_REFRESH_SESSION`), os endpoints de
+autenticação (`register`, `login`, `refresh`, `logout`, `me`) e os tokens **JWT
+(HS256)** — access de 15 minutos e refresh de 30 dias, com rotação simples.
+
+A suíte de testes da API encerrou com **257 testes aprovados**, **0 falhas** e
+**0 pulados**, incluindo testes de autenticação contra **PostgreSQL real** (banco
+`meu_bebe_test`, nunca SQLite). Um **smoke HTTP** real validou o fluxo
+`register → me → refresh → rejeição do refresh antigo → me com novo access →
+logout → rejeição do refresh revogado`. Reitera-se que esses testes validam a
+**implementação de software**, e **não** a validade clínica do modelo de ML.
 
 ### 5.10 Discussão
 
@@ -1070,9 +1115,10 @@ armazenamento local/offline.
 ### 6.2 Limitações do estudo
 
 Entre as limitações, destacam-se: uso de dados sintéticos (sem validade externa),
-ausência de validação clínica, recall zero no limiar 0,5, autenticação ainda não
-funcional, e a ausência de relacionamentos formais na persistência local (modelo
-implicitamente monousuário).
+ausência de validação clínica, recall zero no limiar 0,5, autenticação
+**implementada apenas no backend** (ainda **não** integrada ao aplicativo Flutter,
+e com token de acesso válido até expirar mesmo após logout), e a ausência de
+relacionamentos formais na persistência local (modelo implicitamente monousuário).
 
 ### 6.3 Trabalhos futuros
 
@@ -1080,10 +1126,12 @@ O problema da descontinuidade do pré-natal **não** foi resolvido; este trabalh
 estabeleceu, antes, uma base metodológica e tecnológica experimental que poderá
 ser estendida a dados reais. Como trabalhos futuros, indicam-se: a
 operacionalização longitudinal do desfecho com dados reais (fundamentada e
-ajustada pela duração gestacional), a implementação das **entidades de domínio**,
-da **autenticação** e do **CRUD** do acompanhamento pré-natal (seção 4.7) — cuja
-infraestrutura de persistência **já foi implementada e validada** —, e a condução
-de estudos com dados reais sob os devidos requisitos éticos e de consentimento.
+ajustada pela duração gestacional), a implementação das **entidades de domínio do
+acompanhamento** (GESTANTE, GESTAÇÃO e demais) e do **CRUD** correspondente
+(seção 4.7) — cuja infraestrutura de persistência **já foi implementada e
+validada**, assim como a autenticação no backend —, a **integração do aplicativo
+Flutter com a autenticação** já existente na API, e a condução de estudos com
+dados reais sob os devidos requisitos éticos e de consentimento.
 
 ---
 
@@ -1168,9 +1216,10 @@ de estudos com dados reais sob os devidos requisitos éticos e de consentimento.
   específica**; não adotada no experimento sintético.
 - Normalização alternativa da `escolaridade` e demais análises de sensibilidade
   do IV-DSS — refinamentos adicionais a definir em etapas futuras.
-- Implementação da arquitetura de persistência e autenticação **aprovada**
-  (seção 4.7) — a ser executada em etapas posteriores; o modo de acesso do ORM
-  (síncrono/assíncrono) e a forma física do plano de parto permanecem a definir.
+- Implementação das **entidades de domínio do acompanhamento** (GESTANTE,
+  GESTAÇÃO e demais) e a **integração do Flutter com a autenticação** do backend
+  (seção 4.7) — a ser executada em etapas posteriores; a forma física do plano de
+  parto permanece a definir (o modo síncrono do ORM já foi adotado).
 
 ---
 
