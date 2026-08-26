@@ -563,6 +563,16 @@ O aplicativo integra o formulário DSS à API e ao modelo de ML: a resposta do
 modelo é uma **probabilidade de descontinuidade**, apresentada **não** como
 diagnóstico. A integração foi **implementada e validada** (seções 5.1 e 6.9).
 
+> **Nota (continuidade com o trabalho predecessor).** O TCC predecessor (Rafael
+> Moutinho Kanda, 2025) desenvolveu o aplicativo e os experimentos de aprendizado **não
+> supervisionado** de forma **separada** (app de coleta + experimentos offline), sem
+> integração operacional app ↔ API ↔ ML e sem backend persistente. O presente trabalho
+> **integra** esses três elementos em um único fluxo operacional (Flutter → FastAPI →
+> modelo serializado → resposta). Trata-se de uma diferença de **integração operacional**,
+> não de correção do trabalho anterior. A estratégia de documentação visual (screenshots,
+> diagramas, gráficos, tabelas e quadros) que sustenta essa continuidade está definida em
+> `docs/TCC2_VISUAL_CONTINUITY_PLAN.md`.
+
 ### 4.12 Aspectos éticos e limitações
 
 1. Dados sintéticos **≠** dados reais (sem validade externa clínica).

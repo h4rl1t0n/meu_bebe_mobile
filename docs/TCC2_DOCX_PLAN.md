@@ -198,6 +198,14 @@ O TCC1 cita, mas **não há PDF correspondente no inventário local**:
 
 > Screenshots são raster por natureza; não há exigência de vetorização.
 
+> **Fonte consolidada de continuidade e apresentação visual.** O documento
+> `docs/TCC2_VISUAL_CONTINUITY_PLAN.md` consolida a linha de continuidade com o TCC
+> predecessor (Rafael Moutinho Kanda, 2025), a estratégia de apresentação visual
+> (app/API/ML), o inventário preliminar de figuras, screenshots, diagramas, gráficos,
+> tabelas e quadros, as regras para equações e linguagem, e o cronograma acadêmico até a
+> entrega (05/11/2026). É a referência para as decisões de continuidade e de documentação
+> visual desta monografia; esta seção (§4) permanece como inventário de candidatos.
+
 ---
 
 ## 5. Estrutura proposta da monografia
