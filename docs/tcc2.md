@@ -58,25 +58,44 @@ descontinuidade (via modelo).
 
 ### 1.4 Objetivos
 
-Ver seção 3.
+#### 1.4.1 Objetivo geral
 
-### 1.5 Título — análise (fundamentação metodológica)
+Desenvolver um aplicativo móvel para coleta estruturada dos **Determinantes
+Sociais da Saúde** e **acompanhamento do pré-natal**, construir um **Índice de
+Vulnerabilidade dos DSS (IV-DSS)** para caracterização dos perfis representados
+no dataset sintético, e desenvolver um **modelo de aprendizado de máquina** —
+treinado e avaliado sobre um **dataset sintético** — capaz de **estimar a
+propensão** à **descontinuidade do acompanhamento pré-natal**.
 
-| Termo candidato   | Avaliação                                                                                                   |
-| ----------------- | ----------------------------------------------------------------------------------------------------------- |
-| "abandono"        | forte demais; sem definição operacional acessível/consensual; exige follow-up até o parto.                  |
-| "descontinuidade" | fiel ao conceito investigado; no experimento atual o desfecho é sintético (gerado por mecanismo probabilístico), e a operacionalização longitudinal com dados reais ainda está em aberto (ver 4.5). |
-| "propensão"       | correto: o modelo emite probabilidade, não diagnóstico.                                                     |
-| "risco"           | aceitável, mas carrega conotação clínica.                                                                   |
-| "DSS"             | deve aparecer (é o objeto central da coleta e do índice).                                                   |
+#### 1.4.2 Objetivos específicos
 
-**Recomendação:** priorizar "descontinuidade" + "DSS" + "aprendizado de
-máquina"; manter "índice de vulnerabilidade" como segundo eixo do trabalho.
-**[DECISÃO DO AUTOR]**.
+1. Modelar os DSS em um contrato de dados canônico, versionado e reproduzível.
+2. Construir um **Índice de Vulnerabilidade dos DSS (IV-DSS)**, baseado nas
+   dimensões investigadas, para caracterizar o nível de vulnerabilidade social
+   dos perfis representados no dataset sintético.
+3. Desenvolver o aplicativo Flutter com o questionário dos Determinantes Sociais
+   da Saúde e o módulo de acompanhamento do pré-natal, integrando este último a
+   uma API para persistência e gerenciamento dos dados.
+4. Definir a variável-alvo experimental utilizada no estudo sintético,
+   distinguindo-a da futura operacionalização longitudinal com dados reais.
+5. Gerar um dataset sintético reproduzível (seed fixa), com dependências
+   probabilísticas controladas e explicitamente definidas entre os DSS e o
+   desfecho sintético.
+6. Aplicar e avaliar técnicas de aprendizado de máquina para estimar a propensão
+   à descontinuidade do acompanhamento pré-natal.
+7. Avaliar os modelos por métricas adequadas a classes desbalanceadas.
+8. Integrar o questionário dos Determinantes Sociais da Saúde ao serviço de API
+   e ao modelo de aprendizado de máquina, estabelecendo o fluxo Flutter → API →
+   ML para obtenção da estimativa experimental de propensão à descontinuidade do
+   acompanhamento pré-natal.
+
+### 1.5 Estrutura do trabalho
+
+**[REDIGIR]**
 
 ---
 
-## 2 Referencial Teórico
+## 2 Fundamentação Teórica
 
 ### 2.1 Pré-natal e saúde materna
 
@@ -112,52 +131,21 @@ Classificação binária; regressão logística, modelos de árvore (Random Fore
 XGBoost) e redes neurais; métricas para classes desbalanceadas (Recall,
 Precision, F1, ROC-AUC, PR-AUC). **[VALIDAR NA LITERATURA]**.
 
----
+### 2.5 Trabalhos relacionados
 
-## 3 Objetivos
-
-### 3.1 Objetivo geral
-
-Desenvolver um aplicativo móvel para coleta estruturada dos **Determinantes
-Sociais da Saúde** e **acompanhamento do pré-natal**, construir um **Índice de
-Vulnerabilidade dos DSS (IV-DSS)** para caracterização dos perfis representados
-no dataset sintético, e desenvolver um **modelo de aprendizado de máquina** —
-treinado e avaliado sobre um **dataset sintético** — capaz de **estimar a
-propensão** à **descontinuidade do acompanhamento pré-natal**.
-
-### 3.2 Objetivos específicos
-
-1. Modelar os DSS em um contrato de dados canônico, versionado e reproduzível.
-2. Construir um **Índice de Vulnerabilidade dos DSS (IV-DSS)**, baseado nas
-   dimensões investigadas, para caracterizar o nível de vulnerabilidade social
-   dos perfis representados no dataset sintético.
-3. Desenvolver o aplicativo Flutter com o questionário dos Determinantes Sociais
-   da Saúde e o módulo de acompanhamento do pré-natal, integrando este último a
-   uma API para persistência e gerenciamento dos dados.
-4. Definir a variável-alvo experimental utilizada no estudo sintético,
-   distinguindo-a da futura operacionalização longitudinal com dados reais.
-5. Gerar um dataset sintético reproduzível (seed fixa), com dependências
-   probabilísticas controladas e explicitamente definidas entre os DSS e o
-   desfecho sintético.
-6. Aplicar e avaliar técnicas de aprendizado de máquina para estimar a propensão
-   à descontinuidade do acompanhamento pré-natal.
-7. Avaliar os modelos por métricas adequadas a classes desbalanceadas.
-8. Integrar o questionário dos Determinantes Sociais da Saúde ao serviço de API
-   e ao modelo de aprendizado de máquina, estabelecendo o fluxo Flutter → API →
-   ML para obtenção da estimativa experimental de propensão à descontinuidade do
-   acompanhamento pré-natal.
+**[REDIGIR]** — comparar o corpus selecionado de trabalhos relacionados a ML e pré-natal, sem alegação universal de ineditismo.
 
 ---
 
-## 4 Metodologia
+## 3 Metodologia
 
-### 4.1 Tipo de pesquisa
+### 3.1 Tipo de pesquisa
 
 Pesquisa aplicada, de natureza experimental/quantitativa, com dados sintéticos
 (fase de validação técnica da metodologia). **[DECISÃO DO AUTOR]** — refinamento
 do enquadramento no texto final.
 
-### 4.2 Determinantes Sociais da Saúde utilizados
+### 3.2 Determinantes Sociais da Saúde utilizados
 
 O instrumento coleta **seis dimensões** e **48 variáveis**:
 
@@ -170,11 +158,11 @@ O instrumento coleta **seis dimensões** e **48 variáveis**:
 
 > **Observação de nomenclatura:** o formulário possui uma dimensão denominada
 > "Saúde", porém, após a exclusão das variáveis relacionadas à adesão/desfecho
-> (ver 4.7), o IV-DSS e o modelo utilizam apenas os indicadores relacionados ao
+> (ver 3.7), o IV-DSS e o modelo utilizam apenas os indicadores relacionados ao
 > **acesso** aos serviços de saúde. Isso evita a interpretação de que o índice
 > mede qualidade ou adesão ao pré-natal — ele mede **vulnerabilidade de acesso**.
 
-### 4.3 Construção do Índice de Vulnerabilidade dos DSS (IV-DSS)
+### 3.3 Construção do Índice de Vulnerabilidade dos DSS (IV-DSS)
 
 O **IV-DSS** é uma **medida agregada de caracterização** da vulnerabilidade
 social dos perfis representados no dataset sintético. É um **índice descritivo
@@ -183,7 +171,7 @@ experimental**: não é um instrumento validado, nem escala diagnóstica, nem
 de risco de descontinuidade. A especificação técnica completa encontra-se em
 `docs/planejamento_dataset_sintetico.md`.
 
-#### 4.3.1 Definição conceitual
+#### 3.3.1 Definição conceitual
 
 ```text
           DSS
@@ -199,7 +187,7 @@ de risco de descontinuidade. A especificação técnica completa encontra-se em
 nível de vulnerabilidade social da gestante segundo os DSS?"_; o modelo responde
 a _"qual a propensão à descontinuidade do pré-natal?"_.
 
-#### 4.3.2 Estrutura (três níveis de agregação)
+#### 3.3.2 Estrutura (três níveis de agregação)
 
 - **Nível 1 — indicador → escore:** cada indicador selecionado é transformado em
   um escore de vulnerabilidade `v_i ∈ [0,1]`, onde **0 = menor vulnerabilidade**
@@ -228,7 +216,7 @@ onde:
 - o IV-DSS poderá ser analisado em relação às previsões e ao Y, mas é calculado
   de forma **independente**.
 
-#### 4.3.3 Indicadores e escores por dimensão
+#### 3.3.3 Indicadores e escores por dimensão
 
 **D_educacao** — indicador `escolaridade` (normalização ordinal, intervalos
 iguais operacionais):
@@ -281,13 +269,13 @@ autorrelatada de privação alimentar associada à insuficiência de recursos
 financeiros nos três meses anteriores."* **Não** afirmar que constitui aplicação
 da EBIA ou da FIES.
 
-**Fora do IV-DSS (e por quê):** as 5 variáveis de leakage (4.7), as 5 temporais
-(4.7), as 2 descritivas (`cuidados_vetores`, `melhorias_desejadas`) e as 2 de
+**Fora do IV-DSS (e por quê):** as 5 variáveis de leakage (3.7), as 5 temporais
+(3.7), as 2 descritivas (`cuidados_vetores`, `melhorias_desejadas`) e as 2 de
 sensibilidade (`problema_saude_agua`, `facil_acesso_saude`). `acesso_ubs` e
 `cadastrada_ubs` permanecem disponíveis ao ML como variáveis nominais, mas **não**
 pontuam no IV-DSS.
 
-#### 4.3.4 Pesos
+#### 3.3.4 Pesos
 
 Na ausência de evidência empírica que sustente pesos diferenciados entre as
 dimensões, este estudo adota **pesos iguais (1/6)** como opção metodológica
@@ -297,7 +285,7 @@ construção de indicadores compostos (normalização, ponderação, agregação
 análise de sensibilidade), sem que o peso igual seja tratado como regra
 universal por ele determinada.
 
-#### 4.3.5 Escala e interpretação
+#### 3.3.5 Escala e interpretação
 
 - **Saída principal:** IV-DSS contínuo no intervalo `[0,1]`.
 - **Não** criar pontos de corte absolutos de baixa/média/alta vulnerabilidade.
@@ -306,7 +294,7 @@ universal por ele determinada.
 - Essas categorias por quantis são **amostrais** e **não** representam pontos de
   corte clínicos, epidemiológicos ou validados.
 
-#### 4.3.6 Política de missing e validade
+#### 3.3.6 Política de missing e validade
 
 `missing ≠ 0`, `missing ≠ 0.5`, `missing ≠ vulnerabilidade intermediária`.
 Distinguir resposta ausente, não aplicável estrutural (condicional do schema) e
@@ -316,7 +304,7 @@ contrário, `IV-DSS = não calculável` (não calcular silenciosamente a média 
 dimensões restantes). O `iv_dss_parcial` com cobertura 5/6 é calculado como
 resultado auxiliar.
 
-#### 4.3.7 Análises de sensibilidade
+#### 3.3.7 Análises de sensibilidade
 
 A agregação principal é **aritmética** (não usar geométrica como primeira
 alternativa, pois dimensões podem assumir 0).
@@ -331,7 +319,7 @@ perturbações nos pesos; possível componente ocupacional; e agregação menos
 compensatória justificável. O objetivo de toda análise de sensibilidade é testar
 **robustez** — não escolher a posteriori a versão com "melhor resultado".
 
-### 4.4 Modelagem dos dados
+### 3.4 Modelagem dos dados
 
 Contrato de dados canônico e versionado (`schema_version = '1.13'`), com códigos
 canônicos (`snake_case`) separados dos rótulos de UI. `FormularioData.toMap()`
@@ -339,7 +327,7 @@ canônicos (`snake_case`) separados dos rótulos de UI. `FormularioData.toMap()`
 dimensões e 48 variáveis, todas estruturadas (booleanas, categóricas por código,
 múltipla escolha por código ou numéricas) — **sem campos de texto livre**.
 
-### 4.5 População, T0 e variável-alvo
+### 3.5 População, T0 e variável-alvo
 
 **População-alvo do modelo:** gestantes que **já iniciaram** o acompanhamento
 pré-natal. O critério de inclusão "iniciou o pré-natal" é **parte da população**,
@@ -378,7 +366,7 @@ Há dois planos distintos que **não** devem ser confundidos:
 - Y **não** é calculado a partir de consultas simuladas.
 - Y **não** é produzido pela aplicação da regra de sete consultas.
 - Y é gerado pelo **DGM probabilístico**: `g_* → eta → sigmoid → Bernoulli`
-  (ver 4.6).
+  (ver 3.6).
 - O objetivo desse Y é testar **tecnicamente** o pipeline de ML em cenário
   controlado.
 
@@ -386,7 +374,7 @@ Há dois planos distintos que **não** devem ser confundidos:
 dados reais, o critério longitudinal de desfecho deve ser definido e validado a
 partir dos registros reais de acompanhamento (prontuário/SISPRENATAL).
 
-### 4.6 Geração do dataset sintético
+### 3.6 Geração do dataset sintético
 
 **Nomenclatura conceitual (usada em todo o documento):**
 
@@ -463,7 +451,7 @@ O dataset foi **gerado** com as seguintes configurações: **5.000 registros**,
 **proporção sintética planejada ~25%** de Y=1 (não chamar de "prevalência"),
 seed fixa `42`. Cenários de sensibilidade futuros: ~15%, ~25%, ~35%.
 
-### 4.7 Seleção de variáveis e controle de leakage
+### 3.7 Seleção de variáveis e controle de leakage
 
 Nem todas as 48 respostas do questionário são utilizadas no modelo principal. A
 classificação consolidada das 48 variáveis é:
@@ -497,7 +485,7 @@ durante a gestação/acompanhamento.
 O IV-DSS é construído **exclusivamente** a partir de determinantes sociais e
 condições de vulnerabilidade, nunca de informações do próprio acompanhamento.
 
-### 4.8 Modelos de aprendizado de máquina
+### 3.8 Modelos de aprendizado de máquina
 
 O protocolo experimental avaliou **três** algoritmos de classificação
 supervisionada:
@@ -510,12 +498,12 @@ A proposta inicial do trabalho considerou, adicionalmente, técnicas como **rede
 neurais** e análise de agrupamento exploratória (**K-means**). Essas abordagens,
 entretanto, **não foram executadas** no experimento: o protocolo adotado
 restringiu-se aos três modelos efetivamente implementados e comparados, levando
-à seleção do **Random Forest** (seção 6.2). Essa evolução metodológica — de uma
+à seleção do **Random Forest** (seção 5.2). Essa evolução metodológica — de uma
 proposta ampla para um protocolo fechado com três classificadores — é registrada
 aqui de forma explícita, sem que as técnicas não executadas sejam descritas como
 realizadas.
 
-### 4.9 Treinamento e validação
+### 3.9 Treinamento e validação
 
 O protocolo de treinamento e validação seguiu os seguintes procedimentos:
 
@@ -539,7 +527,7 @@ O pré-processamento transformou as **34 variáveis brutas** de `X_model` em
 categorias nominais e multiselect, mapeamento de ordinais e normalização de
 booleanos — sem imputação e sem escalonamento.
 
-### 4.10 Métricas
+### 3.10 Métricas
 
 A avaliação adotou métricas **independentes de threshold** e **dependentes de
 threshold**:
@@ -555,17 +543,17 @@ threshold**:
 
 A seleção do modelo foi orientada pela **PR-AUC média** na validação cruzada
 (desempate por recall e F1), por ser mais adequada a cenários desbalanceados do
-que a accuracy. Os resultados são apresentados na seção 6.
+que a accuracy. Os resultados são apresentados na seção 5.
 
-### 4.11 Integração Flutter → API → ML
+### 3.11 Procedimento de validação da integração Flutter → API → ML
 
 O aplicativo integra o formulário DSS à API e ao modelo de ML: a resposta do
 modelo é uma **probabilidade de descontinuidade**, apresentada **não** como
-diagnóstico. A integração foi **implementada e validada** (seções 5.1 e 6.9).
+diagnóstico. A integração foi **implementada e validada** (seções 4.1 e 5.9).
 Adicionalmente, a **infraestrutura de persistência** do backend foi submetida a
 um procedimento de validação técnica próprio, contra **PostgreSQL real**, cobrindo
 conexão, sessão, transação, rollback e encerramento de recursos (detalhado em
-6.9).
+5.9).
 
 > **Nota (continuidade com o trabalho predecessor).** O TCC predecessor (Rafael
 > Moutinho Kanda, 2025) desenvolveu o aplicativo e os experimentos de aprendizado **não
@@ -577,7 +565,7 @@ conexão, sessão, transação, rollback e encerramento de recursos (detalhado e
 > diagramas, gráficos, tabelas e quadros) que sustenta essa continuidade está definida em
 > `docs/TCC2_VISUAL_CONTINUITY_PLAN.md`.
 
-### 4.12 Aspectos éticos e limitações
+### 3.12 Aspectos éticos e limitações
 
 1. Dados sintéticos **≠** dados reais (sem validade externa clínica).
 2. Estimativa **≠** diagnóstico médico.
@@ -604,7 +592,7 @@ conexão, sessão, transação, rollback e encerramento de recursos (detalhado e
 12. Os coeficientes do DGM são **parâmetros de simulação**, não efeitos
     epidemiológicos quantitativamente comprovados.
 13. A proporção sintética planejada (~25%) **não** representa prevalência real.
-14. O modelo selecionado apresentou **recall zero no limiar 0,5** (seção 6.3);
+14. O modelo selecionado apresentou **recall zero no limiar 0,5** (seção 5.3);
     isso é um resultado experimental e **não** sustenta interpretação de
     desempenho clínico.
 15. **Persistência operacional ≠ uso científico.** Armazenar futuramente as
@@ -616,9 +604,9 @@ conexão, sessão, transação, rollback e encerramento de recursos (detalhado e
 
 ---
 
-## 5 Desenvolvimento da aplicação
+## 4 Desenvolvimento da Solução
 
-### 5.1 Arquitetura
+### 4.1 Arquitetura
 
 A solução é composta por um **aplicativo móvel** (Flutter), um **backend**
 (FastAPI) e um **pacote de aprendizado de máquina** (`meu_bebe_ml`, Python). O
@@ -652,7 +640,7 @@ contratos de dados canônicos versionados.
 
 O backend conta, adicionalmente, com uma **infraestrutura de persistência** já
 **implementada e validada**, ainda que **não utilizada** pelo módulo de
-acompanhamento — que permanece em **SQLite local** (seção 5.4). Essa
+acompanhamento — que permanece em **SQLite local** (seção 4.4). Essa
 infraestrutura organiza o acesso ao banco de dados relacional em uma camada
 própria da API, com ciclo de vida centralizado:
 
@@ -698,9 +686,9 @@ domínio em fases posteriores. Distingue-se, portanto, a **API DSS atual** (que
 recebe a estimativa experimental, stateless) da futura **API CRUD do
 acompanhamento pré-natal** — cuja infraestrutura de persistência **já existe**,
 mas cujas entidades, autenticação e operações CRUD permanecem **ainda não
-implementadas** (seção 5.7).
+implementadas** (seção 4.7).
 
-### 5.2 Eixo 1 — Questionário dos DSS
+### 4.2 Eixo 1 — Questionário dos DSS
 
 Formulário estruturado das seis dimensões; coleta informações usadas na
 caracterização (IV-DSS) e na estimativa experimental do modelo. O resultado
@@ -710,7 +698,7 @@ metodológico** que esclarece o caráter experimental, a base em dados sintétic
 e a ausência de diagnóstico ou certeza. **Não** há tela de "risco" nem
 classificação de risco.
 
-### 5.3 Eixo 2 — Módulo de acompanhamento do pré-natal
+### 4.3 Eixo 2 — Módulo de acompanhamento do pré-natal
 
 O aplicativo integra, em uma mesma solução, o gerenciamento do acompanhamento
 pré-natal, organizado em **quatro abas principais**: **Home**, **Gestação**,
@@ -737,7 +725,7 @@ Conceitualmente, no plano de parto, **identificação**, **histórico** e
 **alívio da dor**, **nascimento** e **observações**. Essas informações representam
 **preferências e expectativas**, e **não** o registro do desfecho real do parto.
 
-### 5.4 Armazenamento local / offline
+### 4.4 Armazenamento local / offline
 
 O módulo de acompanhamento **não depende de API** para armazenar essas
 informações; funciona offline. Esta é uma característica arquitetural e
@@ -756,7 +744,7 @@ com **SQL bruto** (sem Drift/codegen). O banco `meu_bebe.db` (versão 1) contém
 > de `FOREIGN KEY`/`REFERENCES` foi declarada. A implementação local assume
 > implicitamente **uma única gestante/gestação por instalação/dispositivo**. Essa
 > é uma **limitação da implementação atual**, e **não** uma decisão desejada para
-> a arquitetura futura (seção 5.7).
+> a arquitetura futura (seção 4.7).
 
 A estratégia de evolução **aprovada** para a persistência do acompanhamento prevê
 que a **API/backend** passe a ser a **fonte de verdade**, substituindo
@@ -765,17 +753,17 @@ feature**: cada recurso migra da implementação local para uma implementação 
 validada de ponta a ponta, e só então a API passa a ser a fonte de verdade
 daquela feature. **Não** haverá, nesta etapa, migração automática dos registros
 SQLite existentes, nem offline-first, sincronização ou cache distribuído
-(seção 5.7).
+(seção 4.7).
 
 > **Infraestrutura já implementada.** Embora o módulo de acompanhamento ainda
 > utilize **SQLite local**, a **infraestrutura de persistência do backend** —
 > PostgreSQL 16, SQLAlchemy 2.x (síncrono) e Alembic — **já foi implementada e
-> validada** (seções 5.1 e 6.9). A troca do SQLite por essa infraestrutura
+> validada** (seções 4.1 e 5.9). A troca do SQLite por essa infraestrutura
 > permanece **planejada para etapas posteriores**, feature por feature, por meio
 > da API. O SQLite continua sendo o **estado atual** da persistência no
 > aplicativo.
 
-### 5.5 Autenticação e estado atual do DSS
+### 4.5 Autenticação e estado atual do DSS
 
 O aplicativo possui uma **tela visual de login**; entretanto, **não existe um
 fluxo funcional completo de autenticação e sessão**. O botão "Entrar" atualmente
@@ -799,9 +787,9 @@ relação `USER ↔ GESTANTE`, com **autorização por ownership**. Distinguem-s
 **autenticação** (quem é a usuária) de **autorização** (quais registros ela pode
 acessar); o CPF, quando utilizado, pertence ao perfil da gestante e **não** é
 chave primária nem login automático. Tudo isso permanece **planejado**, e **não**
-implementado (seção 5.7).
+implementado (seção 4.7).
 
-### 5.6 Onde o IV-DSS é calculado
+### 4.6 Onde o IV-DSS é calculado
 
 O IV-DSS é calculado em **etapa analítica independente** no pipeline Python
 (`meu_bebe_ml`), e **não** no aplicativo nem na API — nesta versão. Distinção
@@ -812,7 +800,7 @@ explícita:
 - **Pré-processamento de ML** = preparação de `X_model` para os classificadores
   (one-hot, multi-hot, ordinais, booleanos).
 
-### 5.7 Arquitetura futura aprovada (evolução planejada)
+### 4.7 Arquitetura futura aprovada (evolução planejada)
 
 A arquitetura descrita até aqui corresponde ao **estado atual implementado** — o
 módulo de acompanhamento do pré-natal persiste localmente em SQLite, e o fluxo
@@ -849,7 +837,7 @@ como camada ORM e **Alembic** para migrações versionadas, com **integridade
 referencial formal** (chaves estrangeiras), **timestamps** e identificadores
 **UUID v4** para as novas entidades persistentes. **A infraestrutura de
 persistência correspondente já foi implementada e validada** — PostgreSQL 16,
-SQLAlchemy 2.x em modo **síncrono** e Alembic configurado (seções 5.1 e 6.9);
+SQLAlchemy 2.x em modo **síncrono** e Alembic configurado (seções 4.1 e 5.9);
 permanecem **futuras** a criação das **entidades de domínio**, as **migrations**
 de domínio, a **autenticação** e o **CRUD** do acompanhamento. A adoção do modo
 **síncrono** decorreu da adequação às características desta solução — endpoints
@@ -880,13 +868,13 @@ avaliadas apenas posteriormente.
 
 ---
 
-## 6 Resultados e Discussão
+## 5 Resultados e Discussão
 
 Os resultados são organizados em duas frentes distintas: (i) os **resultados do
 experimento de aprendizado de máquina**; e (ii) a **validação da implementação de
 software**.
 
-### 6.1 Conjunto sintético e protocolo
+### 5.1 Conjunto sintético e protocolo
 
 O experimento utilizou um dataset sintético de **5.000 registros** (seed fixa
 `42`), com proporção sintética planejada de ~25% de casos positivos. A divisão
@@ -894,7 +882,7 @@ estratificada resultou em **4.000 registros de treino** e **1.000 de teste**, co
 razão de positivos preservada (~24,4%). O pré-processamento transformou as
 **34 variáveis brutas** de `X_model` em **96 features** numéricas.
 
-### 6.2 Comparação e seleção de modelos
+### 5.2 Comparação e seleção de modelos
 
 Três modelos foram comparados por validação cruzada 5-fold (folds congelados,
 somente sobre o treino), tendo como métrica primária a **PR-AUC média**:
@@ -911,7 +899,7 @@ selecionado para o experimento técnico** realizado sobre dados sintéticos — 
 um modelo validado clinicamente, nem superior para a população real, nem uma
 ferramenta diagnóstica.
 
-### 6.3 Desempenho do modelo selecionado (hold-out)
+### 5.3 Desempenho do modelo selecionado (hold-out)
 
 O modelo selecionado foi avaliado **uma única vez** no conjunto de teste
 (1.000 registros), após a seleção. Resultados históricos:
@@ -940,7 +928,7 @@ validada".
 > retorna classe, faixa de risco ou previsão de abandono; retorna somente a
 > **probabilidade**.
 
-### 6.4 Análise de threshold
+### 5.4 Análise de threshold
 
 Foi realizada uma análise exploratória de sensibilidade a diferentes limiares de
 decisão (grade de 0,05 a 0,5), sobre as probabilidades out-of-fold do treino. As
@@ -949,7 +937,7 @@ probabilidades preditas concentraram-se em uma faixa restrita (aproximadamente
 evidenciada pelas AUCs. **Nenhum threshold foi adotado operacionalmente**; a
 análise serve apenas para caracterizar o comportamento do modelo.
 
-### 6.5 Calibração e estabilidade
+### 5.5 Calibração e estabilidade
 
 A calibração do modelo foi avaliada por três indicadores complementares, todos
 sobre as previsões out-of-fold do treino: (i) o **Brier score**; (ii) a
@@ -973,7 +961,7 @@ padrão do Brier entre folds foi ≈ 0,0017, o da ROC-AUC ≈ 0,017 e o da PR-AU
 ≈ 0,025 — uma variação moderada, sem indício de instabilidade grave entre os
 folds.
 
-### 6.6 Sensibilidade metodológica
+### 5.6 Sensibilidade metodológica
 
 A análise de sensibilidade comparou o modelo principal (`X_model`, 34 variáveis)
 com uma variante estendida (`X_sens`, 36 variáveis), que acrescenta duas
@@ -989,7 +977,7 @@ praticamente nula (≈ +0,0004). Trata-se de uma **conclusão estritamente
 experimental**: os resultados do modelo principal mostram-se estáveis à adição
 dessas duas variáveis, e este exercício **não** constitui validação clínica.
 
-### 6.7 Interpretabilidade
+### 5.7 Interpretabilidade
 
 A interpretabilidade foi avaliada por **importância por permutação** (out-of-fold,
 múltiplas repetições, métrica PR-AUC). As variáveis com maior impacto na
@@ -1000,7 +988,7 @@ permutação incluíram, em ordem aproximada, `dificuldades_saude`, `faixa_renda
 > treinado, e **não** deve ser lida como associação causal nem como determinante
 > clinicamente comprovado de descontinuidade.
 
-### 6.8 IV-DSS
+### 5.8 IV-DSS
 
 O IV-DSS foi **implementado e calculado** sobre os 5.000 registros sintéticos,
 com as seis dimensões (educação; trabalho e renda; saneamento; acesso aos
@@ -1012,7 +1000,7 @@ vulnerabilidade social**, e permanece conceitualmente separado da probabilidade
 do modelo: **IV-DSS ≠ P(Y) ≠ probability do Random Forest ≠ diagnóstico ≠
 classificador**.
 
-### 6.9 Validação da implementação de software
+### 5.9 Validação da implementação de software
 
 A integração **Flutter → FastAPI → IA → Flutter** foi validada de ponta a ponta
 em **Android Emulator**. Trata-se de uma **validação de integração de software**
@@ -1029,7 +1017,7 @@ de domínio); a ausência de **tabelas residuais**; e o descarte explícito do
 **202 testes aprovados** e **nenhum pulado**. Reitera-se que esses testes validam
 a **infraestrutura de software**, e **não** a validade clínica do modelo de ML.
 
-### 6.10 Discussão
+### 5.10 Discussão
 
 Os resultados devem ser interpretados com cautela. A capacidade discriminativa
 do modelo é **limitada** (ROC-AUC ≈ 0,62; PR-AUC ≈ 0,34), e o **recall zero no
@@ -1055,7 +1043,9 @@ engenharia válido **independentemente** da validade clínica do modelo.
 
 ---
 
-## 7 Conclusão
+## 6 Conclusão
+
+### 6.1 Síntese dos resultados
 
 Este trabalho propôs estimar, a partir dos Determinantes Sociais da Saúde
 coletados de forma estruturada, a propensão de gestantes à descontinuidade do
@@ -1077,23 +1067,27 @@ funcional ao integrar, em uma mesma solução, o questionário DSS, a estimativa
 experimental e o acompanhamento do pré-natal (incluindo plano de parto), com
 armazenamento local/offline.
 
+### 6.2 Limitações do estudo
+
 Entre as limitações, destacam-se: uso de dados sintéticos (sem validade externa),
 ausência de validação clínica, recall zero no limiar 0,5, autenticação ainda não
 funcional, e a ausência de relacionamentos formais na persistência local (modelo
 implicitamente monousuário).
+
+### 6.3 Trabalhos futuros
 
 O problema da descontinuidade do pré-natal **não** foi resolvido; este trabalho
 estabeleceu, antes, uma base metodológica e tecnológica experimental que poderá
 ser estendida a dados reais. Como trabalhos futuros, indicam-se: a
 operacionalização longitudinal do desfecho com dados reais (fundamentada e
 ajustada pela duração gestacional), a implementação das **entidades de domínio**,
-da **autenticação** e do **CRUD** do acompanhamento pré-natal (seção 5.7) — cuja
+da **autenticação** e do **CRUD** do acompanhamento pré-natal (seção 4.7) — cuja
 infraestrutura de persistência **já foi implementada e validada** —, e a condução
 de estudos com dados reais sob os devidos requisitos éticos e de consentimento.
 
 ---
 
-## Referências (já levantadas; a consolidar)
+## Referências
 
 1. Ministério da Saúde. _Atenção ao pré-natal de baixo risco_. Cadernos de
    Atenção Básica nº 32, 2013.
@@ -1115,7 +1109,7 @@ de estudos com dados reais sob os devidos requisitos éticos e de consentimento.
 
 ---
 
-## Apêndice — Decisões metodológicas consolidadas e em aberto
+## APÊNDICE A — DECISÕES METODOLÓGICAS CONSOLIDADAS E EM ABERTO
 
 ### Decisões consolidadas
 
@@ -1175,5 +1169,21 @@ de estudos com dados reais sob os devidos requisitos éticos e de consentimento.
 - Normalização alternativa da `escolaridade` e demais análises de sensibilidade
   do IV-DSS — refinamentos adicionais a definir em etapas futuras.
 - Implementação da arquitetura de persistência e autenticação **aprovada**
-  (seção 5.7) — a ser executada em etapas posteriores; o modo de acesso do ORM
+  (seção 4.7) — a ser executada em etapas posteriores; o modo de acesso do ORM
   (síncrono/assíncrono) e a forma física do plano de parto permanecem a definir.
+
+---
+
+## APÊNDICE B — FUNDAMENTAÇÃO DA ESCOLHA DO TÍTULO
+
+| Termo candidato   | Avaliação                                                                                                   |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| "abandono"        | forte demais; sem definição operacional acessível/consensual; exige follow-up até o parto.                  |
+| "descontinuidade" | fiel ao conceito investigado; no experimento atual o desfecho é sintético (gerado por mecanismo probabilístico), e a operacionalização longitudinal com dados reais ainda está em aberto (ver 3.5). |
+| "propensão"       | correto: o modelo emite probabilidade, não diagnóstico.                                                     |
+| "risco"           | aceitável, mas carrega conotação clínica.                                                                   |
+| "DSS"             | deve aparecer (é o objeto central da coleta e do índice).                                                   |
+
+**Recomendação:** priorizar "descontinuidade" + "DSS" + "aprendizado de
+máquina"; manter "índice de vulnerabilidade" como segundo eixo do trabalho.
+**[DECISÃO DO AUTOR]**.
