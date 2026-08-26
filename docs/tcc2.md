@@ -562,6 +562,10 @@ que a accuracy. Os resultados são apresentados na seção 6.
 O aplicativo integra o formulário DSS à API e ao modelo de ML: a resposta do
 modelo é uma **probabilidade de descontinuidade**, apresentada **não** como
 diagnóstico. A integração foi **implementada e validada** (seções 5.1 e 6.9).
+Adicionalmente, a **infraestrutura de persistência** do backend foi submetida a
+um procedimento de validação técnica próprio, contra **PostgreSQL real**, cobrindo
+conexão, sessão, transação, rollback e encerramento de recursos (detalhado em
+6.9).
 
 > **Nota (continuidade com o trabalho predecessor).** O TCC predecessor (Rafael
 > Moutinho Kanda, 2025) desenvolveu o aplicativo e os experimentos de aprendizado **não
@@ -646,10 +650,55 @@ código do modelo no aplicativo.
 A camada de apresentação é construída com **flutter_modular + MobX**, com
 contratos de dados canônicos versionados.
 
-A arquitetura aqui descrita corresponde ao **estado implementado**. Distingue-se,
-portanto, a **API DSS atual** (que recebe a estimativa experimental, stateless) de
-uma futura **API CRUD do acompanhamento pré-natal**, prevista na arquitetura
-aprovada (seção 5.7) e **ainda não implementada**.
+O backend conta, adicionalmente, com uma **infraestrutura de persistência** já
+**implementada e validada**, ainda que **não utilizada** pelo módulo de
+acompanhamento — que permanece em **SQLite local** (seção 5.4). Essa
+infraestrutura organiza o acesso ao banco de dados relacional em uma camada
+própria da API, com ciclo de vida centralizado:
+
+```text
+                 ┌──────────────────────┐
+                 │       Flutter        │
+                 └──────────┬───────────┘
+                            │
+                         FastAPI
+                            │
+             ┌──────────────┴──────────────┐
+             │                             │
+             ▼                             ▼
+     Fluxo DSS atual              Infraestrutura persistente
+             │                             │
+             ▼                             ▼
+       meu_bebe_ml                   SQLAlchemy 2.x
+             │                             │
+             ▼                             ▼
+      Random Forest                    psycopg 3
+             │                             │
+             ▼                             ▼
+       probability                   PostgreSQL 16
+```
+
+O ramo da esquerda representa o **fluxo DSS atual** (já operacional). O ramo da
+direita representa a **infraestrutura de persistência** disponível — e, nesta
+etapa, **ainda não conectada** a entidades de acompanhamento: não há tabelas de
+domínio nem persistência de consultas, exames, vacinas, medicamentos, gestações
+ou planos de parto. Essa infraestrutura emprega os seguintes componentes:
+
+| Componente | Tecnologia     | Função                                      |
+| ---------- | -------------- | ------------------------------------------- |
+| API        | FastAPI        | comunicação HTTP                            |
+| ORM        | SQLAlchemy 2.x | acesso estruturado (síncrono) aos dados     |
+| Driver     | psycopg 3      | comunicação com o PostgreSQL                |
+| Banco      | PostgreSQL 16  | persistência central futura                 |
+| Migrações  | Alembic        | controle da evolução do esquema             |
+
+A arquitetura aqui descrita corresponde ao **estado implementado** — incluindo a
+**infraestrutura de persistência** do backend, pronta para receber as entidades de
+domínio em fases posteriores. Distingue-se, portanto, a **API DSS atual** (que
+recebe a estimativa experimental, stateless) da futura **API CRUD do
+acompanhamento pré-natal** — cuja infraestrutura de persistência **já existe**,
+mas cujas entidades, autenticação e operações CRUD permanecem **ainda não
+implementadas** (seção 5.7).
 
 ### 5.2 Eixo 1 — Questionário dos DSS
 
@@ -717,6 +766,14 @@ validada de ponta a ponta, e só então a API passa a ser a fonte de verdade
 daquela feature. **Não** haverá, nesta etapa, migração automática dos registros
 SQLite existentes, nem offline-first, sincronização ou cache distribuído
 (seção 5.7).
+
+> **Infraestrutura já implementada.** Embora o módulo de acompanhamento ainda
+> utilize **SQLite local**, a **infraestrutura de persistência do backend** —
+> PostgreSQL 16, SQLAlchemy 2.x (síncrono) e Alembic — **já foi implementada e
+> validada** (seções 5.1 e 6.9). A troca do SQLite por essa infraestrutura
+> permanece **planejada para etapas posteriores**, feature por feature, por meio
+> da API. O SQLite continua sendo o **estado atual** da persistência no
+> aplicativo.
 
 ### 5.5 Autenticação e estado atual do DSS
 
@@ -790,9 +847,16 @@ gestação.
 A persistência futura aprovada prevê **PostgreSQL** como banco, **SQLAlchemy 2.x**
 como camada ORM e **Alembic** para migrações versionadas, com **integridade
 referencial formal** (chaves estrangeiras), **timestamps** e identificadores
-**UUID v4** para as novas entidades persistentes. O modo de acesso do ORM
-(síncrono ou assíncrono) **ainda não está definido** e será avaliado na etapa de
-infraestrutura. O **CPF**, quando utilizado, pertence ao perfil da gestante e
+**UUID v4** para as novas entidades persistentes. **A infraestrutura de
+persistência correspondente já foi implementada e validada** — PostgreSQL 16,
+SQLAlchemy 2.x em modo **síncrono** e Alembic configurado (seções 5.1 e 6.9);
+permanecem **futuras** a criação das **entidades de domínio**, as **migrations**
+de domínio, a **autenticação** e o **CRUD** do acompanhamento. A adoção do modo
+**síncrono** decorreu da adequação às características desta solução — endpoints
+síncronos, ausência de demanda concreta por I/O concorrente intenso, menor
+complexidade de implementação e maior simplicidade em transações, testes e
+manutenção — sem que isso constitua juízo de que a abordagem assíncrona seja
+inferior em geral. O **CPF**, quando utilizado, pertence ao perfil da gestante e
 **não** é chave primária nem credencial de login automática.
 
 A API/backend passará a ser a **fonte de verdade** do acompanhamento pré-natal,
@@ -955,6 +1019,16 @@ em **Android Emulator**. Trata-se de uma **validação de integração de softwa
 (smoke test), e **não** de validação clínica, validação externa do modelo ou
 evidência científica sobre a população real.
 
+Além disso, a **infraestrutura de persistência** do backend foi validada contra
+**PostgreSQL real** (bancos locais `meu_bebe` e `meu_bebe_test`). Foram
+verificados: a abertura de conexão; o teste de conectividade (`SELECT 1`); a
+criação e o encerramento de sessões do SQLAlchemy; a execução de transação e o
+respectivo **rollback**; o acesso do **Alembic** ao banco (com **zero revisions**
+de domínio); a ausência de **tabelas residuais**; e o descarte explícito do
+**engine** no encerramento da aplicação. A suíte de testes da API encerrou com
+**202 testes aprovados** e **nenhum pulado**. Reitera-se que esses testes validam
+a **infraestrutura de software**, e **não** a validade clínica do modelo de ML.
+
 ### 6.10 Discussão
 
 Os resultados devem ser interpretados com cautela. A capacidade discriminativa
@@ -1012,9 +1086,10 @@ O problema da descontinuidade do pré-natal **não** foi resolvido; este trabalh
 estabeleceu, antes, uma base metodológica e tecnológica experimental que poderá
 ser estendida a dados reais. Como trabalhos futuros, indicam-se: a
 operacionalização longitudinal do desfecho com dados reais (fundamentada e
-ajustada pela duração gestacional), a implementação da arquitetura de persistência
-e autenticação **aprovada** (seção 5.7, ainda não implementada), e a condução de
-estudos com dados reais sob os devidos requisitos éticos e de consentimento.
+ajustada pela duração gestacional), a implementação das **entidades de domínio**,
+da **autenticação** e do **CRUD** do acompanhamento pré-natal (seção 5.7) — cuja
+infraestrutura de persistência **já foi implementada e validada** —, e a condução
+de estudos com dados reais sob os devidos requisitos éticos e de consentimento.
 
 ---
 
