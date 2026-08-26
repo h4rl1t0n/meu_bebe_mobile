@@ -1,0 +1,5 @@
+# Diretório de revisions do Alembic (FASE 8B).
+#
+# Intencionalmente VAZIO: a decisão congelada (8B-PLAN §18, alternativa B) é NÃO
+# criar nenhum revision até a primeira entidade REAL de domínio (8C/8D). Este
+# arquivo existe apenas para que o diretório seja rastreado pelo git.

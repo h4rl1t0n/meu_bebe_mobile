@@ -147,9 +147,51 @@ Via variáveis de ambiente (ver `.env.example`):
 | `MODEL_ARTIFACT_PATH`  | `../ia/artifacts/models/selected_model_v1.joblib` | Joblib do modelo (relativo a `api/`).      |
 | `MODEL_MANIFEST_PATH`  | `../ia/artifacts/models/selected_model_v1_manifest.json` | Manifest do modelo.                |
 | `MODEL_LOAD_ON_STARTUP`| `true`                                           | Carrega o modelo no startup.                |
+| `DATABASE_URL`         | *(vazio)*                                        | URL SQLAlchemy (`postgresql+psycopg://…`). Vazio = persistência inerte. |
+| `TEST_DATABASE_URL`    | *(vazio)*                                        | URL do banco de teste (`meu_bebe_test`), só para a suíte de integração. Vazio = testes pulados. |
 
 Caminhos `MODEL_*` são resolvidos a partir da raiz de `api/`, **independentes do
 CWD**.
+
+## Persistência (FASE 8B — infraestrutura)
+
+A infraestrutura de persistência (SQLAlchemy 2.x **síncrono** + psycopg 3 +
+Alembic) está preparada, mas **sem entidades de domínio**: nenhuma tabela é
+criada nesta fase e o endpoint DSS (`/api/v1/risk-estimate`) continua
+**stateless e independente de banco**.
+
+- **Inerte por padrão:** com `DATABASE_URL` vazio, nenhum engine é criado e nada
+  depende do PostgreSQL.
+- **Engine preguiçoso:** criar o engine **não** abre conexão — o processo sobe
+  mesmo com o PostgreSQL indisponível; a conexão só ocorre ao usar o subsistema
+  persistente ou num probe explícito (`SELECT 1`).
+- **Dois bancos locais (recomendado):** `meu_bebe` (dev) e `meu_bebe_test`
+  (testes), criados manualmente:
+
+  ```sql
+  CREATE DATABASE meu_bebe;
+  CREATE DATABASE meu_bebe_test;
+  ```
+
+- **Configuração:** defina no `.env` (nunca versionar senha):
+
+  ```env
+  DATABASE_URL=postgresql+psycopg://usuario:senha@localhost:5432/meu_bebe
+  ```
+
+- **Testes de integração:** executam apenas quando `TEST_DATABASE_URL` aponta
+  para o banco de teste (`meu_bebe_test`) e o PostgreSQL está alcançável; caso
+  contrário, são pulados explicitamente (nunca substituídos por SQLite).
+
+- **Migrations (Alembic):** configuradas em `alembic.ini` + `alembic/`. Nenhum
+  revision foi criado (decisão 8B-PLAN §18): a primeira migration nascerá junto
+  com a primeira entidade real (8C/8D).
+
+  ```powershell
+  # a partir de api/, com o venv ativado
+  alembic heads        # sem revisões nesta fase
+  alembic history      # sem histórico
+  ```
 
 ## Contrato de erro
 

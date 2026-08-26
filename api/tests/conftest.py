@@ -4,11 +4,17 @@ from __future__ import annotations
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy.engine import Engine
 
 from meu_bebe_api.config import Settings
 from meu_bebe_api.contracts.dss import DssPayload
+from meu_bebe_api.db.engine import build_engine
 from meu_bebe_api.main import create_app
 from meu_bebe_api.ml.runtime import ModelRuntime
+
+# URL apontando para uma porta fechada (indisponível): usada para testar a
+# infraestrutura de DB sem exigir PostgreSQL real (o engine é preguiçoso).
+UNREACHABLE_DATABASE_URL = "postgresql+psycopg://user:pass@127.0.0.1:1/none"
 
 
 def make_valid_payload() -> dict:
@@ -112,6 +118,20 @@ def client_with_validation_route(settings_no_load: Settings) -> TestClient:
 
     with TestClient(app) as c:
         yield c
+
+
+@pytest.fixture
+def unreachable_engine() -> Engine:
+    """Engine SQLAlchemy PREGUIÇOSO apontando para uma porta fechada.
+
+    Não abre conexão alguma (``create_engine`` é preguiçoso); a porta 1 é
+    inalcançável, então qualquer tentativa real de conexão falha de forma
+    controlada. Serve para testar engine/session/probe sem PostgreSQL real.
+    """
+    settings = Settings(database_url=UNREACHABLE_DATABASE_URL, _env_file=None)
+    engine = build_engine(settings)
+    yield engine
+    engine.dispose()
 
 
 @pytest.fixture(scope="session")

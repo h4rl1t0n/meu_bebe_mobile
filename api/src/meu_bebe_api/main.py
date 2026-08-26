@@ -24,6 +24,8 @@ from .api.ready import router as ready_router
 from .api.router import api_v1_router
 from .config import Settings, get_settings
 from .core.exception_handlers import register_exception_handlers
+from .db.engine import build_engine
+from .db.session import build_session_factory
 from .ml.errors import ModelError
 from .ml.runtime import ModelRuntime
 
@@ -58,6 +60,14 @@ async def lifespan(app: FastAPI):
             runtime.load()
         except ModelError:
             logger.exception("modelo não carregado no startup (readiness indisponível)")
+
+    # FASE 8B — infraestrutura de persistência (SQLAlchemy 2.x sync + psycopg 3).
+    # ``build_engine`` é PREGUIÇOSO (não abre conexão): o processo sobe mesmo com
+    # o PostgreSQL temporariamente indisponível. A persistência NÃO se acopla ao
+    # ModelRuntime nem ao fluxo DSS — são runtimes independentes (ML ≠ DB).
+    engine = build_engine(settings)
+    app.state.engine = engine
+    app.state.session_factory = build_session_factory(engine)
 
     yield
 
