@@ -636,6 +636,11 @@ código do modelo no aplicativo.
 A camada de apresentação é construída com **flutter_modular + MobX**, com
 contratos de dados canônicos versionados.
 
+A arquitetura aqui descrita corresponde ao **estado implementado**. Distingue-se,
+portanto, a **API DSS atual** (que recebe a estimativa experimental, stateless) de
+uma futura **API CRUD do acompanhamento pré-natal**, prevista na arquitetura
+aprovada (seção 5.7) e **ainda não implementada**.
+
 ### 5.2 Eixo 1 — Questionário dos DSS
 
 Formulário estruturado das seis dimensões; coleta informações usadas na
@@ -692,7 +697,16 @@ com **SQL bruto** (sem Drift/codegen). O banco `meu_bebe.db` (versão 1) contém
 > de `FOREIGN KEY`/`REFERENCES` foi declarada. A implementação local assume
 > implicitamente **uma única gestante/gestação por instalação/dispositivo**. Essa
 > é uma **limitação da implementação atual**, e **não** uma decisão desejada para
-> a arquitetura futura (seção 5.6).
+> a arquitetura futura (seção 5.7).
+
+A estratégia de evolução **aprovada** para a persistência do acompanhamento prevê
+que a **API/backend** passe a ser a **fonte de verdade**, substituindo
+progressivamente a dependência do SQLite local. A transição será **feature por
+feature**: cada recurso migra da implementação local para uma implementação REST,
+validada de ponta a ponta, e só então a API passa a ser a fonte de verdade
+daquela feature. **Não** haverá, nesta etapa, migração automática dos registros
+SQLite existentes, nem offline-first, sincronização ou cache distribuído
+(seção 5.7).
 
 ### 5.5 Autenticação e estado atual do DSS
 
@@ -712,6 +726,14 @@ a API **não** persiste a avaliação.
 > e parte das **Configurações** ainda não representam subsistemas persistentes
 > completos.
 
+A arquitetura futura aprovada prevê **autenticação real** — cadastro, login,
+sessão, token de acesso e token de renovação, com hash de senha moderno — e a
+relação `USER ↔ GESTANTE`, com **autorização por ownership**. Distinguem-se
+**autenticação** (quem é a usuária) de **autorização** (quais registros ela pode
+acessar); o CPF, quando utilizado, pertence ao perfil da gestante e **não** é
+chave primária nem login automático. Tudo isso permanece **planejado**, e **não**
+implementado (seção 5.7).
+
 ### 5.6 Onde o IV-DSS é calculado
 
 O IV-DSS é calculado em **etapa analítica independente** no pipeline Python
@@ -723,41 +745,64 @@ explícita:
 - **Pré-processamento de ML** = preparação de `X_model` para os classificadores
   (one-hot, multi-hot, ordinais, booleanos).
 
-### 5.7 Arquitetura futura proposta (evolução)
+### 5.7 Arquitetura futura aprovada (evolução planejada)
 
-A arquitetura descrita até aqui corresponde ao **estado atual implementado**. A
-seguir apresenta-se uma **evolução arquitetural proposta**, **ainda não
-implementada**, que será detalhada em etapa posterior de modelagem de backend e
-identidade.
+A arquitetura descrita até aqui corresponde ao **estado atual implementado** — o
+módulo de acompanhamento do pré-natal persiste localmente em SQLite, e o fluxo
+DSS utiliza a API apenas para a estimativa experimental, de forma **stateless**. A
+seguir apresenta-se a **arquitetura futura aprovada**, **planejada mas ainda não
+implementada**, que estabelece a direção de evolução da persistência e da
+identidade do acompanhamento pré-natal.
 
-Conceitualmente, o domínio evoluiria para as seguintes entidades e
-relacionamentos:
+Conceitualmente, o domínio evoluirá para as seguintes entidades e relacionamentos:
 
 ```text
-USER
-  └── GESTANTE
-        ├── HISTORICO_OBSTETRICO
-        └── GESTACAO
-              ├── CONSULTA
-              ├── EXAME
-              ├── MEDICACAO
-              ├── VACINA (checklist)
-              ├── PLANO_DE_PARTO
-              └── AVALIACAO_DSS
+USER 1 ─ 1 GESTANTE
+GESTANTE 1 ─ N GESTACAO
+GESTANTE 1 ─ 1 HISTORICO_OBSTETRICO
+GESTACAO 1 ─ N CONSULTA
+GESTACAO 1 ─ N EXAME
+GESTACAO 1 ─ N MEDICACAO
+GESTACAO 1 ─ N VACINA
+GESTACAO 1 ─ 0..1 PLANO_DE_PARTO
+GESTACAO 1 ─ N AVALIACAO_DSS
 ```
 
-Nessa proposta, `USER` representa a conta/autenticação e `GESTANTE` o perfil
-pessoal (nome, nome social, data de nascimento, CPF — se utilizado — e Cartão
-Nacional de Saúde). O **histórico obstétrico** atual (números agregados de
-gravidezes, partos e abortos) não representa uma gestação anterior individual e
-seria modelado como `HISTORICO_OBSTETRICO`. Cada `GESTACAO` teria identidade
-própria, e as entidades do pré-natal (consultas, exames, medicamentos, vacinas,
-plano de parto e avaliação DSS) ficariam associadas à gestação. A persistência
-em **PostgreSQL** e a autenticação são **propostas futuras** — o estado atual do
-gerenciamento pré-natal permanece em **SQLite local**.
+Nessa arquitetura, `USER` representa a **identidade/autenticação** e `GESTANTE` o
+**perfil pessoal** (nome, nome social, data de nascimento, CPF — se utilizado — e
+Cartão Nacional de Saúde). O **histórico obstétrico** atual (números agregados de
+gravidezes, partos e abortos) **pertence à `GESTANTE`** e **não** representa uma
+gestação anterior individual, sendo modelado como `HISTORICO_OBSTETRICO`. Cada
+`GESTACAO` possui identidade própria, e as entidades do pré-natal (consultas,
+exames, medicamentos, vacinas, plano de parto e avaliação DSS) ficam associadas à
+gestação.
 
-> **Não implementado ainda.** Esta subseção é apenas planejamento de evolução
-> arquitetural e não deve ser lida como descrição do estado atual.
+A persistência futura aprovada prevê **PostgreSQL** como banco, **SQLAlchemy 2.x**
+como camada ORM e **Alembic** para migrações versionadas, com **integridade
+referencial formal** (chaves estrangeiras), **timestamps** e identificadores
+**UUID v4** para as novas entidades persistentes. O modo de acesso do ORM
+(síncrono ou assíncrono) **ainda não está definido** e será avaliado na etapa de
+infraestrutura. O **CPF**, quando utilizado, pertence ao perfil da gestante e
+**não** é chave primária nem credencial de login automática.
+
+A API/backend passará a ser a **fonte de verdade** do acompanhamento pré-natal,
+com **autenticação** (cadastro, login e sessão) e **autorização por ownership**,
+aplicada pelo caminho `USER → GESTANTE → GESTACAO → recurso`, para impedir o
+acesso a registros de outra usuária. Distinguem-se, assim, **autenticação**
+("quem é a usuária") de **autorização** ("quais registros ela pode acessar");
+trata-se de **controle de propriedade/autorização**, e **não** de "multi-tenancy".
+
+A transição do SQLite para a API será **incremental, feature por feature**: cada
+recurso migra da implementação local para a implementação REST, validado de ponta
+a ponta, e só então a API passa a ser a fonte de verdade daquela feature. **Não**
+haverá, nesta etapa, migração automática dos registros SQLite existentes, nem
+offline-first, sincronização ou cache distribuído; essas capacidades poderão ser
+avaliadas apenas posteriormente.
+
+> **Não implementado ainda.** Esta subseção registra uma arquitetura **aprovada e
+> planejada**, e **não** deve ser lida como descrição do estado atual nem como
+> resultado de implementação. O fluxo DSS (`POST /api/v1/risk-estimate`) permanece
+> inalterado: stateless, sem autenticação e sem persistência operacional.
 
 ---
 
@@ -957,9 +1002,9 @@ O problema da descontinuidade do pré-natal **não** foi resolvido; este trabalh
 estabeleceu, antes, uma base metodológica e tecnológica experimental que poderá
 ser estendida a dados reais. Como trabalhos futuros, indicam-se: a
 operacionalização longitudinal do desfecho com dados reais (fundamentada e
-ajustada pela duração gestacional), a evolução da arquitetura de persistência e
-autenticação (proposta na seção 5.7), e a condução de estudos com dados reais sob
-os devidos requisitos éticos e de consentimento.
+ajustada pela duração gestacional), a implementação da arquitetura de persistência
+e autenticação **aprovada** (seção 5.7, ainda não implementada), e a condução de
+estudos com dados reais sob os devidos requisitos éticos e de consentimento.
 
 ---
 
@@ -1044,5 +1089,6 @@ os devidos requisitos éticos e de consentimento.
   específica**; não adotada no experimento sintético.
 - Normalização alternativa da `escolaridade` e demais análises de sensibilidade
   do IV-DSS — refinamentos adicionais a definir em etapas futuras.
-- Modelagem detalhada do backend e da identidade (arquitetura futura proposta) —
-  a definir em etapa posterior.
+- Implementação da arquitetura de persistência e autenticação **aprovada**
+  (seção 5.7) — a ser executada em etapas posteriores; o modo de acesso do ORM
+  (síncrono/assíncrono) e a forma física do plano de parto permanecem a definir.
