@@ -21,10 +21,13 @@ from sqlalchemy.orm import Session
 
 from ..contracts.gestacao import GestacaoWrite
 from ..contracts.gestante import GestanteWrite
+from ..contracts.historico_obstetrico import HistoricoObstetricoWrite
 from ..models.gestacao import Gestacao
 from ..models.gestante import Gestante
+from ..models.historico_obstetrico import HistoricoObstetrico
 from ..repositories.gestacao_repository import GestacaoRepository
 from ..repositories.gestante_repository import GestanteRepository
+from ..repositories.historico_obstetrico_repository import HistoricoObstetricoRepository
 from .errors import (
     ACTIVE_PREGNANCY_ALREADY_EXISTS,
     ACTIVE_PREGNANCY_ALREADY_EXISTS_MESSAGE,
@@ -32,6 +35,8 @@ from .errors import (
     DATABASE_UNAVAILABLE_MESSAGE,
     DOMAIN_ERROR,
     DOMAIN_ERROR_MESSAGE,
+    OBSTETRIC_HISTORY_NOT_FOUND,
+    OBSTETRIC_HISTORY_NOT_FOUND_MESSAGE,
     PREGNANCY_NOT_FOUND,
     PREGNANCY_NOT_FOUND_MESSAGE,
     PREGNANCY_REOPEN_NOT_ALLOWED,
@@ -225,3 +230,80 @@ class GestacaoService:
             self._session.rollback()
             raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
         return gestacao
+
+
+class HistoricoObstetricoService:
+    """Regras do histórico obstétrico: GET e UPSERT (1—1)."""
+
+    def __init__(self, session: Session) -> None:
+        self._session = session
+        self._historico = HistoricoObstetricoRepository(session)
+
+    def get(self, gestante_id: uuid.UUID) -> HistoricoObstetrico:
+        """O histórico da gestante, ou 404 ``OBSTETRIC_HISTORY_NOT_FOUND``."""
+        try:
+            historico = self._historico.find_by_gestante_id(gestante_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        if historico is None:
+            raise DomainError(
+                OBSTETRIC_HISTORY_NOT_FOUND, OBSTETRIC_HISTORY_NOT_FOUND_MESSAGE, 404
+            )
+        return historico
+
+    def _apply(
+        self, historico: HistoricoObstetrico, payload: HistoricoObstetricoWrite
+    ) -> HistoricoObstetrico:
+        """Aplica o payload ao histórico (via ``repository.update``).
+
+        Reutilizado no caminho normal e na recuperação de corrida — evita
+        duplicar os três campos em dois blocos distintos.
+        """
+        return self._historico.update(
+            historico,
+            pregnancy_number=payload.pregnancy_number,
+            given_birth_number=payload.given_birth_number,
+            abortions_number=payload.abortions_number,
+        )
+
+    def upsert(
+        self, gestante_id: uuid.UUID, payload: HistoricoObstetricoWrite
+    ) -> HistoricoObstetrico:
+        """Cria (se ausente) ou atualiza (se existente) o histórico e committa.
+
+        Corrida de UPSERT (duas requisições ``find``→``None`` concorrentes): o
+        ``IntegrityError`` do UNIQUE dispara rollback + UMA re-busca do singleton
+        vencedor + aplicação do payload nele (sem loop/retry, sem ``ON CONFLICT``,
+        sem lock explícito). O ``id`` e o ``created_at`` do vencedor são preservados.
+        """
+        try:
+            historico = self._historico.find_by_gestante_id(gestante_id)
+            if historico is None:
+                historico = HistoricoObstetrico(gestante_id=gestante_id)
+                self._apply(historico, payload)
+                self._historico.add(historico)
+            else:
+                self._apply(historico, payload)
+            self._session.flush()
+            self._session.commit()
+        except IntegrityError:
+            # UNIQUE(gestante_id): outra requisição criou o singleton entre o
+            # find e o INSERT. Recupera re-aplicando o payload à linha vencedora.
+            self._session.rollback()
+            historico = self._historico.find_by_gestante_id(gestante_id)
+            if historico is None:
+                raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+            self._apply(historico, payload)
+            self._session.flush()
+            self._session.commit()
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return historico

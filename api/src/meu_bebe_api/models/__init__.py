@@ -9,6 +9,7 @@ from __future__ import annotations
 from .auth_refresh_session import AuthRefreshSession
 from .gestacao import Gestacao
 from .gestante import Gestante
+from .historico_obstetrico import HistoricoObstetrico
 from .user import User
 
-__all__ = ["User", "AuthRefreshSession", "Gestante", "Gestacao"]
+__all__ = ["User", "AuthRefreshSession", "Gestante", "Gestacao", "HistoricoObstetrico"]
