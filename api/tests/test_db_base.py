@@ -5,7 +5,7 @@ a ``naming_convention`` de constraints está aplicada. A FASE 8C adiciona
 ``users`` e ``auth_refresh_sessions``; a FASE 8D adiciona ``gestantes`` e
 ``gestacoes``; a FASE 8E adiciona ``historicos_obstetricos``; a FASE 8F adiciona
 ``consultas`` e ``exames``; a FASE 8G adiciona ``medicamentos`` e ``vacinas``;
-a FASE 8H adiciona ``planos_de_parto``.
+a FASE 8H adiciona ``planos_de_parto``; a FASE 8I adiciona ``avaliacoes_dss``.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ def test_base_metadata_is_sqlalchemy_metadata() -> None:
 
 
 def test_base_metadata_contains_only_domain_tables() -> None:
-    """As ÚNICAS tabelas de domínio são as dez (8C + 8D + 8E + 8F + 8G + 8H)."""
+    """As ÚNICAS tabelas de domínio são as onze (8C + 8D + 8E + 8F + 8G + 8H + 8I)."""
     assert set(Base.metadata.tables) == {
         "users",
         "auth_refresh_sessions",
@@ -32,6 +32,7 @@ def test_base_metadata_contains_only_domain_tables() -> None:
         "medicamentos",
         "vacinas",
         "planos_de_parto",
+        "avaliacoes_dss",
     }
 
 

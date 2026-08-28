@@ -20,6 +20,7 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.orm import Session
 
 from ..contracts.consulta import ConsultaWrite
+from ..contracts.dss import DssPayload
 from ..contracts.exame import ExameWrite
 from ..contracts.gestacao import GestacaoWrite
 from ..contracts.gestante import GestanteWrite
@@ -27,6 +28,7 @@ from ..contracts.historico_obstetrico import HistoricoObstetricoWrite
 from ..contracts.medicamento import MedicamentoWrite
 from ..contracts.plano_parto import PlanoPartoWrite
 from ..contracts.vacina import VacinaWrite
+from ..models.avaliacao_dss import AvaliacaoDss
 from ..models.consulta import Consulta
 from ..models.exame import Exame
 from ..models.gestacao import Gestacao
@@ -35,6 +37,7 @@ from ..models.historico_obstetrico import HistoricoObstetrico
 from ..models.medicamento import Medicamento
 from ..models.plano_parto import PlanoParto
 from ..models.vacina import Vacina
+from ..repositories.avaliacao_dss_repository import AvaliacaoDssRepository
 from ..repositories.consulta_repository import ConsultaRepository
 from ..repositories.exame_repository import ExameRepository
 from ..repositories.gestacao_repository import GestacaoRepository
@@ -46,6 +49,8 @@ from ..repositories.vacina_repository import VacinaRepository
 from .errors import (
     ACTIVE_PREGNANCY_ALREADY_EXISTS,
     ACTIVE_PREGNANCY_ALREADY_EXISTS_MESSAGE,
+    AVALIACAO_DSS_NOT_FOUND,
+    AVALIACAO_DSS_NOT_FOUND_MESSAGE,
     CONSULTA_NOT_FOUND,
     CONSULTA_NOT_FOUND_MESSAGE,
     DATABASE_UNAVAILABLE,
@@ -820,3 +825,78 @@ class PlanoPartoService:
             self._session.rollback()
             raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
         return plano
+
+
+class AvaliacaoDssService:
+    """Regras da avaliação DSS: snapshot imutável (append-only), FASE 8I.
+
+    O ``gestacao_id`` já chega validado por ownership (``get_owned_gestacao``):
+    a gestação pertence à gestante autenticada. Cada POST cria um NOVO snapshot
+    (nunca sobrescreve o anterior); NÃO há update/delete. O service NÃO interage
+    com o Random Forest: a estimativa continua no ``/risk-estimate`` (stateless).
+
+    Persiste o dump JSON canônico do ``DssPayload`` (as 6 dimensões / 48
+    variáveis) no JSONB ``respostas``, e o ``schema_version`` em coluna própria.
+    """
+
+    def __init__(self, session: Session) -> None:
+        self._session = session
+        self._avaliacoes = AvaliacaoDssRepository(session)
+
+    def list(self, gestacao_id: uuid.UUID) -> list[AvaliacaoDss]:
+        """Avaliações da gestação (mais recente primeiro)."""
+        try:
+            return self._avaliacoes.list_by_gestacao_id(gestacao_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+
+    def get(
+        self, gestacao_id: uuid.UUID, avaliacao_id: uuid.UUID
+    ) -> AvaliacaoDss:
+        """A avaliação da gestação, ou 404 ``AVALIACAO_DSS_NOT_FOUND``."""
+        try:
+            avaliacao = self._avaliacoes.find_by_id_and_gestacao(
+                avaliacao_id, gestacao_id
+            )
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        if avaliacao is None:
+            raise DomainError(
+                AVALIACAO_DSS_NOT_FOUND, AVALIACAO_DSS_NOT_FOUND_MESSAGE, 404
+            )
+        return avaliacao
+
+    def create(
+        self, gestacao_id: uuid.UUID, payload: DssPayload
+    ) -> AvaliacaoDss:
+        """Cria um snapshot imutável do questionário e committa.
+
+        ``respostas`` = ``payload.model_dump(mode="json")`` SEM o envelope
+        ``schema_version`` (que fica na coluna própria). O dump em modo JSON
+        serializa enums para os códigos canônicos e preserva null/bool/number/
+        string/listas — nunca Pydantic internals nem objetos Python.
+        """
+        try:
+            avaliacao = AvaliacaoDss(
+                gestacao_id=gestacao_id,
+                schema_version=payload.schema_version,
+                respostas=payload.model_dump(
+                    mode="json", exclude={"schema_version"}
+                ),
+            )
+            self._avaliacoes.add(avaliacao)
+            self._session.flush()
+            self._session.commit()
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return avaliacao

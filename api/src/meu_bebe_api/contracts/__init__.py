@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .avaliacao_dss import AvaliacaoDssResponse
 from .consulta import ConsultaResponse, ConsultaWrite
 from .dss import DSS_SCHEMA_VERSION, DssPayload
 from .errors import ErrorDetail, ErrorResponse
@@ -21,6 +22,7 @@ from .risk_estimate import (
 )
 
 __all__ = [
+    "AvaliacaoDssResponse",
     "DSS_SCHEMA_VERSION",
     "DssPayload",
     "ErrorDetail",
