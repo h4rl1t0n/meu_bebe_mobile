@@ -1,0 +1,43 @@
+{
+  "som_version": "2.0",
+  "schema_version": "1.13",
+  "random_forest_model_file_hash_sha256": "17db2db0c2b87c2a52c46e953162b3f1509a01857b651370ebcc2b4354ce883b",
+  "random_forest_model_unchanged": true,
+  "n_train": 4000,
+  "n_holdout": 1000,
+  "n_features": 96,
+  "input_normalization": "min-max 0-1 SOMENTE nas 9 features não-binárias (3 numéricas + 6 ordinais), fit no treino; 87 binárias/one-hot/multi-hot mantidas em 0-1",
+  "chosen_grid": "10x10",
+  "chosen_k": 2,
+  "quantization_error": 3.0998945428325437,
+  "topographic_error": 0.13025,
+  "pca": {
+    "role": "visualização apenas; SOM + K-means definem os grupos",
+    "n_components": 2,
+    "fit_scope": "PCA ajustado SOMENTE no treino (4000); holdout projetado",
+    "explained_variance_ratio": [
+      0.16424690652146237,
+      0.04533187961260062
+    ]
+  },
+  "figures": {
+    "umatrix_v1.png": "C:\\Users\\Harliton\\Desktop\\TCC\\app\\meu_bebe_mobile\\ia\\artifacts\\som\\figures\\umatrix_v1.png",
+    "groups_map_v1.png": "C:\\Users\\Harliton\\Desktop\\TCC\\app\\meu_bebe_mobile\\ia\\artifacts\\som\\figures\\groups_map_v1.png",
+    "rf_prob_by_group_v1.png": "C:\\Users\\Harliton\\Desktop\\TCC\\app\\meu_bebe_mobile\\ia\\artifacts\\som\\figures\\rf_prob_by_group_v1.png",
+    "iv_dss_by_group_v1.png": "C:\\Users\\Harliton\\Desktop\\TCC\\app\\meu_bebe_mobile\\ia\\artifacts\\som\\figures\\iv_dss_by_group_v1.png",
+    "target_proportion_by_group_v1.png": "C:\\Users\\Harliton\\Desktop\\TCC\\app\\meu_bebe_mobile\\ia\\artifacts\\som\\figures\\target_proportion_by_group_v1.png",
+    "som_holdout_pca_groups_v1.png": "C:\\Users\\Harliton\\Desktop\\TCC\\app\\meu_bebe_mobile\\ia\\artifacts\\som\\figures\\som_holdout_pca_groups_v1.png"
+  },
+  "artifact_files": [
+    "som_config_v1.json",
+    "som_group_summary_v1.csv",
+    "som_group_summary_v1.json",
+    "som_holdout_assignments_v1.csv",
+    "som_k_choice_v1.json",
+    "som_manifest_v1.json",
+    "som_metrics_v1.json",
+    "som_sensitivity_v1.json"
+  ],
+  "timestamp": "2026-08-28T00:29:32.828730+00:00",
+  "note": "Análise exploratória sobre dataset sintético; sem validade populacional nem clínica; o SOM NÃO substitui o Random Forest."
+}

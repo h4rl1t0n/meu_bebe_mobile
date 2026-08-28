@@ -1,0 +1,94 @@
+{
+  "som_version": "2.0",
+  "purpose": "Sensibilidade metodológica: entrada SEM normalização vs COM normalização (min-max 0-1 nas 9 features não-binárias).",
+  "without_normalization": {
+    "chosen_grid": "10x10",
+    "quantization_error": 3.960327664498496,
+    "topographic_error": 0.08225,
+    "chosen_k": 4,
+    "silhouette_k_sweep": [
+      {
+        "k": 2,
+        "silhouette": 0.25132011128429055
+      },
+      {
+        "k": 3,
+        "silhouette": 0.2936618441988774
+      },
+      {
+        "k": 4,
+        "silhouette": 0.29620423732096113
+      },
+      {
+        "k": 5,
+        "silhouette": 0.27851504737454724
+      },
+      {
+        "k": 6,
+        "silhouette": 0.2920787727198883
+      }
+    ],
+    "distribution": {
+      "grupo_1": 288,
+      "grupo_2": 200,
+      "grupo_3": 257,
+      "grupo_4": 255
+    },
+    "convergence": {
+      "max_iv_dss_group": 1,
+      "max_iv_dss_mean": 0.43256423397567306,
+      "max_rf_prob_group": 1,
+      "max_rf_prob_mean": 0.2848819444444444,
+      "max_target_group": 1,
+      "max_target_positive_proportion": 0.3090277777777778,
+      "convergence": true
+    }
+  },
+  "with_normalization": {
+    "chosen_grid": "10x10",
+    "quantization_error": 3.0998945428325437,
+    "topographic_error": 0.13025,
+    "chosen_k": 2,
+    "silhouette_k_sweep": [
+      {
+        "k": 2,
+        "silhouette": 0.43087319971511784
+      },
+      {
+        "k": 3,
+        "silhouette": 0.37073797178113116
+      },
+      {
+        "k": 4,
+        "silhouette": 0.29243342270906447
+      },
+      {
+        "k": 5,
+        "silhouette": 0.2594957794577692
+      },
+      {
+        "k": 6,
+        "silhouette": 0.27389103384529495
+      }
+    ],
+    "distribution": {
+      "grupo_1": 424,
+      "grupo_2": 576
+    },
+    "convergence": {
+      "max_iv_dss_group": 1,
+      "max_iv_dss_mean": 0.34410751028806585,
+      "max_rf_prob_group": 1,
+      "max_rf_prob_mean": 0.25212735849056606,
+      "max_target_group": 1,
+      "max_target_positive_proportion": 0.24528301886792453,
+      "convergence": true
+    }
+  },
+  "comparison": {
+    "same_grid": true,
+    "same_k": false,
+    "convergence_preserved": true,
+    "note": "O SOM com normalização é o resultado OFICIAL. A versão sem normalização é reproduzida aqui apenas para sensibilidade."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "som_version": "2.0",
+  "schema_version": "1.13",
+  "grid": "10x10",
+  "grid_rows": 10,
+  "grid_cols": 10,
+  "sigma0": 5.0,
+  "learning_rate0": 0.5,
+  "iterations": 3000,
+  "seed": 42,
+  "input": "96 features numéricas derivadas de X_MODEL (34), mesma transformação do RF; SOM usa entrada normalizada (min-max 0-1 nas 9 não-binárias)",
+  "normalization": {
+    "method": "min-max 0-1",
+    "applied_to": "9 features não-binárias (3 numéricas + 6 ordinais)",
+    "scaled_fields": [
+      "numero_pessoas",
+      "numero_comodos",
+      "numero_dormitorios",
+      "escolaridade",
+      "frequencia_coleta_lixo",
+      "distancia_ubs",
+      "seguranca_residencia",
+      "refeicoes_por_dia",
+      "avaliacao_alimentacao"
+    ],
+    "n_scaled": 9,
+    "n_passthrough": 87,
+    "binary_passthrough": "87 features binárias/one-hot/multi-hot mantidas em 0-1 (sem alteração)",
+    "fit_scope": "SOMENTE TREINO (4000); holdout usa os mesmos min/range",
+    "constant_handling": "coluna com range 0 no treino -> 0.0"
+  },
+  "fit_scope": "SOMENTE TREINO (4000); holdout (1000) apenas projetado",
+  "excluded_from_input": [
+    "descontinuou_pre_natal",
+    "P(Random Forest)",
+    "IV-DSS (e dimensões D_*)",
+    "OUT_LEAKAGE",
+    "OUT_TEMPORAL",
+    "DESCRIPTIVE",
+    "SENSITIVITY"
+  ],
+  "k": 2,
+  "kmeans_seed": 42
+}

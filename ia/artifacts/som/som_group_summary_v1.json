@@ -1,0 +1,161 @@
+{
+  "k": 2,
+  "n_holdout_total": 1000,
+  "groups": [
+    {
+      "grupo": 1,
+      "n": 424,
+      "pct_holdout": 0.424,
+      "rf_prob_mean": 0.25212735849056606,
+      "rf_prob_median": 0.243,
+      "rf_prob_std": 0.07735896375588405,
+      "iv_dss_mean": 0.34410751028806585,
+      "iv_dss_median": 0.32351851851851854,
+      "iv_dss_n_calculable": 396,
+      "iv_dss_n_not_calculable": 28,
+      "target_positive_proportion": 0.24528301886792453,
+      "predominant_characteristics": "D_trabalho (0.629), D_educacao (0.480), D_acesso (0.381)"
+    },
+    {
+      "grupo": 2,
+      "n": 576,
+      "pct_holdout": 0.576,
+      "rf_prob_mean": 0.24294097222222222,
+      "rf_prob_median": 0.242,
+      "rf_prob_std": 0.06631977858377519,
+      "iv_dss_mean": 0.2957653025162567,
+      "iv_dss_median": 0.27749999999999997,
+      "iv_dss_n_calculable": 524,
+      "iv_dss_n_not_calculable": 52,
+      "target_positive_proportion": 0.24305555555555555,
+      "predominant_characteristics": "D_trabalho (0.553), D_educacao (0.417), D_acesso (0.352)"
+    }
+  ],
+  "characterization": {
+    "1": {
+      "grupo": 1,
+      "dimension_means": {
+        "D_educacao": 0.4798820754716981,
+        "D_trabalho": 0.628546365914787,
+        "D_saneamento": 0.1531053459119497,
+        "D_acesso": 0.3806413301662707,
+        "D_habitacao": 0.18632075471698112,
+        "D_alimentacao": 0.22877358490566038
+      },
+      "top_dims": [
+        {
+          "dimension": "D_trabalho",
+          "mean": 0.6285
+        },
+        {
+          "dimension": "D_educacao",
+          "mean": 0.4799
+        },
+        {
+          "dimension": "D_acesso",
+          "mean": 0.3806
+        }
+      ],
+      "predominant_characteristics": "D_trabalho (0.629), D_educacao (0.480), D_acesso (0.381)",
+      "raw_profile": {
+        "estuda_atualmente": "False",
+        "escolaridade": "medio_completo",
+        "dificuldades_educacao": "['sem_dificuldades']",
+        "entende_orientacoes_saude": "True",
+        "fez_curso_qualificacao_profissional": "False",
+        "empregado": "False",
+        "tipo_emprego": null,
+        "faixa_renda": "ate_1_sm",
+        "trabalho_permite_pre_natal": null,
+        "ambiente_trabalho_seguro": null,
+        "tem_pausas_descanso": null,
+        "beneficios_trabalho": null,
+        "recebe_beneficio_social": "False",
+        "fonte_agua": "rede_publica",
+        "interrupcoes_agua": "False",
+        "esgotamento_sanitario": "rede_coletora",
+        "frequencia_coleta_lixo": "regular",
+        "destino_lixo_sem_coleta": "aguarda_proxima_coleta",
+        "distancia_ubs": "razoavelmente_proxima",
+        "acesso_ubs": "a_pe",
+        "cadastrada_ubs": "True",
+        "dificuldades_saude": "['sem_dificuldades']",
+        "tipo_moradia": "casa",
+        "material_moradia": "alvenaria",
+        "numero_pessoas": 3.7358490566037736,
+        "numero_comodos": 3.275943396226415,
+        "numero_dormitorios": 1.8726415094339623,
+        "itens_residencia": "['agua_encanada', 'banheiro_interno', 'cozinha_separada']",
+        "seguranca_residencia": "regular",
+        "refeicoes_por_dia": "tres",
+        "deixou_de_comer_falta_dinheiro": "False",
+        "alimentos_consumidos": "['frutas_verduras', 'carnes', 'leite_derivados', 'feijao_leguminosas']",
+        "fonte_alimentos": "['supermercado_feira']",
+        "avaliacao_alimentacao": "boa"
+      }
+    },
+    "2": {
+      "grupo": 2,
+      "dimension_means": {
+        "D_educacao": 0.41694444444444445,
+        "D_trabalho": 0.5533147113594041,
+        "D_saneamento": 0.11945408950617281,
+        "D_acesso": 0.35246144721233685,
+        "D_habitacao": 0.16927083333333334,
+        "D_alimentacao": 0.1684027777777778
+      },
+      "top_dims": [
+        {
+          "dimension": "D_trabalho",
+          "mean": 0.5533
+        },
+        {
+          "dimension": "D_educacao",
+          "mean": 0.4169
+        },
+        {
+          "dimension": "D_acesso",
+          "mean": 0.3525
+        }
+      ],
+      "predominant_characteristics": "D_trabalho (0.553), D_educacao (0.417), D_acesso (0.352)",
+      "raw_profile": {
+        "estuda_atualmente": "False",
+        "escolaridade": "medio_completo",
+        "dificuldades_educacao": "['sem_dificuldades']",
+        "entende_orientacoes_saude": "True",
+        "fez_curso_qualificacao_profissional": "False",
+        "empregado": "True",
+        "tipo_emprego": "clt",
+        "faixa_renda": "entre_1_2_sm",
+        "trabalho_permite_pre_natal": "True",
+        "ambiente_trabalho_seguro": "True",
+        "tem_pausas_descanso": "True",
+        "beneficios_trabalho": "['sem_beneficios']",
+        "recebe_beneficio_social": "False",
+        "fonte_agua": "rede_publica",
+        "interrupcoes_agua": "False",
+        "esgotamento_sanitario": "rede_coletora",
+        "frequencia_coleta_lixo": "regular",
+        "destino_lixo_sem_coleta": "aguarda_proxima_coleta",
+        "distancia_ubs": "razoavelmente_proxima",
+        "acesso_ubs": "a_pe",
+        "cadastrada_ubs": "True",
+        "dificuldades_saude": "['sem_dificuldades']",
+        "tipo_moradia": "casa",
+        "material_moradia": "alvenaria",
+        "numero_pessoas": 3.5052083333333335,
+        "numero_comodos": 3.142361111111111,
+        "numero_dormitorios": 1.7899305555555556,
+        "itens_residencia": "['agua_encanada', 'banheiro_interno', 'cozinha_separada']",
+        "seguranca_residencia": "segura",
+        "refeicoes_por_dia": "tres",
+        "deixou_de_comer_falta_dinheiro": "False",
+        "alimentos_consumidos": "['frutas_verduras', 'carnes', 'leite_derivados', 'feijao_leguminosas']",
+        "fonte_alimentos": "['supermercado_feira']",
+        "avaliacao_alimentacao": "boa"
+      }
+    }
+  },
+  "note": "Grupo SOM é rótulo nominal. IV-DSS é descritivo; P(RF) é probabilidade estimada pelo modelo congelado; target é a variável sintética observada pós-formação."
+}

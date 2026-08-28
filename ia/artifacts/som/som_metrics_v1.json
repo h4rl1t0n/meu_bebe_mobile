@@ -1,0 +1,71 @@
+{
+  "chosen_grid": "10x10",
+  "quantization_error": 3.0998945428325437,
+  "topographic_error": 0.13025,
+  "config": {
+    "grid": "10x10",
+    "sigma0": 5.0,
+    "learning_rate0": 0.5,
+    "iterations": 3000,
+    "seed": 42
+  },
+  "normalization": {
+    "method": "min-max 0-1",
+    "applied_to": "9 features não-binárias (3 numéricas + 6 ordinais)",
+    "scaled_fields": [
+      "numero_pessoas",
+      "numero_comodos",
+      "numero_dormitorios",
+      "escolaridade",
+      "frequencia_coleta_lixo",
+      "distancia_ubs",
+      "seguranca_residencia",
+      "refeicoes_por_dia",
+      "avaliacao_alimentacao"
+    ],
+    "n_scaled": 9,
+    "n_passthrough": 87,
+    "binary_passthrough": "87 features binárias/one-hot/multi-hot mantidas em 0-1 (sem alteração)",
+    "fit_scope": "SOMENTE TREINO (4000); holdout usa os mesmos min/range",
+    "constant_handling": "coluna com range 0 no treino -> 0.0"
+  },
+  "grid_sweep": [
+    {
+      "grid": "5x5",
+      "grid_rows": 5,
+      "grid_cols": 5,
+      "n_neurons": 25,
+      "sigma0": 2.5,
+      "learning_rate0": 0.5,
+      "iterations": 3000,
+      "seed": 42,
+      "quantization_error": 3.240764049817047,
+      "topographic_error": 0.049
+    },
+    {
+      "grid": "7x7",
+      "grid_rows": 7,
+      "grid_cols": 7,
+      "n_neurons": 49,
+      "sigma0": 3.5,
+      "learning_rate0": 0.5,
+      "iterations": 3000,
+      "seed": 42,
+      "quantization_error": 3.178563814487424,
+      "topographic_error": 0.13725
+    },
+    {
+      "grid": "10x10",
+      "grid_rows": 10,
+      "grid_cols": 10,
+      "n_neurons": 100,
+      "sigma0": 5.0,
+      "learning_rate0": 0.5,
+      "iterations": 3000,
+      "seed": 42,
+      "quantization_error": 3.0998945428325437,
+      "topographic_error": 0.13025
+    }
+  ],
+  "note": "Métricas do SOM não são comparáveis a ROC-AUC/PR-AUC do RF."
+}

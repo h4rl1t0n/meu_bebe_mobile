@@ -1,0 +1,3 @@
+grupo,n,pct_holdout,rf_prob_mean,rf_prob_median,rf_prob_std,iv_dss_mean,iv_dss_median,iv_dss_n_calculable,iv_dss_n_not_calculable,target_positive_proportion,predominant_characteristics
+1,424,0.424,0.25212735849056606,0.243,0.07735896375588405,0.34410751028806585,0.32351851851851854,396,28,0.24528301886792453,"D_trabalho (0.629), D_educacao (0.480), D_acesso (0.381)"
+2,576,0.576,0.24294097222222222,0.242,0.06631977858377519,0.2957653025162567,0.27749999999999997,524,52,0.24305555555555555,"D_trabalho (0.553), D_educacao (0.417), D_acesso (0.352)"
