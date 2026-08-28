@@ -3,7 +3,14 @@ import 'package:dio/io.dart';
 
 import '../env.dart';
 import 'interceptors/auth_interceptor.dart';
+import 'interceptors/privacy_log_interceptor.dart';
 
+/// Cliente HTTP do backend autenticado (``BACKEND_BASE_URL``).
+///
+/// Usa [PrivacyLogInterceptor] (nunca registra corpo/cabeçalhos) — o login e a
+/// renovação transportam credenciais/tokens, portanto o corpo da requisição e
+/// da resposta jamais pode ir ao log. O [AuthInterceptor] injeta o
+/// ``Authorization`` e faz a renovação transparente em 401.
 final class RestClient extends DioForNative {
   RestClient()
     : super(
@@ -14,8 +21,8 @@ final class RestClient extends DioForNative {
         ),
       ) {
     interceptors.addAll([
-      LogInterceptor(requestBody: true, responseBody: true),
-      AuthInterceptor(),
+      PrivacyLogInterceptor(),
+      AuthInterceptor(client: this),
     ]);
   }
 

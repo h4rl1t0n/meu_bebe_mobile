@@ -1,6 +1,12 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../core/auth/token_storage.dart';
 import '../../repositories/appointments/appointments_repository.dart';
+import '../../repositories/auth/auth_repository.dart';
+import '../../repositories/auth/auth_repository_impl.dart';
+import '../../repositories/perfil/perfil_repository.dart';
+import '../../repositories/perfil/perfil_repository_impl.dart';
+import '../core/core_module.dart';
 import '../../repositories/appointments/appointments_repository_sqlite.dart';
 import '../../repositories/birth/birth_repository.dart';
 import '../../repositories/birth/birth_repository_impl.dart';
@@ -39,7 +45,13 @@ import 'pages/profile/submodules/profile_data/profile_data_controller.dart';
 
 class MainModule extends Module {
   @override
+  List<Module> get imports => [CoreModule()];
+
+  @override
   void binds(i) {
+    i.addSingleton<AuthRepository>(AuthRepositoryImpl.new);
+    i.addSingleton<TokenStorage>(TokenStorage.new);
+    i.addSingleton<PerfilRepository>(PerfilRepositoryImpl.new);
     i.addSingleton<GestationRepository>(GestationRepositoryImpl.new);
     i.addSingleton<ProfileRepository>(ProfileRepositoryImpl.new);
     i.addSingleton<VaccinesRepository>(VaccinesRepositoryImpl.new);

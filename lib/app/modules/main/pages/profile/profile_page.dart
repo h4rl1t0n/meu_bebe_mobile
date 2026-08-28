@@ -17,6 +17,23 @@ String _avatarInitials(String name) {
   return parts.first[0] + parts.last[0];
 }
 
+/// Converte uma data ISO (`YYYY-MM-DD`) em `DD/MM/YYYY` para exibição.
+/// Retorna `—` para valores nulos, vazios ou fora do padrão esperado.
+String _formatIsoDate(String? iso) {
+  if (iso == null || iso.isEmpty) return '—';
+  final parts = iso.split('-');
+  if (parts.length != 3) return '—';
+  final year = parts[0];
+  final month = parts[1];
+  final day = parts[2];
+  if (year.length != 4 || month.length != 2 || day.length != 2) return '—';
+  return '$day/$month/$year';
+}
+
+/// Valor exibível: o texto trimado ou `—` quando vazio.
+String _orDash(String? value) =>
+    (value == null || value.trim().isEmpty) ? '—' : value.trim();
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -108,6 +125,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     /// NOME DO USUÁRIO
                     Text(displayName, textAlign: TextAlign.center, style: context.textStyles.titleSmallStyle),
 
+                    SizedBox(height: Spacing.lg),
+
+                    _gestacaoSection(context),
+
                     SizedBox(height: Spacing.xxxl),
 
                     /// MENU DE OPÇÕES (CARD)
@@ -156,7 +177,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               iconColor: colors.error,
                               text: 'Sair',
                               onTap: () {
-                                Modular.to.navigate(routeLogin);
+                                controller.logout();
                               },
                             ),
                           ],
@@ -170,6 +191,68 @@ class _ProfilePageState extends State<ProfilePage> {
             },
           );
         },
+      ),
+    );
+  }
+
+  /// Seção "Gestação atual" — exibe apenas dados já existentes no backend
+  /// (DUM, local, profissional e contato do pré-natal). Sem gestação ativa
+  /// (404) ou em erro, mostra o estado vazio sem detalhe técnico.
+  Widget _gestacaoSection(BuildContext context) {
+    final colors = context.colors;
+    final gestacao = controller.gestacaoAtual;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: Spacing.md),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(Spacing.lg),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: RadiusTokens.xxlAll,
+          boxShadow: [ElevationTokens.raisedShadow(colors.onSurface)],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Gestação atual', style: context.textStyles.subTitleStyle),
+            SizedBox(height: Spacing.md),
+            if (gestacao == null)
+              Text(
+                'Nenhuma gestação ativa cadastrada.',
+                style: context.textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
+              )
+            else ...[
+              _gestacaoRow(context, 'DUM', _formatIsoDate(gestacao.dataUltimaMenstruacao)),
+              _gestacaoRow(context, 'Local do pré-natal', _orDash(gestacao.localPreNatal)),
+              _gestacaoRow(context, 'Profissional', _orDash(gestacao.profissionalPreNatal)),
+              _gestacaoRow(context, 'Contato do local', _orDash(gestacao.contatoLocalPreNatal)),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _gestacaoRow(BuildContext context, String label, String value) {
+    final colors = context.colors;
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: Spacing.xs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: context.textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(value, style: context.textStyles.bodyMedium),
+          ),
+        ],
       ),
     );
   }

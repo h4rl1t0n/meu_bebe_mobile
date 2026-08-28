@@ -1,5 +1,3 @@
-// lib/modules/profile/ui/pages/profile_data_page.dart
-
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,14 +6,13 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:validatorless/validatorless.dart';
 
 import '../../../../../../core/extensions/size_extension.dart';
+import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/pregnant_data.dart';
-import '../../../../../../model/user_data.dart';
+import '../../../../../../model/gestante/gestante_model.dart';
 import 'profile_data_controller.dart';
 import 'profile_form_controller.dart';
-import 'widgets/custom_drop_down.dart';
 import 'widgets/custom_text_field.dart';
 
 class ProfileDataPage extends StatefulWidget {
@@ -38,7 +35,7 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
 
   Future<void> _init() async {
     await controller.initialize();
-    initializeForm(controller.pregnant, controller.user);
+    initializeForm(controller.gestante, controller.email);
   }
 
   @override
@@ -81,9 +78,7 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
       ),
       bottomNavigationBar: BottomAppBar(
         child: Observer(
-          builder: (_) {
-            return controller.formEnabled ? _saveButton() : _editButton();
-          },
+          builder: (_) => controller.formEnabled ? _saveButton() : _editButton(),
         ),
       ),
     );
@@ -105,17 +100,9 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
               const SizedBox(height: Spacing.md),
               _cpfField(),
               const SizedBox(height: Spacing.md),
-              _emailField(),
-              const SizedBox(height: Spacing.md),
               _cnsField(),
               const SizedBox(height: Spacing.md),
-              _prenatalPlaceField(),
-              const SizedBox(height: Spacing.md),
-              _maritalStatusField(),
-              const SizedBox(height: Spacing.md),
-              _educationField(),
-              const SizedBox(height: Spacing.md),
-              _incomeField(),
+              _emailField(),
             ],
           ),
         ),
@@ -142,7 +129,10 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
     controller: controller,
     textController: birthdayEC,
     label: 'Data de nascimento',
-    validator: Validatorless.required('Data obrigatória'),
+    validator: Validatorless.multiple([
+      Validatorless.required('Data obrigatória'),
+      (value) => dateToIso(value) == null ? 'Data inválida' : null,
+    ]),
     keyboardType: TextInputType.datetime,
     inputFormatters: [FilteringTextInputFormatter.digitsOnly, DataInputFormatter()],
   );
@@ -151,80 +141,85 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
     controller: controller,
     textController: cpfEC,
     label: 'CPF',
-    validator: Validatorless.required('CPF obrigatório'),
+    validator: (value) {
+      final digits = digitsOnly(value);
+      if (digits.isEmpty) return null;
+      if (digits.length != 11) return 'CPF deve ter 11 dígitos';
+      return null;
+    },
     keyboardType: TextInputType.number,
-    inputFormatters: [FilteringTextInputFormatter.digitsOnly, CpfInputFormatter()],
-  );
-
-  Widget _emailField() => CustomTextField(
-    controller: controller,
-    textController: emailEC,
-    label: 'E-mail',
-    validator: Validatorless.multiple([
-      Validatorless.required('E-mail obrigatório'),
-      Validatorless.email('E-mail inválido'),
-    ]),
-    keyboardType: TextInputType.emailAddress,
+    inputFormatters: [
+      FilteringTextInputFormatter.digitsOnly,
+      LengthLimitingTextInputFormatter(11),
+    ],
   );
 
   Widget _cnsField() => CustomTextField(
     controller: controller,
-    textController: nationalHealthCardEC,
+    textController: cnsEC,
     label: 'Número do Cartão Nacional de Saúde',
+    validator: (value) {
+      final digits = digitsOnly(value);
+      if (digits.isEmpty) return null;
+      if (digits.length != 15) return 'CNS deve ter 15 dígitos';
+      return null;
+    },
     keyboardType: TextInputType.number,
+    inputFormatters: [
+      FilteringTextInputFormatter.digitsOnly,
+      LengthLimitingTextInputFormatter(15),
+    ],
   );
 
-  Widget _prenatalPlaceField() =>
-      CustomTextField(controller: controller, textController: prenatalPlaceEC, label: 'Local que realiza o pré-natal');
-
-  Widget _maritalStatusField() =>
-      CustomDropDown(label: 'Estado civil', textController: maritalStatusEC, type: 0, controller: controller);
-
-  Widget _educationField() =>
-      CustomDropDown(label: 'Nível de escolaridade', textController: educationEC, type: 1, controller: controller);
-
-  Widget _incomeField() =>
-      CustomDropDown(label: 'Renda familiar', textController: incomeEC, type: 2, controller: controller);
+  Widget _emailField() => TextFormField(
+    enabled: false,
+    controller: emailEC,
+    style: context.textStyles.textStyle.copyWith(color: context.colors.darkText),
+    decoration: InputDecoration(fillColor: context.colors.primary, label: const Text('E-mail')),
+  );
 
   // -------- Buttons ----------
 
   SizedBox _saveButton() => _actionButton(
     label: 'Salvar',
-    onPressed: () async {
-      FocusScope.of(context).unfocus();
-
-      final valid = formKey.currentState?.validate() ?? false;
-      if (!valid) return;
-
-      final success = await controller.saveProfile(
-        PregnantData(
-          id: controller.pregnant?.id ?? 0,
-          name: nameEC.text,
-          socialName: socialNameEC.text,
-          birthDate: birthdayEC.text,
-          cpf: cpfEC.text,
-          nationalHealthCard: nationalHealthCardEC.text,
-          prenatalPlace: prenatalPlaceEC.text,
-          professionalName: controller.pregnant?.professionalName,
-          prenatalPlaceContact: controller.pregnant?.prenatalPlaceContact,
-        ),
-        UserData(
-          id: controller.user?.id ?? 0,
-          name: controller.user?.name ?? '',
-          email: emailEC.text,
-          phone: controller.user?.phone,
-        ),
-      );
-
-      if (success && mounted) {
-        controller.setFormEnabled(false);
-      }
-    },
+    onPressed: controller.loading ? null : _handleSave,
   );
+
+  Future<void> _handleSave() async {
+    FocusScope.of(context).unfocus();
+
+    final valid = formKey.currentState?.validate() ?? false;
+    if (!valid) return;
+
+    final isoDate = dateToIso(birthdayEC.text);
+    if (isoDate == null) {
+      Messages.showError('Data de nascimento inválida.');
+      return;
+    }
+
+    final cpf = digitsOnly(cpfEC.text);
+    final cns = digitsOnly(cnsEC.text);
+    final socialName = socialNameEC.text.trim();
+
+    final success = await controller.saveProfile(
+      GestanteModel(
+        id: controller.gestante?.id ?? '',
+        nome: nameEC.text.trim(),
+        nomeSocial: socialName.isEmpty ? null : socialName,
+        dataNascimento: isoDate,
+        cpf: cpf.isEmpty ? null : cpf,
+        cns: cns.isEmpty ? null : cns,
+      ),
+    );
+
+    if (success && mounted) {
+      controller.setFormEnabled(false);
+    }
+  }
 
   SizedBox _editButton() => _actionButton(label: 'Editar', onPressed: () => controller.setFormEnabled(true));
 
-  SizedBox _actionButton({required String label, required VoidCallback onPressed}) {
+  SizedBox _actionButton({required String label, required VoidCallback? onPressed}) {
     return SizedBox(
       width: double.infinity,
       height: 50,

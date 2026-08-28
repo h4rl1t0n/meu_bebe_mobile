@@ -4,6 +4,7 @@ import 'modules/core/core_module.dart';
 import 'modules/formulario/formulario_module.dart';
 import 'modules/inicializar_app/inicializar_app_module.dart';
 import 'modules/login/login_module.dart';
+import 'modules/register/register_module.dart';
 import 'modules/main/pages/childbirth/submodules/birth_moment/birth_moment_module.dart';
 import 'modules/main/pages/childbirth/submodules/pain_relief/pain_relief_module.dart';
 import 'modules/main/pages/childbirth/submodules/birth_expectations/birth_module.dart';
@@ -31,6 +32,7 @@ class AppModule extends Module {
   void routes(r) {
     r.module(Modular.initialRoute, module: InicializarAppModule());
     r.module(routeLogin, module: LoginModule());
+    r.module(routeRegister, module: RegisterModule());
     r.module(routeForm, module: FormularioModule());
     r.module(routeTab, module: MainModule());
 
@@ -62,6 +64,7 @@ class AppModule extends Module {
 }
 
 const routeLogin = '/login/';
+const routeRegister = '/register/';
 const routeForm = '/form/';
 const routeTab = '/tab/';
 

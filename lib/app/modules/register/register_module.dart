@@ -4,10 +4,10 @@ import '../../core/auth/token_storage.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../repositories/auth/auth_repository_impl.dart';
 import '../core/core_module.dart';
-import 'login_controller.dart';
-import 'login_page.dart';
+import 'register_controller.dart';
+import 'register_page.dart';
 
-class LoginModule extends Module {
+class RegisterModule extends Module {
   @override
   List<Module> get imports => [CoreModule()];
 
@@ -15,11 +15,11 @@ class LoginModule extends Module {
   void binds(i) {
     i.addSingleton<AuthRepository>(AuthRepositoryImpl.new);
     i.addSingleton<TokenStorage>(TokenStorage.new);
-    i.addSingleton(LoginController.new);
+    i.addSingleton(RegisterController.new);
   }
 
   @override
   void routes(r) {
-    r.child('/', child: (context) => const LoginPage());
+    r.child('/', child: (context) => const RegisterPage());
   }
 }

@@ -32,8 +32,8 @@ class LoginPageState extends State<LoginPage> {
     super.initState();
     controller = Modular.get<LoginController>();
     formKey = GlobalKey<FormState>();
-    emailTEC = TextEditingController(text: 'fms@oab.am.gov.br');
-    passwordTEC = TextEditingController(text: 'fms1622030013');
+    emailTEC = TextEditingController();
+    passwordTEC = TextEditingController();
   }
 
   @override
@@ -202,13 +202,14 @@ class LoginPageState extends State<LoginPage> {
 
                                         ElevatedButton(
                                           style: ElevatedButton.styleFrom(backgroundColor: colors.darkText),
-                                          onPressed: () {
-                                            final valid = formKey.currentState?.validate() ?? false;
-                                            if (valid) {
-                                              Modular.to.pushReplacementNamed(routeTab);
-                                              //controller.login(emailTEC.text, passwordTEC.text);
-                                            }
-                                          },
+                                          onPressed: controller.loading
+                                              ? null
+                                              : () {
+                                                  final valid = formKey.currentState?.validate() ?? false;
+                                                  if (valid) {
+                                                    controller.login(emailTEC.text, passwordTEC.text);
+                                                  }
+                                                },
                                           child: Observer(
                                             builder: (context) {
                                               if (controller.loading) {
@@ -251,7 +252,7 @@ class LoginPageState extends State<LoginPage> {
                                           label: 'Criar nova conta',
                                           icon: Icons.person_add,
                                           onTap: () {
-                                            Modular.to.pushNamed(routeForm);
+                                            Modular.to.pushNamed(routeRegister);
                                           },
                                         ),
 

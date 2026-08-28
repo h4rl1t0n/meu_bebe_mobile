@@ -1,17 +1,18 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../../../../repositories/gestation/gestation_repository.dart';
-import '../../../../../../repositories/gestation/gestation_repository_impl.dart';
-import '../../../../../../repositories/profile/profile_repository.dart';
-import '../../../../../../repositories/profile/profile_repository_impl.dart';
+import '../../../../../../repositories/perfil/perfil_repository.dart';
+import '../../../../../../repositories/perfil/perfil_repository_impl.dart';
+import '../../../../../core/core_module.dart';
 import 'profile_data_controller.dart';
 import 'profile_data_page.dart';
 
 class ProfileDataModule extends Module {
   @override
+  List<Module> get imports => [CoreModule()];
+
+  @override
   void binds(i) {
-    i.addSingleton<ProfileRepository>(ProfileRepositoryImpl.new);
-    i.addSingleton<GestationRepository>(GestationRepositoryImpl.new);
+    i.addSingleton<PerfilRepository>(PerfilRepositoryImpl.new);
     i.addSingleton(ProfileDataController.new);
   }
 

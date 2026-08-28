@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meu_bebe/app/core/env.dart';
 import 'package:meu_bebe/app/core/rest_client/interceptors/auth_interceptor.dart';
+import 'package:meu_bebe/app/core/rest_client/interceptors/privacy_log_interceptor.dart';
 import 'package:meu_bebe/app/core/rest_client/rest_client.dart';
 
 void main() {
@@ -25,12 +26,12 @@ void main() {
     );
 
     test(
-      'interceptors do baseline restaurados (LogInterceptor + AuthInterceptor)',
+      'interceptors do baseline (PrivacyLogInterceptor + AuthInterceptor)',
       () {
         final client = RestClient();
         final types = client.interceptors.map((i) => i.runtimeType).toList();
 
-        expect(types, contains(LogInterceptor));
+        expect(types, contains(PrivacyLogInterceptor));
         expect(types, contains(AuthInterceptor));
       },
     );

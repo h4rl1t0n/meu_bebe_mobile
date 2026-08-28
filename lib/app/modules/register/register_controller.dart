@@ -7,11 +7,11 @@ import '../../core/auth/token_storage.dart';
 import '../../core/helpers/messages.dart';
 import '../../repositories/auth/auth_repository.dart';
 
-part 'login_controller.g.dart';
+part 'register_controller.g.dart';
 
-class LoginController = LoginControllerBase with _$LoginController;
+class RegisterController = RegisterControllerBase with _$RegisterController;
 
-abstract class LoginControllerBase with Store {
+abstract class RegisterControllerBase with Store {
   final AuthRepository authRepository;
   final TokenStorage tokenStorage;
   final void Function(String route) _navigateReplacement;
@@ -20,7 +20,7 @@ abstract class LoginControllerBase with Store {
   bool obscurePassword = true;
 
   @observable
-  bool logged = false;
+  bool obscureConfirmPassword = true;
 
   @observable
   bool loading = false;
@@ -28,7 +28,10 @@ abstract class LoginControllerBase with Store {
   @action
   void passwordToggle() => obscurePassword = !obscurePassword;
 
-  LoginControllerBase(
+  @action
+  void confirmPasswordToggle() => obscureConfirmPassword = !obscureConfirmPassword;
+
+  RegisterControllerBase(
     this.authRepository,
     this.tokenStorage, {
     void Function(String route)? navigateReplacement,
@@ -39,13 +42,17 @@ abstract class LoginControllerBase with Store {
   }
 
   @action
-  Future<void> login(String email, String password) async {
+  Future<void> register(String email, String password, String confirmPassword) async {
     if (loading) return;
+    if (password != confirmPassword) {
+      Messages.showError('As senhas não conferem');
+      return;
+    }
     loading = true;
-    final loginResult = await authRepository.login(email, password);
+    final result = await authRepository.register(email, password);
     loading = false;
 
-    switch (loginResult) {
+    switch (result) {
       case Error(error: final failure):
         Messages.showError(failure.message);
       case Success(success: final token):
@@ -53,18 +60,7 @@ abstract class LoginControllerBase with Store {
           accessToken: token.accessToken,
           refreshToken: token.refreshToken,
         );
-        logged = true;
         _navigateReplacement(routeTab);
     }
-  }
-
-  void forgotMyPassword() {
-    Messages.showInfo(
-      'Entre em contato com o suporte pelo e-mail\nsuporte@meubebe.app para recuperar sua senha.',
-    );
-  }
-
-  void createAccount() {
-    Modular.to.pushNamed(routeRegister);
   }
 }
