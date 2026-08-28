@@ -7,9 +7,19 @@ Alembic como ``target_metadata``). Mantenha os imports dos models aqui.
 from __future__ import annotations
 
 from .auth_refresh_session import AuthRefreshSession
+from .consulta import Consulta
+from .exame import Exame
 from .gestacao import Gestacao
 from .gestante import Gestante
 from .historico_obstetrico import HistoricoObstetrico
 from .user import User
 
-__all__ = ["User", "AuthRefreshSession", "Gestante", "Gestacao", "HistoricoObstetrico"]
+__all__ = [
+    "User",
+    "AuthRefreshSession",
+    "Gestante",
+    "Gestacao",
+    "HistoricoObstetrico",
+    "Consulta",
+    "Exame",
+]

@@ -9,6 +9,8 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from .auth import router as auth_router
+from .consultas import router as consultas_router
+from .exames import router as exames_router
 from .gestacoes import router as gestacoes_router
 from .gestantes import router as gestantes_router
 from .historico_obstetrico import router as historico_obstetrico_router
@@ -20,3 +22,5 @@ api_v1_router.include_router(auth_router)
 api_v1_router.include_router(gestantes_router)
 api_v1_router.include_router(gestacoes_router)
 api_v1_router.include_router(historico_obstetrico_router)
+api_v1_router.include_router(consultas_router)
+api_v1_router.include_router(exames_router)

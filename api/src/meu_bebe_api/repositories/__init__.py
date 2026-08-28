@@ -7,6 +7,8 @@ Os repositories NÃO fazem ``commit`` — apenas queries/ORM na ``Session``. O
 from __future__ import annotations
 
 from .auth_refresh_session_repository import AuthRefreshSessionRepository
+from .consulta_repository import ConsultaRepository
+from .exame_repository import ExameRepository
 from .gestacao_repository import GestacaoRepository
 from .gestante_repository import GestanteRepository
 from .user_repository import UserRepository
@@ -16,4 +18,6 @@ __all__ = [
     "AuthRefreshSessionRepository",
     "GestanteRepository",
     "GestacaoRepository",
+    "ConsultaRepository",
+    "ExameRepository",
 ]

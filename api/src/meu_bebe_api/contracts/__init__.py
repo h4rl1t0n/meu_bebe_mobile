@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from .consulta import ConsultaResponse, ConsultaWrite
 from .dss import DSS_SCHEMA_VERSION, DssPayload
 from .errors import ErrorDetail, ErrorResponse
+from .exame import ExameResponse, ExameWrite
 from .gestacao import GestacaoResponse, GestacaoWrite
 from .gestante import GestanteResponse, GestanteWrite
 from .risk_estimate import (
@@ -30,4 +32,8 @@ __all__ = [
     "GestanteWrite",
     "GestacaoResponse",
     "GestacaoWrite",
+    "ConsultaResponse",
+    "ConsultaWrite",
+    "ExameResponse",
+    "ExameWrite",
 ]

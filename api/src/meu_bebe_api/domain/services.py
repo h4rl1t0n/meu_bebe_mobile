@@ -19,22 +19,32 @@ import uuid
 from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.orm import Session
 
+from ..contracts.consulta import ConsultaWrite
+from ..contracts.exame import ExameWrite
 from ..contracts.gestacao import GestacaoWrite
 from ..contracts.gestante import GestanteWrite
 from ..contracts.historico_obstetrico import HistoricoObstetricoWrite
+from ..models.consulta import Consulta
+from ..models.exame import Exame
 from ..models.gestacao import Gestacao
 from ..models.gestante import Gestante
 from ..models.historico_obstetrico import HistoricoObstetrico
+from ..repositories.consulta_repository import ConsultaRepository
+from ..repositories.exame_repository import ExameRepository
 from ..repositories.gestacao_repository import GestacaoRepository
 from ..repositories.gestante_repository import GestanteRepository
 from ..repositories.historico_obstetrico_repository import HistoricoObstetricoRepository
 from .errors import (
     ACTIVE_PREGNANCY_ALREADY_EXISTS,
     ACTIVE_PREGNANCY_ALREADY_EXISTS_MESSAGE,
+    CONSULTA_NOT_FOUND,
+    CONSULTA_NOT_FOUND_MESSAGE,
     DATABASE_UNAVAILABLE,
     DATABASE_UNAVAILABLE_MESSAGE,
     DOMAIN_ERROR,
     DOMAIN_ERROR_MESSAGE,
+    EXAME_NOT_FOUND,
+    EXAME_NOT_FOUND_MESSAGE,
     OBSTETRIC_HISTORY_NOT_FOUND,
     OBSTETRIC_HISTORY_NOT_FOUND_MESSAGE,
     PREGNANCY_NOT_FOUND,
@@ -307,3 +317,212 @@ class HistoricoObstetricoService:
             self._session.rollback()
             raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
         return historico
+
+
+class ConsultaService:
+    """Regras de consulta: CRUD de lista + ownership (FASE 8F).
+
+    O ``gestacao_id`` já chega validado por ownership (``get_owned_gestacao``):
+    a gestação pertence à gestante autenticada. Ainda assim, GET/PUT/DELETE
+    buscam por ``consulta_id + gestacao_id`` (defense in depth).
+    """
+
+    def __init__(self, session: Session) -> None:
+        self._session = session
+        self._consultas = ConsultaRepository(session)
+
+    def list(self, gestacao_id: uuid.UUID) -> list[Consulta]:
+        try:
+            return self._consultas.list_by_gestacao_id(gestacao_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+
+    def get(self, gestacao_id: uuid.UUID, consulta_id: uuid.UUID) -> Consulta:
+        """A consulta da gestação, ou 404 ``CONSULTA_NOT_FOUND``."""
+        try:
+            consulta = self._consultas.find_by_id_and_gestacao(consulta_id, gestacao_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        if consulta is None:
+            raise DomainError(CONSULTA_NOT_FOUND, CONSULTA_NOT_FOUND_MESSAGE, 404)
+        return consulta
+
+    def create(self, gestacao_id: uuid.UUID, payload: ConsultaWrite) -> Consulta:
+        try:
+            consulta = Consulta(
+                gestacao_id=gestacao_id,
+                titulo=payload.titulo,
+                data_consulta=payload.data_consulta,
+                descricao=payload.descricao,
+            )
+            self._consultas.add(consulta)
+            self._session.flush()
+            self._session.commit()
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return consulta
+
+    def update(
+        self,
+        gestacao_id: uuid.UUID,
+        consulta_id: uuid.UUID,
+        payload: ConsultaWrite,
+    ) -> Consulta:
+        try:
+            consulta = self._consultas.find_by_id_and_gestacao(consulta_id, gestacao_id)
+            if consulta is None:
+                raise DomainError(CONSULTA_NOT_FOUND, CONSULTA_NOT_FOUND_MESSAGE, 404)
+            self._consultas.update(
+                consulta,
+                titulo=payload.titulo,
+                data_consulta=payload.data_consulta,
+                descricao=payload.descricao,
+            )
+            self._session.flush()
+            self._session.commit()
+        except DomainError:
+            self._session.rollback()
+            raise
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return consulta
+
+    def delete(self, gestacao_id: uuid.UUID, consulta_id: uuid.UUID) -> None:
+        try:
+            consulta = self._consultas.find_by_id_and_gestacao(consulta_id, gestacao_id)
+            if consulta is None:
+                raise DomainError(CONSULTA_NOT_FOUND, CONSULTA_NOT_FOUND_MESSAGE, 404)
+            self._consultas.delete(consulta)
+            self._session.commit()
+        except DomainError:
+            self._session.rollback()
+            raise
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+
+
+class ExameService:
+    """Regras de exame: CRUD de lista + ownership (FASE 8F).
+
+    Igual a ``ConsultaService``, com o campo opcional ``categoria`` (string livre)
+    reservado ao mapeamento legado da 1ª ultrassonografia.
+    """
+
+    def __init__(self, session: Session) -> None:
+        self._session = session
+        self._exames = ExameRepository(session)
+
+    def list(self, gestacao_id: uuid.UUID) -> list[Exame]:
+        try:
+            return self._exames.list_by_gestacao_id(gestacao_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+
+    def get(self, gestacao_id: uuid.UUID, exame_id: uuid.UUID) -> Exame:
+        """O exame da gestação, ou 404 ``EXAME_NOT_FOUND``."""
+        try:
+            exame = self._exames.find_by_id_and_gestacao(exame_id, gestacao_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        if exame is None:
+            raise DomainError(EXAME_NOT_FOUND, EXAME_NOT_FOUND_MESSAGE, 404)
+        return exame
+
+    def create(self, gestacao_id: uuid.UUID, payload: ExameWrite) -> Exame:
+        try:
+            exame = Exame(
+                gestacao_id=gestacao_id,
+                titulo=payload.titulo,
+                data_exame=payload.data_exame,
+                descricao=payload.descricao,
+                categoria=payload.categoria,
+            )
+            self._exames.add(exame)
+            self._session.flush()
+            self._session.commit()
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return exame
+
+    def update(
+        self,
+        gestacao_id: uuid.UUID,
+        exame_id: uuid.UUID,
+        payload: ExameWrite,
+    ) -> Exame:
+        try:
+            exame = self._exames.find_by_id_and_gestacao(exame_id, gestacao_id)
+            if exame is None:
+                raise DomainError(EXAME_NOT_FOUND, EXAME_NOT_FOUND_MESSAGE, 404)
+            self._exames.update(
+                exame,
+                titulo=payload.titulo,
+                data_exame=payload.data_exame,
+                descricao=payload.descricao,
+                categoria=payload.categoria,
+            )
+            self._session.flush()
+            self._session.commit()
+        except DomainError:
+            self._session.rollback()
+            raise
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return exame
+
+    def delete(self, gestacao_id: uuid.UUID, exame_id: uuid.UUID) -> None:
+        try:
+            exame = self._exames.find_by_id_and_gestacao(exame_id, gestacao_id)
+            if exame is None:
+                raise DomainError(EXAME_NOT_FOUND, EXAME_NOT_FOUND_MESSAGE, 404)
+            self._exames.delete(exame)
+            self._session.commit()
+        except DomainError:
+            self._session.rollback()
+            raise
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
