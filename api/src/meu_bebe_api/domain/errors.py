@@ -23,6 +23,7 @@ CONSULTA_NOT_FOUND = "CONSULTA_NOT_FOUND"
 EXAME_NOT_FOUND = "EXAME_NOT_FOUND"
 MEDICAMENTO_NOT_FOUND = "MEDICAMENTO_NOT_FOUND"
 VACINA_NOT_FOUND = "VACINA_NOT_FOUND"
+PLANO_PARTO_NOT_FOUND = "PLANO_PARTO_NOT_FOUND"
 DOMAIN_ERROR = "DOMAIN_ERROR"
 
 PROFILE_NOT_FOUND_MESSAGE = "Perfil de gestante não encontrado."
@@ -35,6 +36,7 @@ CONSULTA_NOT_FOUND_MESSAGE = "Consulta não encontrada."
 EXAME_NOT_FOUND_MESSAGE = "Exame não encontrado."
 MEDICAMENTO_NOT_FOUND_MESSAGE = "Medicamento não encontrado."
 VACINA_NOT_FOUND_MESSAGE = "Vacina não encontrada."
+PLANO_PARTO_NOT_FOUND_MESSAGE = "Plano de parto não encontrado."
 DOMAIN_ERROR_MESSAGE = "Falha ao processar a solicitação."
 
 # Reexporta o erro de infraestrutura compartilhado com a auth (seção 22).
@@ -61,6 +63,8 @@ __all__ = [
     "MEDICAMENTO_NOT_FOUND_MESSAGE",
     "VACINA_NOT_FOUND",
     "VACINA_NOT_FOUND_MESSAGE",
+    "PLANO_PARTO_NOT_FOUND",
+    "PLANO_PARTO_NOT_FOUND_MESSAGE",
     "DOMAIN_ERROR",
     "DOMAIN_ERROR_MESSAGE",
     "DomainError",

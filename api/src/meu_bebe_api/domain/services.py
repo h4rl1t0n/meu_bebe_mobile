@@ -25,6 +25,7 @@ from ..contracts.gestacao import GestacaoWrite
 from ..contracts.gestante import GestanteWrite
 from ..contracts.historico_obstetrico import HistoricoObstetricoWrite
 from ..contracts.medicamento import MedicamentoWrite
+from ..contracts.plano_parto import PlanoPartoWrite
 from ..contracts.vacina import VacinaWrite
 from ..models.consulta import Consulta
 from ..models.exame import Exame
@@ -32,6 +33,7 @@ from ..models.gestacao import Gestacao
 from ..models.gestante import Gestante
 from ..models.historico_obstetrico import HistoricoObstetrico
 from ..models.medicamento import Medicamento
+from ..models.plano_parto import PlanoParto
 from ..models.vacina import Vacina
 from ..repositories.consulta_repository import ConsultaRepository
 from ..repositories.exame_repository import ExameRepository
@@ -39,6 +41,7 @@ from ..repositories.gestacao_repository import GestacaoRepository
 from ..repositories.gestante_repository import GestanteRepository
 from ..repositories.historico_obstetrico_repository import HistoricoObstetricoRepository
 from ..repositories.medicamento_repository import MedicamentoRepository
+from ..repositories.plano_parto_repository import PlanoPartoRepository
 from ..repositories.vacina_repository import VacinaRepository
 from .errors import (
     ACTIVE_PREGNANCY_ALREADY_EXISTS,
@@ -55,6 +58,8 @@ from .errors import (
     MEDICAMENTO_NOT_FOUND_MESSAGE,
     OBSTETRIC_HISTORY_NOT_FOUND,
     OBSTETRIC_HISTORY_NOT_FOUND_MESSAGE,
+    PLANO_PARTO_NOT_FOUND,
+    PLANO_PARTO_NOT_FOUND_MESSAGE,
     PREGNANCY_NOT_FOUND,
     PREGNANCY_NOT_FOUND_MESSAGE,
     PREGNANCY_REOPEN_NOT_ALLOWED,
@@ -735,3 +740,83 @@ class VacinaService:
             self._session.rollback()
             raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
         return vacina
+
+
+class PlanoPartoService:
+    """Regras do plano de parto: GET e UPSERT (singleton por gestação, FASE 8H).
+
+    O ``gestacao_id`` já chega validado por ownership (``get_owned_gestacao``):
+    a gestação pertence à gestante autenticada. O plano é 1—0..1 com a gestação,
+    então GET retorna 404 ``PLANO_PARTO_NOT_FOUND`` se ausente e PUT faz UPSERT
+    (cria se ausente, atualiza se existente) — como o Histórico Obstétrico. Não
+    há DELETE: o app nunca remove o plano.
+    """
+
+    def __init__(self, session: Session) -> None:
+        self._session = session
+        self._plano = PlanoPartoRepository(session)
+
+    def get(self, gestacao_id: uuid.UUID) -> PlanoParto:
+        """O plano da gestação, ou 404 ``PLANO_PARTO_NOT_FOUND``."""
+        try:
+            plano = self._plano.find_by_gestacao_id(gestacao_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        if plano is None:
+            raise DomainError(
+                PLANO_PARTO_NOT_FOUND, PLANO_PARTO_NOT_FOUND_MESSAGE, 404
+            )
+        return plano
+
+    def _apply(self, plano: PlanoParto, payload: PlanoPartoWrite) -> PlanoParto:
+        """Aplica o payload ao plano (via ``repository.update``).
+
+        As chaves de ``payload.model_dump()`` mapeiam 1:1 as colunas do modelo
+        (os nomes do contrato e do ORM são idênticos por convenção). Reutilizado
+        no caminho normal e na recuperação de corrida — evita repetir os 28
+        campos em dois blocos.
+        """
+        return self._plano.update(plano, **payload.model_dump())
+
+    def upsert(
+        self, gestacao_id: uuid.UUID, payload: PlanoPartoWrite
+    ) -> PlanoParto:
+        """Cria (se ausente) ou atualiza (se existente) o plano e committa.
+
+        Corrida de UPSERT (duas requisições ``find``→``None`` concorrentes): o
+        ``IntegrityError`` do UNIQUE(gestacao_id) dispara rollback + UMA re-busca
+        do singleton vencedor + aplicação do payload nele (sem loop/retry, sem
+        ``ON CONFLICT``, sem lock explícito). ``id`` e ``created_at`` do vencedor
+        são preservados.
+        """
+        try:
+            plano = self._plano.find_by_gestacao_id(gestacao_id)
+            if plano is None:
+                plano = PlanoParto(gestacao_id=gestacao_id)
+                self._apply(plano, payload)
+                self._plano.add(plano)
+            else:
+                self._apply(plano, payload)
+            self._session.flush()
+            self._session.commit()
+        except IntegrityError:
+            # UNIQUE(gestacao_id): outra requisição criou o singleton entre o
+            # find e o INSERT. Recupera re-aplicando o payload à linha vencedora.
+            self._session.rollback()
+            plano = self._plano.find_by_gestacao_id(gestacao_id)
+            if plano is None:
+                raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+            self._apply(plano, payload)
+            self._session.flush()
+            self._session.commit()
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return plano

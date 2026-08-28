@@ -13,6 +13,7 @@ from .gestacao import Gestacao
 from .gestante import Gestante
 from .historico_obstetrico import HistoricoObstetrico
 from .medicamento import Medicamento
+from .plano_parto import PlanoParto
 from .user import User
 from .vacina import Vacina
 
@@ -26,4 +27,5 @@ __all__ = [
     "Exame",
     "Medicamento",
     "Vacina",
+    "PlanoParto",
 ]
