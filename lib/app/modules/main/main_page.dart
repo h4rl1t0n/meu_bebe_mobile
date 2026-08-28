@@ -5,6 +5,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import 'main_controller.dart';
 import 'pages/childbirth/childbirth_page.dart';
+import 'pages/gestation/gestation_controller.dart';
 import 'pages/gestation/gestation_page.dart';
 import 'pages/home/home_page.dart';
 import 'pages/profile/profile_page.dart';
@@ -44,6 +45,12 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
             onDestinationSelected: (index) {
               tabController.animateTo(index, duration: const Duration(milliseconds: 350), curve: Curves.easeInOutCubic);
               controller.setIndex(index);
+              if (index == 1) {
+                Modular.get<GestationController>().initialize();
+              }
+              if (index == 3) {
+                controller.refreshGestacaoAtual();
+              }
             },
             destinations: [
               NavigationDestination(
@@ -68,7 +75,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                 icon: Icon(CupertinoIcons.person),
                 selectedIcon: Icon(CupertinoIcons.person_fill),
                 label: 'Perfil',
-                tooltip: 'Parto',
+                tooltip: 'Perfil',
               ),
             ],
           );

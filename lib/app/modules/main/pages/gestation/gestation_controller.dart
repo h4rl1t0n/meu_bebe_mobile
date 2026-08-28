@@ -1,38 +1,49 @@
 import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
-import '../../../../model/current_pregnancy_data.dart';
-import '../../../../model/pregnant_data.dart';
+import '../../../../model/gestacao/gestacao_model.dart';
+import '../../../../model/gestante/gestante_model.dart';
+import '../../../../model/historico_obstetrico/historico_obstetrico_model.dart';
 import '../../../../repositories/appointments/appointments_repository.dart';
-import '../../../../repositories/current_gestation/current_gestation_repository.dart';
 import '../../../../repositories/exams/exams_repository.dart';
-import '../../../../repositories/gestation/gestation_repository.dart';
-import '../../../../repositories/history/history_repository.dart';
+import '../../../../repositories/historico_obstetrico/historico_obstetrico_repository.dart';
+import '../../../../repositories/perfil/perfil_repository.dart';
 
 part 'gestation_controller.g.dart';
 
 class GestationController = GestationControllerBase with _$GestationController;
 
+/// Controlador (somente leitura) da ABA GESTAÇÃO.
+///
+/// Fonte de verdade dos domínios migrados (9A/9B):
+///  - gestante (nome, data de nascimento)  → [PerfilRepository.getGestante]
+///  - gestação atual (DUM e pré-natal)     → [PerfilRepository.getGestacaoAtual]
+///  - histórico obstétrico                 → [HistoricoObstetricoRepository.getHistorico]
+///
+/// Permanecem locais (SQLite) apenas os domínios ainda NÃO migrados:
+/// consultas e exames. A primeira ultrassonografia pertence a EXAMES (FASE 8F)
+/// e não é exibida nesta aba — dívida registrada, não split-brain.
 abstract class GestationControllerBase with Store {
-  final GestationRepository gestationRepository;
-  final CurrentGestationRepository currentGestationRepository;
+  final PerfilRepository perfilRepository;
+  final HistoricoObstetricoRepository historicoObstetricoRepository;
   final AppointmentsRepository appointmentsRepository;
   final ExamsRepository examsRepository;
-  final HistoryRepository historyRepository;
 
   GestationControllerBase(
-    this.gestationRepository,
-    this.currentGestationRepository,
+    this.perfilRepository,
+    this.historicoObstetricoRepository,
     this.appointmentsRepository,
     this.examsRepository,
-    this.historyRepository,
   );
 
   @observable
-  PregnantData? pregnantData;
+  GestanteModel? gestante;
 
   @observable
-  CurrentPregnancyData? currentPregnancyData;
+  GestacaoModel? gestacao;
+
+  @observable
+  HistoricoObstetricoModel? historico;
 
   @observable
   ObservableList<String> appointments = ObservableList<String>();
@@ -41,37 +52,51 @@ abstract class GestationControllerBase with Store {
   ObservableList<String> exams = ObservableList<String>();
 
   @observable
-  ObservableList<String> historyItems = ObservableList<String>();
-
-  @observable
   bool isLoading = false;
 
   @action
   Future<void> initialize() async {
     isLoading = true;
-    await Future.wait([_getPregnant(), _getCurrentGestation(), _getAppointments(), _getExams(), _getHistory()]);
+    await Future.wait([
+      _getGestante(),
+      _getGestacao(),
+      _getHistorico(),
+      _getAppointments(),
+      _getExams(),
+    ]);
     isLoading = false;
   }
 
   @action
-  Future<void> _getPregnant() async {
-    final result = await gestationRepository.getPregnant();
+  Future<void> _getGestante() async {
+    final result = await perfilRepository.getGestante();
     switch (result) {
       case Success():
-        pregnantData = result.success;
+        gestante = result.success;
       case Error():
-        break;
+        gestante = null;
     }
   }
 
   @action
-  Future<void> _getCurrentGestation() async {
-    final result = await currentGestationRepository.getGestation();
+  Future<void> _getGestacao() async {
+    final result = await perfilRepository.getGestacaoAtual();
     switch (result) {
       case Success():
-        currentPregnancyData = result.success;
+        gestacao = result.success;
       case Error():
-        break;
+        gestacao = null;
+    }
+  }
+
+  @action
+  Future<void> _getHistorico() async {
+    final result = await historicoObstetricoRepository.getHistorico();
+    switch (result) {
+      case Success():
+        historico = result.success;
+      case Error():
+        historico = null;
     }
   }
 
@@ -99,20 +124,17 @@ abstract class GestationControllerBase with Store {
     }
   }
 
-  @action
-  Future<void> _getHistory() async {
-    final result = await historyRepository.getHistory();
-    switch (result) {
-      case Success():
-        historyItems.clear();
-        final h = result.success;
-        if (h != null) {
-          historyItems.add('Gravidezes anteriores: ${h.pregnancyNumber ?? 0}');
-          historyItems.add('Partos anteriores: ${h.givenBirthNumber ?? 0}');
-          historyItems.add('Abortos: ${h.abortionsNumber ?? 0}');
-        }
-      case Error():
-        break;
-    }
+  /// Linhas do "Histórico de gestações" exibido na aba. `null` (não informado)
+  /// difere de `0` (zero ocorrências) — nunca converte `null` em zero.
+  @computed
+  List<String> get historyItems {
+    final h = historico;
+    return [
+      'Gravidezes anteriores: ${_count(h?.pregnancyNumber)}',
+      'Partos anteriores: ${_count(h?.givenBirthNumber)}',
+      'Abortos: ${_count(h?.abortionsNumber)}',
+    ];
   }
+
+  String _count(int? value) => value == null ? 'Sem dados' : '$value';
 }

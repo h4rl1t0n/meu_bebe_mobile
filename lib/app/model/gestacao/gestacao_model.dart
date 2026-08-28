@@ -1,8 +1,9 @@
-/// Modelo do domínio GESTAÇÃO ATUAL (contrato congelado FASE 8D).
+/// Modelo do domínio GESTAÇÃO ATUAL (contrato FASE 8D / 9B).
 ///
-/// Apenas leitura nesta fase: o Perfil exibe a gestação ativa existente. As
-/// datas (`data_ultima_menstruacao`, `ended_at`) são mantidas como `String?`
-/// para não acoplar a desserialização a um formato específico.
+/// As datas (`data_ultima_menstruacao`, `ended_at`) são mantidas como `String?`
+/// para não acoplar a desserialização a um formato específico. `ended_at` é
+/// exibido, mas NUNCA é enviado (não encerramos gestação nesta fase — ver
+/// [toWriteJson]).
 class GestacaoModel {
   final String id;
   final String? dataUltimaMenstruacao;
@@ -34,5 +35,16 @@ class GestacaoModel {
       contatoLocalPreNatal: data['contato_local_pre_natal'] as String?,
       endedAt: data['ended_at'] as String?,
     );
+  }
+
+  /// Payload de escrita (POST/PUT) — apenas os campos editáveis do contrato
+  /// ``GestacaoWrite``. Sem `id`, `ended_at` ou timestamps.
+  Map<String, dynamic> toWriteJson() {
+    return {
+      'data_ultima_menstruacao': dataUltimaMenstruacao,
+      'local_pre_natal': localPreNatal,
+      'profissional_pre_natal': profissionalPreNatal,
+      'contato_local_pre_natal': contatoLocalPreNatal,
+    };
   }
 }

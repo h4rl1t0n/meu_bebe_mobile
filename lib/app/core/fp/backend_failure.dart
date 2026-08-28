@@ -25,6 +25,11 @@ final class EmailAlreadyRegisteredFailure extends BackendFailure {
     : super(message: 'Este e-mail já está cadastrado.');
 }
 
+final class ActiveGestationExistsFailure extends BackendFailure {
+  const ActiveGestationExistsFailure()
+    : super(message: 'Já existe uma gestação ativa.');
+}
+
 final class ValidationFailure extends BackendFailure {
   const ValidationFailure()
     : super(message: 'Dados inválidos. Verifique os campos informados.');

@@ -2,15 +2,26 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../../model/current_pregnancy_data.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
 import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
+/// Card "Gestação atual" do resumo. Recebe a DUM da API (ISO) e a primeira
+/// ultrassonografia, que pertence a EXAMES (FASE 8F) e por ora é `null`.
 class CurrentGestationCard extends StatelessWidget {
-  const CurrentGestationCard({super.key, required this.current, this.onEdit});
+  const CurrentGestationCard({
+    super.key,
+    required this.lastMenstrualPeriod,
+    required this.firstUltrasound,
+    this.onEdit,
+  });
 
-  final CurrentPregnancyData? current;
+  /// `YYYY-MM-DD` (ISO) vinda da API.
+  final String? lastMenstrualPeriod;
+
+  /// Domínio EXAMES — ainda não integrado (dívida FASE 8F).
+  final String? firstUltrasound;
+
   final VoidCallback? onEdit;
 
   @override
@@ -29,9 +40,9 @@ class CurrentGestationCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              CustomItemTile(flex: 1, title: 'Última menstruação', content: _getData(current?.lastMenstrualPeriod)),
+              CustomItemTile(flex: 1, title: 'Última menstruação', content: _formatDate(lastMenstrualPeriod)),
               const SizedBox(width: Spacing.sm),
-              CustomItemTile(flex: 1, title: 'Data do ultrassom', content: _getData(current?.firstUltrasound)),
+              CustomItemTile(flex: 1, title: 'Data do ultrassom', content: _getData(firstUltrasound)),
             ],
           ),
           const SizedBox(height: Spacing.sm),
@@ -67,33 +78,30 @@ class CurrentGestationCard extends StatelessWidget {
     }
   }
 
+  /// Exibe a DUM em `DD/MM/YYYY` a partir do ISO da API.
+  String _formatDate(String? iso) {
+    if (iso == null || iso.isEmpty) return 'Não informado';
+    final parsed = DateTime.tryParse(iso);
+    if (parsed == null) return iso;
+    return '${parsed.day.toString().padLeft(2, '0')}/${parsed.month.toString().padLeft(2, '0')}/${parsed.year}';
+  }
+
   String _getGestationalAge() {
-    if (current?.lastMenstrualPeriod != null) {
-      final now = DateTime.now();
-      final menstrualDay = DateTime.parse(_transformDate(current!.lastMenstrualPeriod!));
-      final gestationalDays = now.difference(menstrualDay).inDays;
-      return '${gestationalDays ~/ 7} semanas e ${gestationalDays % 7} dias';
-    }
-    return 'Sem dados';
+    final iso = lastMenstrualPeriod;
+    if (iso == null || iso.isEmpty) return 'Sem dados';
+    final menstrualDay = DateTime.tryParse(iso);
+    if (menstrualDay == null) return 'Sem dados';
+    final gestationalDays = DateTime.now().difference(menstrualDay).inDays;
+    if (gestationalDays < 0) return 'Sem dados';
+    return '${gestationalDays ~/ 7} semanas e ${gestationalDays % 7} dias';
   }
 
   String _getChildbirthDate() {
-    if (current?.lastMenstrualPeriod != null) {
-      final menstrualDay = DateTime.parse(_transformDate(current!.lastMenstrualPeriod!));
-      final birth = menstrualDay.add(const Duration(days: 280));
-      return _dateTimeToString(birth);
-    }
-
-    return 'Sem dados';
-  }
-
-  String _transformDate(String date) {
-    final formatted = '${date.substring(6, 10)}-${date.substring(3, 5)}-${date.substring(0, 2)}';
-    return formatted;
-  }
-
-  String _dateTimeToString(DateTime date) {
-    final rawDate = date.toString();
-    return '${rawDate.substring(8, 10)}/${rawDate.substring(5, 7)}/${rawDate.substring(0, 4)}';
+    final iso = lastMenstrualPeriod;
+    if (iso == null || iso.isEmpty) return 'Sem dados';
+    final menstrualDay = DateTime.tryParse(iso);
+    if (menstrualDay == null) return 'Sem dados';
+    final birth = menstrualDay.add(const Duration(days: 280));
+    return '${birth.day.toString().padLeft(2, '0')}/${birth.month.toString().padLeft(2, '0')}/${birth.year}';
   }
 }

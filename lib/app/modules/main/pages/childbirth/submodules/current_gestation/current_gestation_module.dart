@@ -1,14 +1,21 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../../../../repositories/current_gestation/current_gestation_repository.dart';
-import '../../../../../../repositories/current_gestation/current_gestation_repository_impl.dart';
+import '../../../../../../repositories/gestacao/gestacao_repository.dart';
+import '../../../../../../repositories/gestacao/gestacao_repository_impl.dart';
+import '../../../../../../repositories/perfil/perfil_repository.dart';
+import '../../../../../../repositories/perfil/perfil_repository_impl.dart';
+import '../../../../../core/core_module.dart';
 import 'current_gestation_controller.dart';
 import 'current_gestation_page.dart';
 
 class CurrentGestationModule extends Module {
   @override
+  List<Module> get imports => [CoreModule()];
+
+  @override
   void binds(i) {
-    i.addSingleton<CurrentGestationRepository>(CurrentGestationRepositoryImpl.new);
+    i.addSingleton<PerfilRepository>(PerfilRepositoryImpl.new);
+    i.addSingleton<GestacaoRepository>(GestacaoRepositoryImpl.new);
     i.addSingleton(CurrentGestationController.new);
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../model/previous_pregnancy.dart';
+import '../../../../../../model/historico_obstetrico/historico_obstetrico_model.dart';
 import 'history_page.dart';
 
 mixin HistoryFormController on State<HistoryPage> {
@@ -14,15 +14,9 @@ mixin HistoryFormController on State<HistoryPage> {
     abortionNumberEC.dispose();
   }
 
-  void initializeForm(PreviousPregnancy history) {
-    history.pregnancyNumber == null
-        ? pregnantNumberEC.clear()
-        : pregnantNumberEC.text = history.pregnancyNumber.toString();
-    history.givenBirthNumber == null
-        ? childbirthNumberEC.clear()
-        : childbirthNumberEC.text = history.givenBirthNumber.toString();
-    history.abortionsNumber == null
-        ? abortionNumberEC.clear()
-        : abortionNumberEC.text = history.abortionsNumber.toString();
+  void initializeForm(HistoricoObstetricoModel? historico) {
+    pregnantNumberEC.text = historico?.pregnancyNumber?.toString() ?? '';
+    childbirthNumberEC.text = historico?.givenBirthNumber?.toString() ?? '';
+    abortionNumberEC.text = historico?.abortionsNumber?.toString() ?? '';
   }
 }

@@ -6,7 +6,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/current_pregnancy_data.dart';
+import '../../../../../../model/gestacao/gestacao_model.dart';
 import '../../../../widgets/base_card.dart';
 import 'current_gestation_controller.dart';
 import 'current_gestation_form_controller.dart';
@@ -18,7 +18,8 @@ class CurrentGestationPage extends StatefulWidget {
   State<CurrentGestationPage> createState() => _CurrentGestationPageState();
 }
 
-class _CurrentGestationPageState extends State<CurrentGestationPage> with CurrentGestationFormController {
+class _CurrentGestationPageState extends State<CurrentGestationPage>
+    with CurrentGestationFormController {
   final formKey = GlobalKey<FormState>();
   final _controller = Modular.get<CurrentGestationController>();
 
@@ -26,7 +27,7 @@ class _CurrentGestationPageState extends State<CurrentGestationPage> with Curren
   void initState() {
     super.initState();
     _controller.initialize().then((_) {
-      initializeForm(_controller.model!);
+      if (mounted) initializeForm(_controller.model);
     });
   }
 
@@ -38,48 +39,67 @@ class _CurrentGestationPageState extends State<CurrentGestationPage> with Curren
 
   @override
   Widget build(BuildContext context) {
-    return Observer(
-      builder: (_) {
-        if (_controller.saved) {
-          _controller.saved = false;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pop(context);
-          });
-        }
-        return Scaffold(appBar: _buildAppBar, body: _buildBody);
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Gravidez Atual', style: context.textStyles.titleSmallStyle),
+        centerTitle: true,
+      ),
+      body: Observer(
+        builder: (_) {
+          if (_controller.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return _buildBody;
+        },
+      ),
     );
-  }
-
-  AppBar get _buildAppBar {
-    return AppBar(title: Text('Gravidez Atual', style: context.textStyles.titleSmallStyle), centerTitle: true);
   }
 
   Widget get _buildBody {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.pageH,
+        vertical: Spacing.pageV,
+      ),
       child: SingleChildScrollView(
         child: BaseCard(
           child: Form(
             key: formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Sobre a minha gravidez', style: context.textStyles.titleSmallStyle),
+                Text(
+                  'Sobre a minha gravidez',
+                  style: context.textStyles.titleSmallStyle,
+                ),
                 SizedBox(height: Spacing.lg),
                 _buildTextField(
                   lastMenstrualPeriodEC,
                   'Data da última menstruação',
+                  validator: _validateDum,
                   keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, DataInputFormatter()],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    DataInputFormatter(),
+                  ],
                 ),
                 SizedBox(height: Spacing.lg),
-                Text('Em relação ao 1° ultrassom', style: context.textStyles.titleSmallStyle),
+                _buildTextField(
+                  localPreNatalEC,
+                  'Local do pré-natal',
+                  inputFormatters: [LengthLimitingTextInputFormatter(255)],
+                ),
                 SizedBox(height: Spacing.lg),
                 _buildTextField(
-                  firstUltrasoundEC,
-                  'Data do primeiro ultrassom',
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, DataInputFormatter()],
+                  profissionalPreNatalEC,
+                  'Profissional do pré-natal',
+                  inputFormatters: [LengthLimitingTextInputFormatter(255)],
+                ),
+                SizedBox(height: Spacing.lg),
+                _buildTextField(
+                  contatoLocalPreNatalEC,
+                  'Contato do local',
+                  inputFormatters: [LengthLimitingTextInputFormatter(64)],
                 ),
                 SizedBox(height: Spacing.lg),
                 _saveButton(),
@@ -89,6 +109,13 @@ class _CurrentGestationPageState extends State<CurrentGestationPage> with Curren
         ),
       ),
     );
+  }
+
+  String? _validateDum(String? value) {
+    final v = (value ?? '').trim();
+    if (v.isEmpty) return null;
+    if (dumDisplayToIso(v) == null) return 'Informe uma data válida';
+    return null;
   }
 
   TextFormField _buildTextField(
@@ -114,22 +141,37 @@ class _CurrentGestationPageState extends State<CurrentGestationPage> with Curren
       width: double.infinity,
       height: 48,
       child: ElevatedButton(
-        onPressed: () {
-          FocusScope.of(context).unfocus();
-          final valid = formKey.currentState?.validate() ?? false;
-
-          if (valid) {
-            _controller.saveGestation(
-              CurrentPregnancyData(
-                id: 1,
-                lastMenstrualPeriod: lastMenstrualPeriodEC.text.isEmpty ? null : lastMenstrualPeriodEC.text,
-                firstUltrasound: firstUltrasoundEC.text.isEmpty ? null : firstUltrasoundEC.text,
-              ),
-            );
-          }
-        },
+        onPressed: _controller.loading ? null : _handleSave,
         child: const Text('Salvar'),
       ),
     );
+  }
+
+  Future<void> _handleSave() async {
+    FocusScope.of(context).unfocus();
+    final valid = formKey.currentState?.validate() ?? false;
+    if (!valid) return;
+
+    final dumText = lastMenstrualPeriodEC.text.trim();
+    final dum = dumDisplayToIso(dumText);
+    if (dumText.isNotEmpty && dum == null) return;
+
+    final local = localPreNatalEC.text.trim();
+    final profissional = profissionalPreNatalEC.text.trim();
+    final contato = contatoLocalPreNatalEC.text.trim();
+
+    final ok = await _controller.save(
+      GestacaoModel(
+        id: _controller.model?.id ?? '',
+        dataUltimaMenstruacao: dum,
+        localPreNatal: local.isEmpty ? null : local,
+        profissionalPreNatal: profissional.isEmpty ? null : profissional,
+        contatoLocalPreNatal: contato.isEmpty ? null : contato,
+      ),
+    );
+
+    if (ok && mounted) {
+      Navigator.pop(context);
+    }
   }
 }

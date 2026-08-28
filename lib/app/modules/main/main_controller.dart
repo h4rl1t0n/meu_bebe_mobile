@@ -79,8 +79,16 @@ abstract class MainControllerBase with Store {
       }
     }
 
-    // Gestação atual (exibição no Perfil). `null` quando não há gestação ativa
-    // (404) ou em erro de conexão/sessão — a UI mostra "sem gestação ativa".
+    await refreshGestacaoAtual();
+  }
+
+  /// Recarrega somente a gestação atual (exibida no Perfil). Chamado também ao
+  /// entrar na aba Perfil para refletir uma gestação recém-criada/editada sem
+  /// reiniciar o app.
+  @action
+  Future<void> refreshGestacaoAtual() async {
+    // `null` quando não há gestação ativa (404) ou em erro de conexão/sessão —
+    // a UI mostra "sem gestação ativa".
     final gestacaoResult = await perfilRepository.getGestacaoAtual();
     switch (gestacaoResult) {
       case Success(success: final gestacao):

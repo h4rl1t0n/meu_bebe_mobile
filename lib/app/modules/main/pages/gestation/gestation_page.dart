@@ -45,17 +45,21 @@ class _GestationPageState extends State<GestationPage> {
             padding: EdgeInsets.only(bottom: Spacing.sm),
             children: [
               PregnantCard(
-                pregnantData: _controller.pregnantData,
-                currentPregnancy: _controller.currentPregnancyData,
+                name: _controller.gestante?.nome,
+                birthDate: _controller.gestante?.dataNascimento,
+                lastMenstrualPeriod: _controller.gestacao?.dataUltimaMenstruacao,
+                localPreNatal: _controller.gestacao?.localPreNatal,
+                profissionalPreNatal: _controller.gestacao?.profissionalPreNatal,
+                contatoLocalPreNatal: _controller.gestacao?.contatoLocalPreNatal,
                 onEdit: () {
-                  Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.initialize());
+                  Modular.to.pushNamed(routeGravidezAtual).then((_) => _controller.initialize());
                 },
               ),
               SizedBox(height: Spacing.sm),
               MaternityCard(
-                prenatalPlace: _controller.pregnantData?.prenatalPlace,
+                prenatalPlace: _controller.gestacao?.localPreNatal,
                 onEdit: () {
-                  Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.initialize());
+                  Modular.to.pushNamed(routeGravidezAtual).then((_) => _controller.initialize());
                 },
               ),
               SizedBox(height: Spacing.sm),

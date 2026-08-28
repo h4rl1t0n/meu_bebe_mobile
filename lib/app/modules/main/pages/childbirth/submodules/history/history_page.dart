@@ -5,7 +5,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/previous_pregnancy.dart';
+import '../../../../../../model/historico_obstetrico/historico_obstetrico_model.dart';
 import '../../../../widgets/base_card.dart';
 import 'history_controller.dart';
 import 'history_form_controller.dart';
@@ -25,7 +25,7 @@ class _HistoryPageState extends State<HistoryPage> with HistoryFormController {
   void initState() {
     super.initState();
     _controller.initialize().then((_) {
-      initializeForm(_controller.model!);
+      if (mounted) initializeForm(_controller.model);
     });
   }
 
@@ -37,33 +37,42 @@ class _HistoryPageState extends State<HistoryPage> with HistoryFormController {
 
   @override
   Widget build(BuildContext context) {
-    return Observer(
-      builder: (_) {
-        if (_controller.saved) {
-          _controller.saved = false;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pop(context);
-          });
-        }
-        return Scaffold(appBar: _buildAppBar, body: _buildBody);
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Gestações Anteriores',
+          style: context.textStyles.titleSmallStyle,
+        ),
+        centerTitle: true,
+      ),
+      body: Observer(
+        builder: (_) {
+          if (_controller.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return _buildBody;
+        },
+      ),
     );
-  }
-
-  AppBar get _buildAppBar {
-    return AppBar(title: Text('Gestações Anteriores', style: context.textStyles.titleSmallStyle), centerTitle: true);
   }
 
   Widget get _buildBody {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.pageH,
+        vertical: Spacing.pageV,
+      ),
       child: SingleChildScrollView(
         child: BaseCard(
           child: Form(
             key: formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('História das gestações anteriores', style: context.textStyles.titleSmallStyle),
+                Text(
+                  'História das gestações anteriores',
+                  style: context.textStyles.titleSmallStyle,
+                ),
                 const SizedBox(height: 16),
                 _buildTextField(
                   pregnantNumberEC,
@@ -118,23 +127,34 @@ class _HistoryPageState extends State<HistoryPage> with HistoryFormController {
       width: double.infinity,
       height: 48,
       child: ElevatedButton(
-        onPressed: () {
-          FocusScope.of(context).unfocus();
-          final valid = formKey.currentState?.validate() ?? false;
-
-          if (valid) {
-            _controller.saveHistory(
-              PreviousPregnancy(
-                id: 1,
-                pregnancyNumber: pregnantNumberEC.text.isEmpty ? null : int.parse(pregnantNumberEC.text),
-                givenBirthNumber: childbirthNumberEC.text.isEmpty ? null : int.parse(childbirthNumberEC.text),
-                abortionsNumber: abortionNumberEC.text.isEmpty ? null : int.parse(abortionNumberEC.text),
-              ),
-            );
-          }
-        },
+        onPressed: _controller.loading ? null : _handleSave,
         child: const Text('Salvar'),
       ),
     );
+  }
+
+  Future<void> _handleSave() async {
+    FocusScope.of(context).unfocus();
+    final valid = formKey.currentState?.validate() ?? false;
+    if (!valid) return;
+
+    final ok = await _controller.save(
+      HistoricoObstetricoModel(
+        id: _controller.model?.id ?? '',
+        pregnancyNumber: _parseCount(pregnantNumberEC),
+        givenBirthNumber: _parseCount(childbirthNumberEC),
+        abortionsNumber: _parseCount(abortionNumberEC),
+      ),
+    );
+
+    if (ok && mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  int? _parseCount(TextEditingController controller) {
+    final t = controller.text.trim();
+    if (t.isEmpty) return null;
+    return int.tryParse(t);
   }
 }

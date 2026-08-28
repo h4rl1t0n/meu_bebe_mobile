@@ -2,16 +2,34 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/current_pregnancy_data.dart';
-import '../../../../../../model/pregnant_data.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/custom_item_tile.dart';
 
+/// Card "Identificação" da Aba Gestação. Recebe valores simples já vindos da
+/// API (gestante + gestação), nunca modelos SQLite.
 class PregnantCard extends StatelessWidget {
-  const PregnantCard({super.key, required this.pregnantData, required this.currentPregnancy, this.onEdit});
+  const PregnantCard({
+    super.key,
+    required this.name,
+    required this.birthDate,
+    required this.lastMenstrualPeriod,
+    required this.localPreNatal,
+    required this.profissionalPreNatal,
+    required this.contatoLocalPreNatal,
+    this.onEdit,
+  });
 
-  final PregnantData? pregnantData;
-  final CurrentPregnancyData? currentPregnancy;
+  final String? name;
+
+  /// `YYYY-MM-DD` (ISO) vinda da API.
+  final String? birthDate;
+
+  /// `YYYY-MM-DD` (ISO) vinda da API.
+  final String? lastMenstrualPeriod;
+
+  final String? localPreNatal;
+  final String? profissionalPreNatal;
+  final String? contatoLocalPreNatal;
   final VoidCallback? onEdit;
 
   @override
@@ -25,7 +43,7 @@ class PregnantCard extends StatelessWidget {
           Row(
             spacing: 10,
             children: [
-              CustomItemTile(flex: 3, title: 'Nome', content: _getData(pregnantData?.name)),
+              CustomItemTile(flex: 3, title: 'Nome', content: _getData(name)),
               CustomItemTile(flex: 1, title: 'Idade', content: _getAge()),
             ],
           ),
@@ -43,16 +61,16 @@ class PregnantCard extends StatelessWidget {
               CustomItemTile(
                 flex: 1,
                 title: 'Local que realiza o pre-natal',
-                content: _getData(pregnantData?.prenatalPlace),
+                content: _getData(localPreNatal),
               ),
             ],
           ),
           const SizedBox(height: Spacing.sm),
           Row(
             children: [
-              CustomItemTile(flex: 1, title: 'Nome do profissional', content: _getData(pregnantData?.professionalName)),
+              CustomItemTile(flex: 1, title: 'Nome do profissional', content: _getData(profissionalPreNatal)),
               const SizedBox(width: Spacing.sm),
-              CustomItemTile(flex: 1, title: 'Contato do local', content: _getData(pregnantData?.prenatalPlaceContact)),
+              CustomItemTile(flex: 1, title: 'Contato do local', content: _getData(contatoLocalPreNatal)),
             ],
           ),
           const SizedBox(height: Spacing.lg),
@@ -76,45 +94,34 @@ class PregnantCard extends StatelessWidget {
   }
 
   String _getAge() {
-    final birthDate = pregnantData?.birthDate;
-    if (birthDate == null || birthDate.isEmpty) return 'Nao informado';
-    try {
-      final formatted = '${birthDate.substring(6, 10)}-${birthDate.substring(3, 5)}-${birthDate.substring(0, 2)}';
-      final birth = DateTime.parse(formatted);
-      final now = DateTime.now();
-      final age = now.year - birth.year;
-      if (now.month < birth.month || (now.month == birth.month && now.day < birth.day)) {
-        return '${age - 1} anos';
-      }
-      return '$age anos';
-    } catch (_) {
-      return 'Nao informado';
+    final iso = birthDate;
+    if (iso == null || iso.isEmpty) return 'Nao informado';
+    final birth = DateTime.tryParse(iso);
+    if (birth == null) return 'Nao informado';
+    final now = DateTime.now();
+    var age = now.year - birth.year;
+    if (now.month < birth.month || (now.month == birth.month && now.day < birth.day)) {
+      age -= 1;
     }
+    return '$age anos';
   }
 
   String _getGestationalAge() {
-    final lmp = currentPregnancy?.lastMenstrualPeriod;
-    if (lmp == null || lmp.isEmpty) return 'Sem dados';
-    try {
-      final formatted = '${lmp.substring(6, 10)}-${lmp.substring(3, 5)}-${lmp.substring(0, 2)}';
-      final menstrualDay = DateTime.parse(formatted);
-      final gestationalDays = DateTime.now().difference(menstrualDay).inDays;
-      return '${gestationalDays ~/ 7} semanas e ${gestationalDays % 7} dias';
-    } catch (_) {
-      return 'Sem dados';
-    }
+    final iso = lastMenstrualPeriod;
+    if (iso == null || iso.isEmpty) return 'Sem dados';
+    final menstrualDay = DateTime.tryParse(iso);
+    if (menstrualDay == null) return 'Sem dados';
+    final gestationalDays = DateTime.now().difference(menstrualDay).inDays;
+    if (gestationalDays < 0) return 'Sem dados';
+    return '${gestationalDays ~/ 7} semanas e ${gestationalDays % 7} dias';
   }
 
   String _getChildbirthDate() {
-    final lmp = currentPregnancy?.lastMenstrualPeriod;
-    if (lmp == null || lmp.isEmpty) return 'Sem dados';
-    try {
-      final formatted = '${lmp.substring(6, 10)}-${lmp.substring(3, 5)}-${lmp.substring(0, 2)}';
-      final menstrualDay = DateTime.parse(formatted);
-      final birth = menstrualDay.add(const Duration(days: 280));
-      return '${birth.day.toString().padLeft(2, '0')}/${birth.month.toString().padLeft(2, '0')}/${birth.year}';
-    } catch (_) {
-      return 'Sem dados';
-    }
+    final iso = lastMenstrualPeriod;
+    if (iso == null || iso.isEmpty) return 'Sem dados';
+    final menstrualDay = DateTime.tryParse(iso);
+    if (menstrualDay == null) return 'Sem dados';
+    final birth = menstrualDay.add(const Duration(days: 280));
+    return '${birth.day.toString().padLeft(2, '0')}/${birth.month.toString().padLeft(2, '0')}/${birth.year}';
   }
 }

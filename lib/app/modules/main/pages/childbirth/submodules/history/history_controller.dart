@@ -1,51 +1,58 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../../../core/helpers/messages.dart';
-import '../../../../../../model/previous_pregnancy.dart';
-import '../../../../../../repositories/history/history_repository.dart';
+import '../../../../../../model/historico_obstetrico/historico_obstetrico_model.dart';
+import '../../../../../../repositories/historico_obstetrico/historico_obstetrico_repository.dart';
 
 part 'history_controller.g.dart';
 
 class HistoryController = HistoryControllerBase with _$HistoryController;
 
 abstract class HistoryControllerBase with Store {
-  final HistoryRepository repository;
+  final HistoricoObstetricoRepository repository;
 
   @observable
-  bool saved = false;
+  bool loading = true;
 
   @observable
-  PreviousPregnancy? model;
+  HistoricoObstetricoModel? model;
 
   HistoryControllerBase(this.repository);
 
   @action
   Future<void> initialize() async {
-    final result = await repository.getHistory();
+    loading = true;
+    final result = await repository.getHistorico();
 
     switch (result) {
+      case Success(success: final historico):
+        model = historico;
       case Error():
-        Messages.showError('Erro ao pegar dados de gravidez anteriores');
-      case Success():
-        model = result.success;
+        model = null;
     }
 
-    model ??= const PreviousPregnancy(id: 0);
+    loading = false;
   }
 
+  /// Salva (PUT upsert) o histórico obstétrico. Retorna `true` em sucesso.
   @action
-  Future<void> saveHistory(PreviousPregnancy history) async {
-    final result = await repository.updateHistory(history: history);
+  Future<bool> save(HistoricoObstetricoModel data) async {
+    if (loading) return false;
+    loading = true;
+
+    final result = await repository.saveHistorico(data);
+
+    loading = false;
 
     switch (result) {
-      case Error():
-        Messages.showError('Erro ao salvar os dados');
-      case Success():
+      case Success(success: final historico):
+        model = historico;
         Messages.showSuccess('Dados salvos com sucesso');
-        model = result.success;
-        saved = true;
+        return true;
+      case Error(error: final failure):
+        Messages.showError(failure.message);
+        return false;
     }
   }
 }

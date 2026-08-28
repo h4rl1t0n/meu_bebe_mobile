@@ -28,11 +28,7 @@ class _ChildbirthResumePageState extends State<ChildbirthResumePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      if (_controller.updated) {
-        await _controller.initialize().then((value) => _controller.setUpdated(false));
-      }
-    });
+    _controller.initialize();
   }
 
   @override
@@ -48,69 +44,69 @@ class _ChildbirthResumePageState extends State<ChildbirthResumePage> {
   }
 
   Widget get _buildBody {
-    return FutureBuilder(
-      future: _controller.initialize(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Observer(
-            builder: (_) => Visibility(
-              visible: !_controller.updated,
-              replacement: const Center(child: CircularProgressIndicator()),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      IdentificationCard(
-                        pregnantData: _controller.pregnantData,
-                        onEdit: () =>
-                            Modular.to.pushNamed(routeIndetificacao).then((_) => _controller.setUpdated(true)),
-                      ),
-                      SizedBox(height: Spacing.sm),
-                      HistoryCard(
-                        history: _controller.historyData,
-                        onEdit: () => Modular.to.pushNamed(routeHistoria).then((_) => _controller.setUpdated(true)),
-                      ),
-                      SizedBox(height: Spacing.sm),
-                      CurrentGestationCard(
-                        current: _controller.currentPregnancyData,
-                        onEdit: () =>
-                            Modular.to.pushNamed(routeGravidezAtual).then((_) => _controller.setUpdated(true)),
-                      ),
-                      SizedBox(height: Spacing.sm),
-                      ExpectationsCard(
-                        expectations: _controller.expectationsData,
-                        onEdit: () => Modular.to.pushNamed(routeExpectativa).then((_) => _controller.setUpdated(true)),
-                      ),
-                      SizedBox(height: Spacing.sm),
-                      BirthMomentCard(
-                        birthMoment: _controller.birthMomentData,
-                        onEdit: () => Modular.to.pushNamed(routeMomentoParto).then((_) => _controller.setUpdated(true)),
-                      ),
-                      SizedBox(height: Spacing.sm),
-                      PainReliefCard(
-                        painRelief: _controller.painReliefData,
-                        onEdit: () => Modular.to.pushNamed(routeAlivioDor).then((_) => _controller.setUpdated(true)),
-                      ),
-                      SizedBox(height: Spacing.sm),
-                      BirthExpectationsCard(
-                        birth: _controller.birthData,
-                        onEdit: () => Modular.to.pushNamed(routeNascimento).then((_) => _controller.setUpdated(true)),
-                      ),
-                      SizedBox(height: Spacing.sm),
-                      DesiresExpectationsCard(
-                        observations: _controller.observationsData,
-                        onEdit: () => Modular.to.pushNamed(routeObservacoes).then((_) => _controller.setUpdated(true)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        } else {
+    return Observer(
+      builder: (_) {
+        if (_controller.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
+
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                IdentificationCard(
+                  name: _controller.gestante?.nome,
+                  socialName: _controller.gestante?.nomeSocial,
+                  birthDate: _controller.gestante?.dataNascimento,
+                  nationalHealthCard: _controller.gestante?.cns,
+                  localPreNatal: _controller.gestacao?.localPreNatal,
+                  profissionalPreNatal: _controller.gestacao?.profissionalPreNatal,
+                  contatoLocalPreNatal: _controller.gestacao?.contatoLocalPreNatal,
+                  onEdit: () => Modular.to.pushNamed(routeDadosPerfil).then((_) => _controller.initialize()),
+                ),
+                SizedBox(height: Spacing.sm),
+                HistoryCard(
+                  pregnancyNumber: _controller.historico?.pregnancyNumber,
+                  givenBirthNumber: _controller.historico?.givenBirthNumber,
+                  abortionsNumber: _controller.historico?.abortionsNumber,
+                  onEdit: () => Modular.to.pushNamed(routeHistoria).then((_) => _controller.initialize()),
+                ),
+                SizedBox(height: Spacing.sm),
+                CurrentGestationCard(
+                  lastMenstrualPeriod: _controller.gestacao?.dataUltimaMenstruacao,
+                  firstUltrasound: null,
+                  onEdit: () => Modular.to.pushNamed(routeGravidezAtual).then((_) => _controller.initialize()),
+                ),
+                SizedBox(height: Spacing.sm),
+                ExpectationsCard(
+                  expectations: _controller.expectationsData,
+                  onEdit: () => Modular.to.pushNamed(routeExpectativa).then((_) => _controller.initialize()),
+                ),
+                SizedBox(height: Spacing.sm),
+                BirthMomentCard(
+                  birthMoment: _controller.birthMomentData,
+                  onEdit: () => Modular.to.pushNamed(routeMomentoParto).then((_) => _controller.initialize()),
+                ),
+                SizedBox(height: Spacing.sm),
+                PainReliefCard(
+                  painRelief: _controller.painReliefData,
+                  onEdit: () => Modular.to.pushNamed(routeAlivioDor).then((_) => _controller.initialize()),
+                ),
+                SizedBox(height: Spacing.sm),
+                BirthExpectationsCard(
+                  birth: _controller.birthData,
+                  onEdit: () => Modular.to.pushNamed(routeNascimento).then((_) => _controller.initialize()),
+                ),
+                SizedBox(height: Spacing.sm),
+                DesiresExpectationsCard(
+                  observations: _controller.observationsData,
+                  onEdit: () => Modular.to.pushNamed(routeObservacoes).then((_) => _controller.initialize()),
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
