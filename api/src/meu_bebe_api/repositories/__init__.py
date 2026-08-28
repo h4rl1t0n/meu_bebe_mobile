@@ -11,7 +11,9 @@ from .consulta_repository import ConsultaRepository
 from .exame_repository import ExameRepository
 from .gestacao_repository import GestacaoRepository
 from .gestante_repository import GestanteRepository
+from .medicamento_repository import MedicamentoRepository
 from .user_repository import UserRepository
+from .vacina_repository import VacinaRepository
 
 __all__ = [
     "UserRepository",
@@ -20,4 +22,6 @@ __all__ = [
     "GestacaoRepository",
     "ConsultaRepository",
     "ExameRepository",
+    "MedicamentoRepository",
+    "VacinaRepository",
 ]

@@ -4,7 +4,7 @@ Garantem que ``Base.metadata`` é a metadata oficial (usada pelo Alembic) e que
 a ``naming_convention`` de constraints está aplicada. A FASE 8C adiciona
 ``users`` e ``auth_refresh_sessions``; a FASE 8D adiciona ``gestantes`` e
 ``gestacoes``; a FASE 8E adiciona ``historicos_obstetricos``; a FASE 8F adiciona
-``consultas`` e ``exames``.
+``consultas`` e ``exames``; a FASE 8G adiciona ``medicamentos`` e ``vacinas``.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ def test_base_metadata_is_sqlalchemy_metadata() -> None:
 
 
 def test_base_metadata_contains_only_domain_tables() -> None:
-    """As ÚNICAS tabelas de domínio são as sete (8C + 8D + 8E + 8F)."""
+    """As ÚNICAS tabelas de domínio são as nove (8C + 8D + 8E + 8F + 8G)."""
     assert set(Base.metadata.tables) == {
         "users",
         "auth_refresh_sessions",
@@ -28,6 +28,8 @@ def test_base_metadata_contains_only_domain_tables() -> None:
         "historicos_obstetricos",
         "consultas",
         "exames",
+        "medicamentos",
+        "vacinas",
     }
 
 

@@ -8,6 +8,8 @@ from .errors import ErrorDetail, ErrorResponse
 from .exame import ExameResponse, ExameWrite
 from .gestacao import GestacaoResponse, GestacaoWrite
 from .gestante import GestanteResponse, GestanteWrite
+from .medicamento import MedicamentoResponse, MedicamentoWrite
+from .vacina import VacinaResponse, VacinaWrite
 from .risk_estimate import (
     EXPERIMENTAL_ESTIMATE_NOTICE,
     EXPERIMENTAL_TARGET,
@@ -36,4 +38,8 @@ __all__ = [
     "ConsultaWrite",
     "ExameResponse",
     "ExameWrite",
+    "MedicamentoResponse",
+    "MedicamentoWrite",
+    "VacinaResponse",
+    "VacinaWrite",
 ]

@@ -24,16 +24,22 @@ from ..contracts.exame import ExameWrite
 from ..contracts.gestacao import GestacaoWrite
 from ..contracts.gestante import GestanteWrite
 from ..contracts.historico_obstetrico import HistoricoObstetricoWrite
+from ..contracts.medicamento import MedicamentoWrite
+from ..contracts.vacina import VacinaWrite
 from ..models.consulta import Consulta
 from ..models.exame import Exame
 from ..models.gestacao import Gestacao
 from ..models.gestante import Gestante
 from ..models.historico_obstetrico import HistoricoObstetrico
+from ..models.medicamento import Medicamento
+from ..models.vacina import Vacina
 from ..repositories.consulta_repository import ConsultaRepository
 from ..repositories.exame_repository import ExameRepository
 from ..repositories.gestacao_repository import GestacaoRepository
 from ..repositories.gestante_repository import GestanteRepository
 from ..repositories.historico_obstetrico_repository import HistoricoObstetricoRepository
+from ..repositories.medicamento_repository import MedicamentoRepository
+from ..repositories.vacina_repository import VacinaRepository
 from .errors import (
     ACTIVE_PREGNANCY_ALREADY_EXISTS,
     ACTIVE_PREGNANCY_ALREADY_EXISTS_MESSAGE,
@@ -45,6 +51,8 @@ from .errors import (
     DOMAIN_ERROR_MESSAGE,
     EXAME_NOT_FOUND,
     EXAME_NOT_FOUND_MESSAGE,
+    MEDICAMENTO_NOT_FOUND,
+    MEDICAMENTO_NOT_FOUND_MESSAGE,
     OBSTETRIC_HISTORY_NOT_FOUND,
     OBSTETRIC_HISTORY_NOT_FOUND_MESSAGE,
     PREGNANCY_NOT_FOUND,
@@ -53,6 +61,8 @@ from .errors import (
     PREGNANCY_REOPEN_NOT_ALLOWED_MESSAGE,
     PROFILE_ALREADY_EXISTS,
     PROFILE_ALREADY_EXISTS_MESSAGE,
+    VACINA_NOT_FOUND,
+    VACINA_NOT_FOUND_MESSAGE,
     DomainError,
 )
 
@@ -526,3 +536,202 @@ class ExameService:
         except Exception:  # noqa: BLE001 — sanitizado
             self._session.rollback()
             raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+
+
+class MedicamentoService:
+    """Regras de medicamento: CRUD de lista + ownership (FASE 8G).
+
+    O ``gestacao_id`` já chega validado por ownership (``get_owned_gestacao``):
+    a gestação pertence à gestante autenticada. Ainda assim, GET/PUT/DELETE
+    buscam por ``medicamento_id + gestacao_id`` (defense in depth).
+    """
+
+    def __init__(self, session: Session) -> None:
+        self._session = session
+        self._medicamentos = MedicamentoRepository(session)
+
+    def list(self, gestacao_id: uuid.UUID) -> list[Medicamento]:
+        try:
+            return self._medicamentos.list_by_gestacao_id(gestacao_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+
+    def get(self, gestacao_id: uuid.UUID, medicamento_id: uuid.UUID) -> Medicamento:
+        """O medicamento da gestação, ou 404 ``MEDICAMENTO_NOT_FOUND``."""
+        try:
+            medicamento = self._medicamentos.find_by_id_and_gestacao(
+                medicamento_id, gestacao_id
+            )
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        if medicamento is None:
+            raise DomainError(
+                MEDICAMENTO_NOT_FOUND, MEDICAMENTO_NOT_FOUND_MESSAGE, 404
+            )
+        return medicamento
+
+    def create(self, gestacao_id: uuid.UUID, payload: MedicamentoWrite) -> Medicamento:
+        try:
+            medicamento = Medicamento(
+                gestacao_id=gestacao_id,
+                nome=payload.nome,
+                dose=payload.dose,
+                frequencia=payload.frequencia,
+            )
+            self._medicamentos.add(medicamento)
+            self._session.flush()
+            self._session.commit()
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return medicamento
+
+    def update(
+        self,
+        gestacao_id: uuid.UUID,
+        medicamento_id: uuid.UUID,
+        payload: MedicamentoWrite,
+    ) -> Medicamento:
+        try:
+            medicamento = self._medicamentos.find_by_id_and_gestacao(
+                medicamento_id, gestacao_id
+            )
+            if medicamento is None:
+                raise DomainError(
+                    MEDICAMENTO_NOT_FOUND, MEDICAMENTO_NOT_FOUND_MESSAGE, 404
+                )
+            self._medicamentos.update(
+                medicamento,
+                nome=payload.nome,
+                dose=payload.dose,
+                frequencia=payload.frequencia,
+            )
+            self._session.flush()
+            self._session.commit()
+        except DomainError:
+            self._session.rollback()
+            raise
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return medicamento
+
+    def delete(self, gestacao_id: uuid.UUID, medicamento_id: uuid.UUID) -> None:
+        try:
+            medicamento = self._medicamentos.find_by_id_and_gestacao(
+                medicamento_id, gestacao_id
+            )
+            if medicamento is None:
+                raise DomainError(
+                    MEDICAMENTO_NOT_FOUND, MEDICAMENTO_NOT_FOUND_MESSAGE, 404
+                )
+            self._medicamentos.delete(medicamento)
+            self._session.commit()
+        except DomainError:
+            self._session.rollback()
+            raise
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+
+
+class VacinaService:
+    """Regras de vacina: CRUD de lista + ownership, SEM delete (FASE 8G).
+
+    O Flutter não remove vacina (o ``deleteVaccine`` do repositório é código
+    morto); o checklist apenas alterna ``aplicada`` via update. Por isso não há
+    DELETE aqui (não inventar endpoint por simetria).
+    """
+
+    def __init__(self, session: Session) -> None:
+        self._session = session
+        self._vacinas = VacinaRepository(session)
+
+    def list(self, gestacao_id: uuid.UUID) -> list[Vacina]:
+        try:
+            return self._vacinas.list_by_gestacao_id(gestacao_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+
+    def get(self, gestacao_id: uuid.UUID, vacina_id: uuid.UUID) -> Vacina:
+        """A vacina da gestação, ou 404 ``VACINA_NOT_FOUND``."""
+        try:
+            vacina = self._vacinas.find_by_id_and_gestacao(vacina_id, gestacao_id)
+        except OperationalError:
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        if vacina is None:
+            raise DomainError(VACINA_NOT_FOUND, VACINA_NOT_FOUND_MESSAGE, 404)
+        return vacina
+
+    def create(self, gestacao_id: uuid.UUID, payload: VacinaWrite) -> Vacina:
+        try:
+            vacina = Vacina(
+                gestacao_id=gestacao_id,
+                nome=payload.nome,
+                aplicada=payload.aplicada,
+            )
+            self._vacinas.add(vacina)
+            self._session.flush()
+            self._session.commit()
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return vacina
+
+    def update(
+        self,
+        gestacao_id: uuid.UUID,
+        vacina_id: uuid.UUID,
+        payload: VacinaWrite,
+    ) -> Vacina:
+        try:
+            vacina = self._vacinas.find_by_id_and_gestacao(vacina_id, gestacao_id)
+            if vacina is None:
+                raise DomainError(VACINA_NOT_FOUND, VACINA_NOT_FOUND_MESSAGE, 404)
+            self._vacinas.update(
+                vacina,
+                nome=payload.nome,
+                aplicada=payload.aplicada,
+            )
+            self._session.flush()
+            self._session.commit()
+        except DomainError:
+            self._session.rollback()
+            raise
+        except OperationalError:
+            self._session.rollback()
+            raise DomainError(
+                DATABASE_UNAVAILABLE, DATABASE_UNAVAILABLE_MESSAGE, 503
+            ) from None
+        except Exception:  # noqa: BLE001 — sanitizado
+            self._session.rollback()
+            raise DomainError(DOMAIN_ERROR, DOMAIN_ERROR_MESSAGE, 500) from None
+        return vacina

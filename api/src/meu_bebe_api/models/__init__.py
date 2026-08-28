@@ -12,7 +12,9 @@ from .exame import Exame
 from .gestacao import Gestacao
 from .gestante import Gestante
 from .historico_obstetrico import HistoricoObstetrico
+from .medicamento import Medicamento
 from .user import User
+from .vacina import Vacina
 
 __all__ = [
     "User",
@@ -22,4 +24,6 @@ __all__ = [
     "HistoricoObstetrico",
     "Consulta",
     "Exame",
+    "Medicamento",
+    "Vacina",
 ]
