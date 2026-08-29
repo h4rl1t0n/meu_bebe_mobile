@@ -22,73 +22,75 @@ class _MedicationPageState extends State<MedicationPage> {
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (controller.updated) {
-        controller.resetUpdated();
-      }
-    });
+    controller.initialize();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: controller.initialize(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Meus Medicamentos', style: context.textStyles.titleSmallStyle),
-              centerTitle: true,
-            ),
-            body: _buildBody,
-          );
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Meus Medicamentos', style: context.textStyles.titleSmallStyle),
+        centerTitle: true,
+      ),
+      body: Observer(
+        builder: (_) {
+          if (controller.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!controller.hasGestacao) {
+            return Center(
+              child: Text(
+                'Cadastre sua gestação para gerenciar medicamentos.',
+                textAlign: TextAlign.center,
+                style: context.textStyles.subTitleStyle,
+              ),
+            );
+          }
+          return _buildBody;
+        },
+      ),
     );
   }
 
   Widget get _buildBody => Container(
-    padding: const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
-    child: Observer(
-      builder: (_) => Visibility(
-        visible: !controller.updated,
-        child: Column(
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () => openAddMedicationDialog(),
-                child: const Text('Adicionar medicamento'),
-              ),
-            ),
-            const SizedBox(height: Spacing.lg),
-            controller.medications.isNotEmpty
-                ? Expanded(
-                    child: ListView(
-                      children: controller.medications
-                          .map(
-                            (medication) => MedicineCard(
-                              name: medication.name,
-                              dose: medication.dose,
-                              medicineTime: medication.medicationTime,
-                              onTap: () {
-                                controller.deleteMedication(medication.id);
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  )
-                : const Expanded(
-                    child: SizedBox(child: Center(child: Text('Não foram encontrados medicamentos'))),
-                  ),
-          ],
+    padding: const EdgeInsets.symmetric(
+      horizontal: Spacing.pageH,
+      vertical: Spacing.pageV,
+    ),
+    child: Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () => openAddMedicationDialog(),
+            child: const Text('Adicionar medicamento'),
+          ),
         ),
-      ),
+        const SizedBox(height: Spacing.lg),
+        controller.medications.isNotEmpty
+            ? Expanded(
+                child: ListView(
+                  children: controller.medications
+                      .map(
+                        (medication) => MedicineCard(
+                          name: medication.nome,
+                          dose: medication.dose,
+                          frequencia: medication.frequencia,
+                          onTap: () {
+                            controller.deleteMedication(medication.id);
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+              )
+            : const Expanded(
+                child: SizedBox(
+                  child: Center(child: Text('Não foram encontrados medicamentos')),
+                ),
+              ),
+      ],
     ),
   );
 

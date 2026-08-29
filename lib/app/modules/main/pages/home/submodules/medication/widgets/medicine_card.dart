@@ -9,13 +9,13 @@ class MedicineCard extends StatelessWidget {
     super.key,
     required this.name,
     required this.dose,
-    required this.medicineTime,
+    required this.frequencia,
     required this.onTap,
   });
 
   final String name;
   final String dose;
-  final String medicineTime;
+  final String frequencia;
   final VoidCallback onTap;
 
   @override
@@ -57,7 +57,7 @@ class MedicineCard extends StatelessWidget {
                 const SizedBox(height: Spacing.sm),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(medicineTime, style: textStyles.textStyle),
+                  child: Text(frequencia, style: textStyles.textStyle),
                 ),
               ],
             ),

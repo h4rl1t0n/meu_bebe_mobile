@@ -4,7 +4,7 @@ import 'package:validatorless/validatorless.dart';
 
 import '../../../../../../../core/extensions/size_extension.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../../model/medication.dart';
+import '../../../../../../../model/medicamento/medicamento_model.dart';
 import '../medication_controller.dart';
 import 'custom_text_form_field.dart';
 
@@ -21,13 +21,13 @@ class MedicationDialog extends StatefulWidget {
 class _MedicationDialogState extends State<MedicationDialog> {
   final nameEC = TextEditingController();
   final doseEC = TextEditingController();
-  final medicationTimeEC = TextEditingController();
+  final frequenciaEC = TextEditingController();
 
   @override
   void dispose() {
     nameEC.dispose();
     doseEC.dispose();
-    medicationTimeEC.dispose();
+    frequenciaEC.dispose();
     super.dispose();
   }
 
@@ -49,11 +49,10 @@ class _MedicationDialogState extends State<MedicationDialog> {
               validator: Validatorless.required('Nome obrigatório'),
             ),
             CustomTextFormField(
-              controller: medicationTimeEC,
-              label: 'Tempo do medicamento (ex.: 6 em 6 horas)',
-              validator: Validatorless.required('Tempo obrigatório'),
+              controller: frequenciaEC,
+              label: 'Frequência (ex.: 6 em 6 horas)',
+              validator: Validatorless.required('Frequência obrigatória'),
             ),
-
             CustomTextFormField(
               controller: doseEC,
               label: 'Dose do medicamento',
@@ -73,7 +72,12 @@ class _MedicationDialogState extends State<MedicationDialog> {
             final valid = widget.formKey.currentState?.validate() ?? false;
             if (valid) {
               widget.controller.saveMedication(
-                Medication(id: 0, name: nameEC.text, dose: doseEC.text, medicationTime: medicationTimeEC.text),
+                MedicamentoModel(
+                  id: '',
+                  nome: nameEC.text.trim(),
+                  dose: doseEC.text.trim(),
+                  frequencia: frequenciaEC.text.trim(),
+                ),
               );
               clearControllers();
               Modular.to.pop();
@@ -88,6 +92,6 @@ class _MedicationDialogState extends State<MedicationDialog> {
   void clearControllers() {
     nameEC.clear();
     doseEC.clear();
-    medicationTimeEC.clear();
+    frequenciaEC.clear();
   }
 }

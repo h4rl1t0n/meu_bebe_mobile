@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
+import '../../../../../../model/vacina/vacina_catalogo.dart';
 import 'vaccines_controller.dart';
 import 'widgets/vaccine_card.dart';
 
@@ -20,86 +21,76 @@ class _VaccinesPageState extends State<VaccinesPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (controller.updated) {
-        controller.resetUpdated();
-      }
-    });
+    controller.initialize();
   }
 
   @override
   Widget build(BuildContext context) {
     final textStyles = context.textStyles;
 
-    return FutureBuilder(
-      future: controller.initialize(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Scaffold(
-            appBar: AppBar(title: Text('Minhas Vacinas', style: textStyles.titleSmallStyle), centerTitle: true),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
-              child: Observer(
-                builder: (context) {
-                  if (controller.vaccines.isEmpty) {
-                    return Center(child: Text('Carregando as vacinas', style: textStyles.subTitleStyle));
-                  }
-
-                  return SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: Spacing.lg),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text('Qualquer tempo', style: textStyles.titleSmallStyle),
-                        ),
-                        const SizedBox(height: Spacing.sm),
-                        Column(
-                          children: controller.vaccines
-                              .where((vaccine) => vaccine.id < controller.vaccines.length - 1)
-                              .map(
-                                (vaccine) => VaccineCard(
-                                  used: vaccine.used,
-                                  onChanged: () {
-                                    controller.updateVaccine(vaccine.copyWith(used: !vaccine.used));
-                                  },
-                                  index: vaccine.id,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                        const SizedBox(height: Spacing.xxxl),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '20ª semana de gravidez até 45 dias após o parto',
-                            textAlign: TextAlign.center,
-                            style: textStyles.titleSmallStyle,
-                          ),
-                        ),
-                        const SizedBox(height: Spacing.sm),
-                        if (controller.vaccines.isNotEmpty)
-                          VaccineCard(
-                            used: controller.vaccines.last.used,
-                            onChanged: () {
-                              controller.updateVaccine(
-                                controller.vaccines.last.copyWith(used: !controller.vaccines.last.used),
-                              );
-                            },
-                            index: controller.vaccines.last.id,
-                          ),
-                      ],
-                    ),
-                  );
-                },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Minhas Vacinas', style: textStyles.titleSmallStyle),
+        centerTitle: true,
+      ),
+      body: Observer(
+        builder: (_) {
+          if (controller.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!controller.hasGestacao) {
+            return Center(
+              child: Text(
+                'Cadastre sua gestação para marcar vacinas.',
+                textAlign: TextAlign.center,
+                style: textStyles.subTitleStyle,
               ),
+            );
+          }
+
+          final qualquerTempo = VacinaCatalogo.itens.where((i) => !i.tpa);
+          final tpa = VacinaCatalogo.itens.where((i) => i.tpa);
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.pageH,
+              vertical: Spacing.pageV,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: Text('Qualquer tempo', style: textStyles.titleSmallStyle),
+                ),
+                const SizedBox(height: Spacing.sm),
+                for (final item in qualquerTempo) _buildCard(item),
+                const SizedBox(height: Spacing.xxxl),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    '20ª semana de gravidez até 45 dias após o parto',
+                    textAlign: TextAlign.center,
+                    style: textStyles.titleSmallStyle,
+                  ),
+                ),
+                const SizedBox(height: Spacing.sm),
+                for (final item in tpa) _buildCard(item),
+              ],
             ),
           );
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
+        },
+      ),
+    );
+  }
+
+  Widget _buildCard(VacinaCatalogoItem item) {
+    final vacina = controller.vacinaPorNome(item.nome);
+    return VaccineCard(
+      title: item.titulo,
+      info: item.info,
+      used: vacina?.aplicada ?? false,
+      onChanged: () => controller.toggleVacina(item.nome),
     );
   }
 }
