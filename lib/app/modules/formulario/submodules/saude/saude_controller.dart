@@ -127,6 +127,21 @@ abstract class SaudeControllerBase with Store {
     validate();
   }
 
+  /// Restaura o estado inicial para uma NOVA avaliação (FASE 9G).
+  @action
+  void reset() {
+    distanciaUBS = null;
+    faltouConsulta = null;
+    acessoUBS = null;
+    cadastradaUBS = null;
+    servicosPreNatal.clear();
+    examesPreNatalCompletos = null;
+    vacinasEmDia = null;
+    avaliacaoPreNatal = null;
+    dificuldadesSaude.clear();
+    isValid = false;
+  }
+
   @action
   void validate() {
     isValid = SaudeValidator.isTabValid(

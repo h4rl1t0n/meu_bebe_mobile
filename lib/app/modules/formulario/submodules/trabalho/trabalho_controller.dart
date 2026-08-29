@@ -128,6 +128,22 @@ abstract class TrabalhoControllerBase with Store {
     validate();
   }
 
+  /// Restaura o estado inicial para uma NOVA avaliação (FASE 9G).
+  @action
+  void reset() {
+    empregado = null;
+    tipoEmprego = null;
+    faixaRenda = null;
+    permitePreNatal = null;
+    ambienteSeguro = null;
+    temPausas = null;
+    beneficios.clear();
+    motivoDesemprego = null;
+    recebeBeneficioSocial = null;
+    impactoGestacaoTrabalho = null;
+    isValid = false;
+  }
+
   @action
   void validate() {
     isValid = TrabalhoValidator.isTabValid(

@@ -4,9 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../../../../../app_module.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/gestacao/gestacao_model.dart';
+import '../../../../../../modules/onboarding/onboarding_route_args.dart';
 import '../../../../widgets/base_card.dart';
 import 'current_gestation_controller.dart';
 import 'current_gestation_form_controller.dart';
@@ -171,7 +173,11 @@ class _CurrentGestationPageState extends State<CurrentGestationPage>
     );
 
     if (ok && mounted) {
-      Navigator.pop(context);
+      if (isOnboardingRoute()) {
+        Modular.to.pushReplacementNamed(routeForm, arguments: onboardingArgs);
+      } else {
+        Navigator.pop(context);
+      }
     }
   }
 }

@@ -7,6 +7,8 @@ import '../../core/constants/images.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/design_tokens.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
+import '../onboarding/onboarding_navigator.dart';
+import '../onboarding/onboarding_resolver.dart';
 
 class InicializarAppPage extends StatefulWidget {
   const InicializarAppPage({super.key});
@@ -29,11 +31,18 @@ class _InicializarAppPageState extends State<InicializarAppPage> with SingleTick
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(milliseconds: 2000));
-      // Estado de sessão: se já há tokens persistidos, segue direto para o app
-      // (o AuthInterceptor renova o access token de forma transparente); caso
+      // Estado de sessão: se já há tokens persistidos, resolve o destino a
+      // partir do estado REAL do backend (gestante/gestação/DSS); caso
       // contrário, vai para o login.
       final hasSession = await const TokenStorage().hasSession();
-      Modular.to.pushReplacementNamed(hasSession ? routeTab : routeLogin);
+      if (!hasSession) {
+        Modular.to.pushReplacementNamed(routeLogin);
+        return;
+      }
+      final resolver = Modular.get<OnboardingResolver>();
+      final resolution = await resolver.resolve();
+      if (!mounted) return;
+      navigateOnboardingResolution(resolution);
     });
   }
 

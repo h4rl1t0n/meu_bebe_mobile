@@ -6,6 +6,9 @@ import '../../app_module.dart';
 import '../../core/auth/token_storage.dart';
 import '../../core/helpers/messages.dart';
 import '../../repositories/auth/auth_repository.dart';
+import '../onboarding/onboarding_navigator.dart';
+import '../onboarding/onboarding_resolution.dart';
+import '../onboarding/onboarding_resolver.dart';
 
 part 'login_controller.g.dart';
 
@@ -14,7 +17,8 @@ class LoginController = LoginControllerBase with _$LoginController;
 abstract class LoginControllerBase with Store {
   final AuthRepository authRepository;
   final TokenStorage tokenStorage;
-  final void Function(String route) _navigateReplacement;
+  final OnboardingResolver onboardingResolver;
+  final void Function(OnboardingResolution resolution) _navigateReplacement;
 
   @observable
   bool obscurePassword = true;
@@ -30,13 +34,11 @@ abstract class LoginControllerBase with Store {
 
   LoginControllerBase(
     this.authRepository,
-    this.tokenStorage, {
-    void Function(String route)? navigateReplacement,
-  }) : _navigateReplacement = navigateReplacement ?? _defaultNavigateReplacement;
-
-  static void _defaultNavigateReplacement(String route) {
-    Modular.to.pushReplacementNamed(route);
-  }
+    this.tokenStorage,
+    this.onboardingResolver, {
+    void Function(OnboardingResolution resolution)? navigateReplacement,
+  }) : _navigateReplacement =
+           navigateReplacement ?? navigateOnboardingResolution;
 
   @action
   Future<void> login(String email, String password) async {
@@ -54,7 +56,8 @@ abstract class LoginControllerBase with Store {
           refreshToken: token.refreshToken,
         );
         logged = true;
-        _navigateReplacement(routeTab);
+        final resolution = await onboardingResolver.resolve();
+        _navigateReplacement(resolution);
     }
   }
 

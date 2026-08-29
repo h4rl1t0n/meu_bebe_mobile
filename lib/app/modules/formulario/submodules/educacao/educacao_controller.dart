@@ -81,6 +81,20 @@ abstract class EducacaoControllerBase with Store {
     validate();
   }
 
+  /// Restaura o estado inicial para uma NOVA avaliação (FASE 9G). Os
+  /// controllers são singletons compartilhados entre navegações; sem reset a
+  /// reavaliação pré-preencheria a resposta anterior.
+  @action
+  void reset() {
+    estuda = null;
+    escolaridade = null;
+    situacaoEstudosGestacao = null;
+    dificuldadesEscolares.clear();
+    entendeOrientacoes = null;
+    fezCursoQualificacaoProfissional = null;
+    isValid = false;
+  }
+
   @action
   void validate() {
     isValid = EducacaoValidator.isTabValid(

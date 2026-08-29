@@ -5,12 +5,14 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:validatorless/validatorless.dart';
 
+import '../../../../../../app_module.dart';
 import '../../../../../../core/extensions/size_extension.dart';
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/gestante/gestante_model.dart';
+import '../../../../../../modules/onboarding/onboarding_route_args.dart';
 import 'profile_data_controller.dart';
 import 'profile_form_controller.dart';
 import 'widgets/custom_text_field.dart';
@@ -214,6 +216,9 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
 
     if (success && mounted) {
       controller.setFormEnabled(false);
+      if (isOnboardingRoute()) {
+        Modular.to.pushReplacementNamed(routeGravidezAtual, arguments: onboardingArgs);
+      }
     }
   }
 

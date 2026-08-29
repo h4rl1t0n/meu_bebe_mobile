@@ -2,6 +2,8 @@ import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
 import '../../../enum/page_status.dart';
+import '../../../repositories/avaliacao_dss/avaliacao_dss_repository.dart';
+import '../../../repositories/perfil/perfil_repository.dart';
 import '../../../repositories/risk_estimate/risk_estimate_repository.dart';
 import '../catalog/alimentacao_options.dart';
 import '../catalog/educacao_options.dart';
@@ -25,6 +27,8 @@ class FormularioController = FormularioControllerBase
 
 abstract class FormularioControllerBase with Store {
   final RiskEstimateRepository riskEstimateRepository;
+  final AvaliacaoDssRepository avaliacaoDssRepository;
+  final PerfilRepository perfilRepository;
   final EducacaoController educacaoCtrl;
   final TrabalhoController trabalhoCtrl;
   final SaneamentoController saneamentoCtrl;
@@ -34,6 +38,8 @@ abstract class FormularioControllerBase with Store {
 
   FormularioControllerBase({
     required this.riskEstimateRepository,
+    required this.avaliacaoDssRepository,
+    required this.perfilRepository,
     required this.educacaoCtrl,
     required this.trabalhoCtrl,
     required this.saneamentoCtrl,
@@ -53,6 +59,15 @@ abstract class FormularioControllerBase with Store {
 
   @observable
   String? error;
+
+  // Estado da persistência operacional (FASE 9F). São campos PLAIN (não
+  // `@observable`): são lidos imperativamente após `await enviarFormulario()`
+  // (callback da página e testes), não via Observer/reaction. Mantidos
+  // SEPARADOS do estado da estimativa (`status`/`error`/`riskEstimate`) para
+  // preservar a independência das duas responsabilidades.
+  bool persisted = false;
+  String? persistenceError;
+  bool noActiveGestacao = false;
 
   @computed
   bool get loading => status == PageStatus.loading;
@@ -94,6 +109,29 @@ abstract class FormularioControllerBase with Store {
     }
   }
 
+  /// Restaura todo o estado para uma NOVA avaliação (FASE 9G).
+  ///
+  /// O [FormularioController] e os subcontrollers são SINGLETONS compartilhados
+  /// entre navegações para `/form/`. Sem este reset, a reavaliação
+  /// pré-preencheria a resposta anterior (proibido — seção 25). Chamado pela
+  /// página no `initState`, antes da primeira renderização.
+  @action
+  void resetForNewAvaliacao() {
+    currentStep = 0;
+    status = PageStatus.initial;
+    riskEstimate = null;
+    error = null;
+    persisted = false;
+    persistenceError = null;
+    noActiveGestacao = false;
+    educacaoCtrl.reset();
+    trabalhoCtrl.reset();
+    saneamentoCtrl.reset();
+    saudeCtrl.reset();
+    habitacaoCtrl.reset();
+    alimentacaoCtrl.reset();
+  }
+
   @action
   Future<void> enviarFormulario() async {
     if (loading) return;
@@ -101,6 +139,16 @@ abstract class FormularioControllerBase with Store {
     error = null;
 
     final data = consolidatedData;
+
+    // Responsabilidade A — persistência operacional (append-only), UMA única
+    // vez. O guard `!persisted` evita duplicar o POST em retries após sucesso;
+    // em caso de falha, `persisted` segue false e a próxima tentativa reenviará.
+    if (!persisted) {
+      await _persistirAvaliacao(data);
+    }
+
+    // Responsabilidade B — estimativa experimental (`/risk-estimate`, stateless).
+    // Roda SEMPRE, independente do resultado da persistência (nunca lança).
     final result = await riskEstimateRepository.estimate(data);
 
     switch (result) {
@@ -110,6 +158,35 @@ abstract class FormularioControllerBase with Store {
       case Success(success: final estimate):
         riskEstimate = estimate;
         status = PageStatus.success;
+    }
+  }
+
+  /// Persiste o snapshot operacional vinculado à gestação atual.
+  ///
+  /// Sem gestação ativa → NÃO há POST (apenas sinaliza `noActiveGestacao`),
+  /// mantendo as respostas intactas e sem auto-criar gestação. A persistência
+  /// falha não interrompe a estimativa: apenas registra `persistenceError`.
+  Future<void> _persistirAvaliacao(FormularioData data) async {
+    final gestacaoResult = await perfilRepository.getGestacaoAtual();
+
+    switch (gestacaoResult) {
+      case Error(error: final failure):
+        persistenceError = failure.message;
+      case Success(success: final gestacao):
+        if (gestacao == null) {
+          noActiveGestacao = true;
+          return;
+        }
+        final persistResult = await avaliacaoDssRepository.registrar(
+          gestacao.id,
+          data,
+        );
+        switch (persistResult) {
+          case Error(error: final failure):
+            persistenceError = failure.message;
+          case Success():
+            persisted = true;
+        }
     }
   }
 

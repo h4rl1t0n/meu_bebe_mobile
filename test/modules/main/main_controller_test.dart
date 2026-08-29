@@ -3,10 +3,13 @@ import 'package:meu_bebe/app/app_module.dart';
 import 'package:meu_bebe/app/core/auth/token_storage.dart';
 import 'package:meu_bebe/app/core/fp/backend_failure.dart';
 import 'package:meu_bebe/app/model/auth/auth_models.dart';
+import 'package:meu_bebe/app/model/avaliacao_dss/avaliacao_dss_model.dart';
 import 'package:meu_bebe/app/model/gestacao/gestacao_model.dart';
 import 'package:meu_bebe/app/model/gestante/gestante_model.dart';
+import 'package:meu_bebe/app/modules/formulario/models/formulario_data.dart';
 import 'package:meu_bebe/app/modules/main/main_controller.dart';
 import 'package:meu_bebe/app/repositories/auth/auth_repository.dart';
+import 'package:meu_bebe/app/repositories/avaliacao_dss/avaliacao_dss_repository.dart';
 import 'package:meu_bebe/app/repositories/perfil/perfil_repository.dart';
 import 'package:multiple_result/multiple_result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -52,6 +55,19 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Result<UserResponseModel, BackendFailure>> me() => throw UnimplementedError();
+}
+
+class _FakeAvaliacaoDssRepository implements AvaliacaoDssRepository {
+  @override
+  Future<Result<List<AvaliacaoDssModel>, BackendFailure>> list(
+    String gestacaoId,
+  ) async => const Success(<AvaliacaoDssModel>[]);
+
+  @override
+  Future<Result<AvaliacaoDssModel, BackendFailure>> registrar(
+    String gestacaoId,
+    FormularioData data,
+  ) => throw UnimplementedError();
 }
 
 class _FakePerfilRepository implements PerfilRepository {
@@ -111,6 +127,7 @@ void main() {
       perfil,
       auth,
       const TokenStorage(),
+      _FakeAvaliacaoDssRepository(),
       navigateReplacement: (route) => navigations?.add(route),
     );
   }

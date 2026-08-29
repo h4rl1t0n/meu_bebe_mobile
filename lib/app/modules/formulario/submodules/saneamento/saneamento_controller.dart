@@ -101,6 +101,19 @@ abstract class SaneamentoControllerBase with Store {
     validate();
   }
 
+  /// Restaura o estado inicial para uma NOVA avaliação (FASE 9G).
+  @action
+  void reset() {
+    fonteAgua = null;
+    interrupcoesAgua = null;
+    esgotamentoSanitario = null;
+    frequenciaColetaLixo = null;
+    destinoLixoSemColeta = null;
+    preocupacaoAgua = null;
+    cuidadosVetores.clear();
+    isValid = false;
+  }
+
   @action
   void validate() {
     isValid = SaneamentoValidator.isTabValid(

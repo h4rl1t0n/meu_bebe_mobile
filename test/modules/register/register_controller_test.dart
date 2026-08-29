@@ -5,8 +5,12 @@ import 'package:meu_bebe/app/app_module.dart';
 import 'package:meu_bebe/app/core/auth/token_storage.dart';
 import 'package:meu_bebe/app/core/fp/backend_failure.dart';
 import 'package:meu_bebe/app/model/auth/auth_models.dart';
+import 'package:meu_bebe/app/modules/onboarding/onboarding_resolution.dart';
+import 'package:meu_bebe/app/modules/onboarding/onboarding_resolver.dart';
 import 'package:meu_bebe/app/modules/register/register_controller.dart';
 import 'package:meu_bebe/app/repositories/auth/auth_repository.dart';
+import 'package:meu_bebe/app/repositories/avaliacao_dss/avaliacao_dss_repository.dart';
+import 'package:meu_bebe/app/repositories/perfil/perfil_repository.dart';
 import 'package:multiple_result/multiple_result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +19,29 @@ TokenResponseModel _token() => const TokenResponseModel(
       accessToken: 'access',
       refreshToken: 'refresh',
     );
+
+class _NoopPerfilRepository implements PerfilRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _NoopAvaliacaoDssRepository implements AvaliacaoDssRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Resolver stub configurável: o teste de registro não exercita a resolução
+/// real (coberta por `onboarding_resolver_test.dart`), mas precisa provar que o
+/// controller navega conforme o resultado (novo usuário → onboarding).
+class _StubOnboardingResolver extends OnboardingResolver {
+  _StubOnboardingResolver([this.resolution = const OnboardingComplete()])
+      : super(_NoopPerfilRepository(), _NoopAvaliacaoDssRepository());
+
+  final OnboardingResolution resolution;
+
+  @override
+  Future<OnboardingResolution> resolve() async => resolution;
+}
 
 class _FakeAuthRepository implements AuthRepository {
   _FakeAuthRepository(this.onRegister);
@@ -50,17 +77,22 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  RegisterController makeController(_FakeAuthRepository repo, {List<String>? navigations}) {
+  RegisterController makeController(
+    _FakeAuthRepository repo, {
+    List<OnboardingResolution>? navigations,
+    OnboardingResolution resolution = const OnboardingComplete(),
+  }) {
     return RegisterController(
       repo,
       const TokenStorage(),
-      navigateReplacement: (route) => navigations?.add(route),
+      _StubOnboardingResolver(resolution),
+      navigateReplacement: (res) => navigations?.add(res),
     );
   }
 
   group('RegisterController.register', () {
     test('sucesso: salva tokens e navega para a Tab', () async {
-      final navigations = <String>[];
+      final navigations = <OnboardingResolution>[];
       final repo = _FakeAuthRepository((_, _) async => Success(_token()));
       final c = makeController(repo, navigations: navigations);
 
@@ -68,15 +100,34 @@ void main() {
 
       expect(repo.registerCalls, 1);
       expect(c.loading, isFalse);
-      expect(navigations, [routeTab]);
+      expect(navigations, [isA<OnboardingComplete>()]);
 
       final storage = const TokenStorage();
       expect(await storage.getAccessToken(), 'access');
       expect(await storage.getRefreshToken(), 'refresh');
     });
 
+    test('novo usuário: resolve onboarding e navega para dadosPerfil', () async {
+      final navigations = <OnboardingResolution>[];
+      final repo = _FakeAuthRepository((_, _) async => Success(_token()));
+      final c = makeController(
+        repo,
+        navigations: navigations,
+        resolution: const OnboardingNextStep(routeDadosPerfil),
+      );
+
+      await c.register('maria@example.com', 'senha123', 'senha123');
+
+      expect(repo.registerCalls, 1);
+      expect(
+        navigations.single,
+        isA<OnboardingNextStep>()
+            .having((r) => r.route, 'route', routeDadosPerfil),
+      );
+    });
+
     test('senhas diferentes: não chama o backend nem navega', () async {
-      final navigations = <String>[];
+      final navigations = <OnboardingResolution>[];
       final repo = _FakeAuthRepository((_, _) async => Success(_token()));
       final c = makeController(repo, navigations: navigations);
 
@@ -88,7 +139,7 @@ void main() {
     });
 
     test('e-mail já cadastrado: não navega nem persiste sessão', () async {
-      final navigations = <String>[];
+      final navigations = <OnboardingResolution>[];
       final repo = _FakeAuthRepository(
         (_, _) async => const Error(EmailAlreadyRegisteredFailure()),
       );

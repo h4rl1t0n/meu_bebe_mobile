@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../app_module.dart';
 import '../../core/constants/images.dart';
 import '../../core/helpers/messages.dart';
 import '../../enum/page_status.dart';
@@ -9,6 +10,8 @@ import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/design_tokens.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
 import '../../core/ui/widgets/stepper_header/stepper_header.dart';
+import '../onboarding/onboarding_resolver.dart';
+import '../onboarding/onboarding_route_args.dart';
 import 'controllers/formulario_controller.dart';
 import 'models/formulario_data.dart';
 import 'submodules/alimentacao/alimentacao_tab.dart';
@@ -42,6 +45,9 @@ class _FormularioPageState extends State<FormularioPage> {
   void initState() {
     super.initState();
     controller = Modular.get<FormularioController>();
+    // Nova avaliação nunca pré-preenche (FASE 9G): os controllers são
+    // singletons e podem carregar a resposta anterior.
+    controller.resetForNewAvaliacao();
   }
 
   @override
@@ -223,13 +229,18 @@ class _FormularioPageState extends State<FormularioPage> {
                               if (controller.status == PageStatus.success) {
                                 final estimate = controller.riskEstimate;
                                 Navigator.pop(ctx);
+                                _surfacePersistenceFeedback();
                                 if (estimate != null && mounted) {
                                   await showRiskEstimateResultSheet(
                                     context,
                                     estimate,
                                   );
                                 }
+                                if (mounted) {
+                                  _afterResultSheet();
+                                }
                               } else {
+                                _surfacePersistenceFeedback();
                                 Messages.showError(
                                   controller.error ??
                                       'Não foi possível enviar o formulário.',
@@ -257,6 +268,43 @@ class _FormularioPageState extends State<FormularioPage> {
         ),
       ),
     );
+  }
+
+  /// Superfície do estado de persistência operacional (FASE 9F), independente
+  /// do resultado da estimativa. Lê os campos PLAIN do controller (não
+  /// reativos) após `await enviarFormulario()`.
+  void _surfacePersistenceFeedback() {
+    if (controller.noActiveGestacao) {
+      Messages.showInfo(
+        'Nenhuma gestação ativa foi encontrada. Suas respostas não foram '
+        'salvas, mas você ainda pode visualizar a estimativa.',
+      );
+    } else if (controller.persistenceError != null) {
+      Messages.showWarning(
+        'Não foi possível salvar suas respostas. A estimativa não foi afetada.',
+      );
+    } else if (controller.persisted) {
+      Messages.showSuccess('Respostas salvas com sucesso.');
+    }
+  }
+
+  /// Navegação pós-resultado (FASE 9G), após o fechamento do sheet "Entendi".
+  ///
+  /// Onboarding (primeiro DSS): libera o Main SOMENTE se a persistência
+  /// operacional sucedeu (`persisted`). Persistência falha NÃO libera o Main —
+  /// permanece no formulário para nova tentativa. Reavaliação (modo normal):
+  /// apenas volta para a área DSS (Perfil).
+  void _afterResultSheet() {
+    if (isOnboardingRoute()) {
+      if (controller.persisted) {
+        // Primeiro DSS persistido: invalida a resolução em cache para que o
+        // guard da Main re-consulte o backend e libere a tab.
+        Modular.get<OnboardingResolver>().invalidate();
+        Modular.to.pushReplacementNamed(routeTab);
+      }
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   Widget _buildSummaryItem(String label, String value) {

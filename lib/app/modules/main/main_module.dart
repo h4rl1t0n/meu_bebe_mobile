@@ -3,6 +3,8 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../core/auth/token_storage.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../repositories/auth/auth_repository_impl.dart';
+import '../../repositories/avaliacao_dss/avaliacao_dss_repository.dart';
+import '../../repositories/avaliacao_dss/avaliacao_dss_repository_impl.dart';
 import '../../repositories/consulta/consulta_repository.dart';
 import '../../repositories/consulta/consulta_repository_impl.dart';
 import '../../repositories/exame/exame_repository.dart';
@@ -31,6 +33,7 @@ class MainModule extends Module {
     i.addSingleton<AuthRepository>(AuthRepositoryImpl.new);
     i.addSingleton<TokenStorage>(TokenStorage.new);
     i.addSingleton<PerfilRepository>(PerfilRepositoryImpl.new);
+    i.addSingleton<AvaliacaoDssRepository>(AvaliacaoDssRepositoryImpl.new);
     i.addSingleton<HistoricoObstetricoRepository>(HistoricoObstetricoRepositoryImpl.new);
     i.addSingleton<ConsultaRepository>(ConsultaRepositoryImpl.new);
     i.addSingleton<ExameRepository>(ExameRepositoryImpl.new);

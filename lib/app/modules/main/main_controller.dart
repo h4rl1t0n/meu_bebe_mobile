@@ -4,8 +4,10 @@ import 'package:multiple_result/multiple_result.dart';
 
 import '../../app_module.dart';
 import '../../core/auth/token_storage.dart';
+import '../../model/avaliacao_dss/avaliacao_dss_model.dart';
 import '../../model/gestacao/gestacao_model.dart';
 import '../../repositories/auth/auth_repository.dart';
+import '../../repositories/avaliacao_dss/avaliacao_dss_repository.dart';
 import '../../repositories/perfil/perfil_repository.dart';
 
 part 'main_controller.g.dart';
@@ -16,6 +18,7 @@ abstract class MainControllerBase with Store {
   final PerfilRepository perfilRepository;
   final AuthRepository authRepository;
   final TokenStorage tokenStorage;
+  final AvaliacaoDssRepository avaliacaoDssRepository;
   final void Function(String route) _navigateReplacement;
 
   @observable
@@ -29,6 +32,9 @@ abstract class MainControllerBase with Store {
 
   @observable
   GestacaoModel? gestacaoAtual;
+
+  @observable
+  AvaliacaoDssModel? ultimaAvaliacaoDss;
 
   @action
   void setIndex(int value) {
@@ -45,7 +51,8 @@ abstract class MainControllerBase with Store {
   MainControllerBase(
     this.perfilRepository,
     this.authRepository,
-    this.tokenStorage, {
+    this.tokenStorage,
+    this.avaliacaoDssRepository, {
     void Function(String route)? navigateReplacement,
   }) : _navigateReplacement = navigateReplacement ?? _defaultNavigateReplacement;
 
@@ -95,6 +102,26 @@ abstract class MainControllerBase with Store {
         gestacaoAtual = gestacao;
       case Error():
         gestacaoAtual = null;
+    }
+
+    await refreshUltimaAvaliacaoDss();
+  }
+
+  /// Recarrega a avaliação DSS mais recente (exibida no Perfil). Sem gestação
+  /// ativa ou em erro, resolve para `null` (a UI mostra o estado vazio).
+  @action
+  Future<void> refreshUltimaAvaliacaoDss() async {
+    final gestacao = gestacaoAtual;
+    if (gestacao == null) {
+      ultimaAvaliacaoDss = null;
+      return;
+    }
+    final result = await avaliacaoDssRepository.list(gestacao.id);
+    switch (result) {
+      case Success(success: final list):
+        ultimaAvaliacaoDss = list.isEmpty ? null : list.first;
+      case Error():
+        ultimaAvaliacaoDss = null;
     }
   }
 

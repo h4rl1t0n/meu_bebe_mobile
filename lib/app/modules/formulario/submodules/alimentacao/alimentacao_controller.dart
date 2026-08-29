@@ -94,6 +94,19 @@ abstract class AlimentacaoControllerBase with Store {
     validate();
   }
 
+  /// Restaura o estado inicial para uma NOVA avaliação (FASE 9G).
+  @action
+  void reset() {
+    refeicoesPorDia = null;
+    deixouDeComerFaltaDinheiro = null;
+    alimentosConsumidos.clear();
+    fonteAlimentos.clear();
+    mudancaAlimentacaoGestacao = null;
+    usaSuplementos = null;
+    avaliacaoAlimentacao = null;
+    isValid = false;
+  }
+
   @action
   void validate() {
     isValid = AlimentacaoValidator.isTabValid(

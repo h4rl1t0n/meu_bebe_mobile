@@ -1,6 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../core/core_module.dart';
+import '../onboarding/onboarding_module.dart';
 import 'controllers/formulario_controller.dart';
 import 'formulario_page.dart';
 import 'submodules/educacao/educacao_controller.dart';
@@ -12,7 +13,7 @@ import 'submodules/alimentacao/alimentacao_controller.dart';
 
 class FormularioModule extends Module {
   @override
-  List<Module> get imports => [CoreModule()];
+  List<Module> get imports => [CoreModule(), OnboardingModule()];
 
   @override
   void binds(i) {

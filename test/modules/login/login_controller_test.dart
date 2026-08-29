@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:meu_bebe/app/app_module.dart';
 import 'package:meu_bebe/app/core/auth/token_storage.dart';
 import 'package:meu_bebe/app/core/fp/backend_failure.dart';
 import 'package:meu_bebe/app/model/auth/auth_models.dart';
 import 'package:meu_bebe/app/modules/login/login_controller.dart';
+import 'package:meu_bebe/app/modules/onboarding/onboarding_resolution.dart';
+import 'package:meu_bebe/app/modules/onboarding/onboarding_resolver.dart';
 import 'package:meu_bebe/app/repositories/auth/auth_repository.dart';
+import 'package:meu_bebe/app/repositories/avaliacao_dss/avaliacao_dss_repository.dart';
+import 'package:meu_bebe/app/repositories/perfil/perfil_repository.dart';
 import 'package:multiple_result/multiple_result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +18,28 @@ TokenResponseModel _token() => const TokenResponseModel(
       accessToken: 'access',
       refreshToken: 'refresh',
     );
+
+class _NoopPerfilRepository implements PerfilRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _NoopAvaliacaoDssRepository implements AvaliacaoDssRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Resolver stub que sempre resolve para a Tab (o teste de login não exercita
+/// o fluxo de onboarding; isso é coberto por `onboarding_resolver_test.dart`).
+class _StubOnboardingResolver extends OnboardingResolver {
+  _StubOnboardingResolver([this.resolution = const OnboardingComplete()])
+      : super(_NoopPerfilRepository(), _NoopAvaliacaoDssRepository());
+
+  final OnboardingResolution resolution;
+
+  @override
+  Future<OnboardingResolution> resolve() async => resolution;
+}
 
 class _FakeAuthRepository implements AuthRepository {
   _FakeAuthRepository(this.onLogin);
@@ -50,11 +75,15 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  LoginController makeController(_FakeAuthRepository repo, {List<String>? navigations}) {
+  LoginController makeController(
+    _FakeAuthRepository repo, {
+    List<OnboardingResolution>? navigations,
+  }) {
     return LoginController(
       repo,
       const TokenStorage(),
-      navigateReplacement: (route) => navigations?.add(route),
+      _StubOnboardingResolver(),
+      navigateReplacement: (resolution) => navigations?.add(resolution),
     );
   }
 
@@ -67,7 +96,7 @@ void main() {
     });
 
     test('sucesso: salva tokens, marca logged e navega para a Tab', () async {
-      final navigations = <String>[];
+      final navigations = <OnboardingResolution>[];
       final repo = _FakeAuthRepository((_, _) async => Success(_token()));
       final c = makeController(repo, navigations: navigations);
 
@@ -76,7 +105,7 @@ void main() {
       expect(repo.loginCalls, 1);
       expect(c.logged, isTrue);
       expect(c.loading, isFalse);
-      expect(navigations, [routeTab]);
+      expect(navigations, [isA<OnboardingComplete>()]);
 
       final storage = const TokenStorage();
       expect(await storage.getAccessToken(), 'access');
@@ -84,7 +113,7 @@ void main() {
     });
 
     test('credenciais inválidas: não loga, não navega, não persiste sessão', () async {
-      final navigations = <String>[];
+      final navigations = <OnboardingResolution>[];
       final repo = _FakeAuthRepository(
         (_, _) async => const Error(InvalidCredentialsFailure()),
       );

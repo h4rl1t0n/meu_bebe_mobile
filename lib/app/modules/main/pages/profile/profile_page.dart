@@ -7,6 +7,7 @@ import '../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../core/ui/theme/styles/text_styles.dart';
 import '../../main_controller.dart';
+import 'submodules/dss/dss_date_format.dart';
 import 'widgets/tile_button.dart';
 
 String _avatarInitials(String name) {
@@ -128,6 +129,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     SizedBox(height: Spacing.lg),
 
                     _gestacaoSection(context),
+
+                    SizedBox(height: Spacing.md),
+
+                    _dssSection(context),
 
                     SizedBox(height: Spacing.xxxl),
 
@@ -261,5 +266,69 @@ class _ProfilePageState extends State<ProfilePage> {
     await Modular.to.pushNamed(routeDadosPerfil);
     // Ao voltar da tela, atualiza os dados
     controller.initialize();
+  }
+
+  /// Seção DSS (FASE 9G): mostra a data da última avaliação (sem probabilidade
+  /// histórica) e dá acesso ao histórico (read-only) e à reavaliação
+  /// (append-only).
+  Widget _dssSection(BuildContext context) {
+    final colors = context.colors;
+    final avaliacao = controller.ultimaAvaliacaoDss;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: Spacing.md),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(Spacing.md),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: RadiusTokens.xxlAll,
+          boxShadow: [ElevationTokens.raisedShadow(colors.onSurface)],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: Spacing.sm),
+              child: Text('Avaliação DSS', style: context.textStyles.subTitleStyle),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: Spacing.xs),
+              child: Text(
+                avaliacao == null
+                    ? 'Nenhuma avaliação realizada.'
+                    : 'Última avaliação: ${formatDssDate(avaliacao.createdAt)}',
+                style: context.textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
+              ),
+            ),
+            SizedBox(height: Spacing.sm),
+            TileButton(
+              icon: Icons.history,
+              iconColor: colors.darkText,
+              text: 'Ver avaliações',
+              onTap: _abrirHistoricoDss,
+            ),
+            Divider(height: 1, color: colors.divider),
+            TileButton(
+              icon: Icons.edit_note,
+              iconColor: colors.darkText,
+              text: 'Responder novamente',
+              onTap: _abrirReavaliacao,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _abrirHistoricoDss() async {
+    await Modular.to.pushNamed(routeHistoricoDss);
+  }
+
+  Future<void> _abrirReavaliacao() async {
+    await Modular.to.pushNamed(routeForm);
+    if (mounted) {
+      await controller.refreshUltimaAvaliacaoDss();
+    }
   }
 }

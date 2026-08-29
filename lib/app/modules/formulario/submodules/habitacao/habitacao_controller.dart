@@ -125,6 +125,21 @@ abstract class HabitacaoControllerBase with Store {
     validate();
   }
 
+  /// Restaura o estado inicial para uma NOVA avaliação (FASE 9G).
+  @action
+  void reset() {
+    tipoMoradia = null;
+    materialMoradia = null;
+    numeroPessoas = 0;
+    numeroComodos = 0;
+    numeroDormitorios = 0;
+    itensResidencia.clear();
+    segurancaResidencia = null;
+    melhoriasDesejadas.clear();
+    facilAcessoSaude = null;
+    isValid = false;
+  }
+
   @action
   void validate() {
     isValid = HabitacaoValidator.isTabValid(

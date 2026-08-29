@@ -4,6 +4,9 @@ import 'modules/core/core_module.dart';
 import 'modules/formulario/formulario_module.dart';
 import 'modules/inicializar_app/inicializar_app_module.dart';
 import 'modules/login/login_module.dart';
+import 'modules/onboarding/onboarding_gate_module.dart';
+import 'modules/onboarding/onboarding_guard.dart';
+import 'modules/onboarding/onboarding_module.dart';
 import 'modules/register/register_module.dart';
 import 'modules/main/pages/childbirth/submodules/birth_moment/birth_moment_module.dart';
 import 'modules/main/pages/childbirth/submodules/pain_relief/pain_relief_module.dart';
@@ -20,13 +23,15 @@ import 'modules/main/pages/home/submodules/medication/medication_module.dart';
 import 'modules/main/pages/home/submodules/vaccines/vaccines_module.dart';
 import 'modules/main/main_module.dart';
 import 'modules/main/pages/profile/submodules/configuracoes/configuracoes_module.dart';
+import 'modules/main/pages/profile/submodules/dss/dss_detail_module.dart';
+import 'modules/main/pages/profile/submodules/dss/dss_module.dart';
 import 'modules/main/pages/profile/submodules/notificacoes/notificacoes_module.dart';
 import 'modules/main/pages/profile/submodules/profile_data/profile_data_module.dart';
 import 'modules/main/pages/profile/submodules/sobre_app/sobre_app_module.dart';
 
 class AppModule extends Module {
   @override
-  List<Module> get imports => [CoreModule()];
+  List<Module> get imports => [CoreModule(), OnboardingModule()];
 
   @override
   void routes(r) {
@@ -34,7 +39,8 @@ class AppModule extends Module {
     r.module(routeLogin, module: LoginModule());
     r.module(routeRegister, module: RegisterModule());
     r.module(routeForm, module: FormularioModule());
-    r.module(routeTab, module: MainModule());
+    r.module(routeTab, module: MainModule(), guards: [OnboardingGuard()]);
+    r.module(routeOnboardingGate, module: OnboardingGateModule());
 
     // Module da Tab Home
     r.module(routeConsultasExames, module: AppointmentsExamsModule());
@@ -60,6 +66,8 @@ class AppModule extends Module {
     r.module(routeNotificacoes, module: NotificacoesModule());
     r.module(routeConfiguracoes, module: ConfiguracoesModule());
     r.module(routeSobreApp, module: SobreAppModule());
+    r.module(routeHistoricoDss, module: DssModule());
+    r.module(routeDetalheDss, module: DssDetailModule());
   }
 }
 
@@ -67,6 +75,7 @@ const routeLogin = '/login/';
 const routeRegister = '/register/';
 const routeForm = '/form/';
 const routeTab = '/tab/';
+const routeOnboardingGate = '/onboarding_gate/';
 
 const routeConsultasExames = '/consultas_exames/';
 const routeInformacoes = '/informacoes/';
@@ -83,6 +92,8 @@ const routeDadosPerfil = '/dados_perfil/';
 const routeNotificacoes = '/notificacoes/';
 const routeConfiguracoes = '/configuracoes/';
 const routeSobreApp = '/sobre_app/';
+const routeHistoricoDss = '/historico_dss/';
+const routeDetalheDss = '/detalhe_dss/';
 
 const routeMomentoParto = '/momento_parto/';
 const routeAlivioDor = '/alivio_dor/';

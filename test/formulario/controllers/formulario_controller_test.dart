@@ -11,6 +11,14 @@ import 'package:meu_bebe/app/modules/formulario/submodules/habitacao/habitacao_c
 import 'package:meu_bebe/app/modules/formulario/submodules/saneamento/saneamento_controller.dart';
 import 'package:meu_bebe/app/modules/formulario/submodules/saude/saude_controller.dart';
 import 'package:meu_bebe/app/modules/formulario/submodules/trabalho/trabalho_controller.dart';
+import 'package:meu_bebe/app/core/fp/backend_failure.dart'
+    show BackendFailure, UnexpectedFailure;
+import 'package:meu_bebe/app/model/auth/auth_models.dart';
+import 'package:meu_bebe/app/model/avaliacao_dss/avaliacao_dss_model.dart';
+import 'package:meu_bebe/app/model/gestacao/gestacao_model.dart';
+import 'package:meu_bebe/app/model/gestante/gestante_model.dart';
+import 'package:meu_bebe/app/repositories/avaliacao_dss/avaliacao_dss_repository.dart';
+import 'package:meu_bebe/app/repositories/perfil/perfil_repository.dart';
 import 'package:meu_bebe/app/repositories/risk_estimate/risk_estimate_failure.dart';
 import 'package:meu_bebe/app/repositories/risk_estimate/risk_estimate_repository.dart';
 import 'package:multiple_result/multiple_result.dart';
@@ -57,9 +65,91 @@ class _FakeRiskEstimateRepository implements RiskEstimateRepository {
   }
 }
 
-FormularioController _buildController(RiskEstimateRepository repository) {
+const _avaliacao = AvaliacaoDssModel(
+  id: 'avaliacao-1',
+  schemaVersion: '1.13',
+  respostas: <String, dynamic>{},
+  createdAt: '2026-08-29T00:00:00Z',
+);
+
+class _FakeAvaliacaoDssRepository implements AvaliacaoDssRepository {
+  final Future<Result<AvaliacaoDssModel, BackendFailure>> Function(
+    String gestacaoId,
+    FormularioData data,
+  )
+  handler;
+
+  int callCount = 0;
+  String? capturedGestacaoId;
+  FormularioData? capturedData;
+
+  _FakeAvaliacaoDssRepository(this.handler);
+
+  @override
+  Future<Result<AvaliacaoDssModel, BackendFailure>> registrar(
+    String gestacaoId,
+    FormularioData data,
+  ) {
+    callCount++;
+    capturedGestacaoId = gestacaoId;
+    capturedData = data;
+    return handler(gestacaoId, data);
+  }
+
+  @override
+  Future<Result<List<AvaliacaoDssModel>, BackendFailure>> list(
+    String gestacaoId,
+  ) async => const Success(<AvaliacaoDssModel>[]);
+}
+
+class _FakePerfilRepository implements PerfilRepository {
+  final Future<Result<GestacaoModel?, BackendFailure>> Function()
+      getGestacaoAtualHandler;
+
+  int getGestacaoAtualCallCount = 0;
+
+  _FakePerfilRepository(this.getGestacaoAtualHandler);
+
+  @override
+  Future<Result<GestacaoModel?, BackendFailure>> getGestacaoAtual() {
+    getGestacaoAtualCallCount++;
+    return getGestacaoAtualHandler();
+  }
+
+  @override
+  Future<Result<UserResponseModel?, BackendFailure>> getUser() =>
+      throw UnimplementedError();
+
+  @override
+  Future<Result<GestanteModel?, BackendFailure>> getGestante() =>
+      throw UnimplementedError();
+
+  @override
+  Future<Result<GestanteModel, BackendFailure>> createGestante(
+    GestanteModel gestante,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Result<GestanteModel, BackendFailure>> updateGestante(
+    GestanteModel gestante,
+  ) => throw UnimplementedError();
+}
+
+FormularioController _buildController(
+  RiskEstimateRepository repository, {
+  PerfilRepository? perfilRepository,
+  AvaliacaoDssRepository? avaliacaoDssRepository,
+}) {
   return FormularioController(
     riskEstimateRepository: repository,
+    avaliacaoDssRepository:
+        avaliacaoDssRepository ??
+        _FakeAvaliacaoDssRepository(
+          (_, _) async => const Success(_avaliacao),
+        ),
+    perfilRepository:
+        perfilRepository ??
+        _FakePerfilRepository(() async => const Success(null)),
     educacaoCtrl: EducacaoController(),
     trabalhoCtrl: TrabalhoController(),
     saneamentoCtrl: SaneamentoController(),
@@ -213,5 +303,142 @@ void main() {
         expect(captured, isA<FormularioData>());
       },
     );
+  });
+
+  group('FormularioController — persistência operacional (FASE 9F)', () {
+    test('persistência OK: registrar com gestacao.id + estimativa success',
+        () async {
+      final avalRepo = _FakeAvaliacaoDssRepository(
+        (_, _) async => const Success(_avaliacao),
+      );
+      final controller = _buildController(
+        _FakeRiskEstimateRepository((_) async => _success()),
+        perfilRepository: _FakePerfilRepository(
+          () async => const Success(GestacaoModel(id: 'gestacao-1')),
+        ),
+        avaliacaoDssRepository: avalRepo,
+      );
+
+      await controller.enviarFormulario();
+
+      expect(controller.status, PageStatus.success);
+      expect(controller.persisted, isTrue);
+      expect(controller.noActiveGestacao, isFalse);
+      expect(controller.persistenceError, isNull);
+      expect(avalRepo.callCount, 1);
+      expect(avalRepo.capturedGestacaoId, 'gestacao-1');
+      expect(avalRepo.capturedData, isA<FormularioData>());
+    });
+
+    test('sem gestação ativa: NÃO faz POST e sinaliza noActiveGestacao',
+        () async {
+      final avalRepo = _FakeAvaliacaoDssRepository(
+        (_, _) async => const Success(_avaliacao),
+      );
+      final controller = _buildController(
+        _FakeRiskEstimateRepository((_) async => _success()),
+        perfilRepository: _FakePerfilRepository(
+          () async => const Success(null),
+        ),
+        avaliacaoDssRepository: avalRepo,
+      );
+
+      await controller.enviarFormulario();
+
+      expect(controller.status, PageStatus.success);
+      expect(controller.noActiveGestacao, isTrue);
+      expect(controller.persisted, isFalse);
+      expect(controller.persistenceError, isNull);
+      expect(avalRepo.callCount, 0);
+    });
+
+    test('falha na persistência: mensagem amigável, estimativa não afetada',
+        () async {
+      final controller = _buildController(
+        _FakeRiskEstimateRepository((_) async => _success()),
+        perfilRepository: _FakePerfilRepository(
+          () async => const Success(GestacaoModel(id: 'gestacao-1')),
+        ),
+        avaliacaoDssRepository: _FakeAvaliacaoDssRepository(
+          (_, _) async => const Error(UnexpectedFailure()),
+        ),
+      );
+
+      await controller.enviarFormulario();
+
+      expect(controller.status, PageStatus.success);
+      expect(controller.persisted, isFalse);
+      expect(
+        controller.persistenceError,
+        'Não foi possível concluir a operação.',
+      );
+      expect(controller.error, isNull);
+    });
+
+    test('falha na estimativa: persistência concluída de forma independente',
+        () async {
+      final avalRepo = _FakeAvaliacaoDssRepository(
+        (_, _) async => const Success(_avaliacao),
+      );
+      final controller = _buildController(
+        _FakeRiskEstimateRepository(
+          (_) async => _error(const ConnectionFailure()),
+        ),
+        perfilRepository: _FakePerfilRepository(
+          () async => const Success(GestacaoModel(id: 'gestacao-1')),
+        ),
+        avaliacaoDssRepository: avalRepo,
+      );
+
+      await controller.enviarFormulario();
+
+      expect(controller.status, PageStatus.error);
+      expect(controller.error, 'Não foi possível conectar ao serviço.');
+      expect(controller.persisted, isTrue);
+      expect(avalRepo.callCount, 1);
+    });
+
+    test('retry após sucesso: NÃO duplica o POST append-only', () async {
+      final avalRepo = _FakeAvaliacaoDssRepository(
+        (_, _) async => const Success(_avaliacao),
+      );
+      final estimateRepo = _FakeRiskEstimateRepository((_) async => _success());
+      final controller = _buildController(
+        estimateRepo,
+        perfilRepository: _FakePerfilRepository(
+          () async => const Success(GestacaoModel(id: 'gestacao-1')),
+        ),
+        avaliacaoDssRepository: avalRepo,
+      );
+
+      await controller.enviarFormulario();
+      await controller.enviarFormulario();
+
+      expect(avalRepo.callCount, 1);
+      expect(estimateRepo.callCount, 2);
+    });
+
+    test('sem gestação: respostas preservadas e NÃO auto-cria gestação',
+        () async {
+      final estimateRepo = _FakeRiskEstimateRepository((_) async => _success());
+      final controller = _buildController(
+        estimateRepo,
+        perfilRepository: _FakePerfilRepository(
+          () async => const Success(null),
+        ),
+        avaliacaoDssRepository: _FakeAvaliacaoDssRepository(
+          (_, _) async => const Success(_avaliacao),
+        ),
+      );
+
+      await controller.enviarFormulario();
+
+      // Respostas NÃO são descartadas: o FormularioData consolidado segue
+      // entregue à estimativa. Nenhuma tentativa de criar gestação (o fake de
+      // `createGestante` lançaria UnimplementedError se fosse chamado).
+      expect(estimateRepo.captured, isA<FormularioData>());
+      expect(controller.consolidatedData, isA<FormularioData>());
+      expect(controller.noActiveGestacao, isTrue);
+    });
   });
 }

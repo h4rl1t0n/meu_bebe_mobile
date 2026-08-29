@@ -1,11 +1,12 @@
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
-import '../../app_module.dart';
 import '../../core/auth/token_storage.dart';
 import '../../core/helpers/messages.dart';
 import '../../repositories/auth/auth_repository.dart';
+import '../onboarding/onboarding_navigator.dart';
+import '../onboarding/onboarding_resolution.dart';
+import '../onboarding/onboarding_resolver.dart';
 
 part 'register_controller.g.dart';
 
@@ -14,7 +15,8 @@ class RegisterController = RegisterControllerBase with _$RegisterController;
 abstract class RegisterControllerBase with Store {
   final AuthRepository authRepository;
   final TokenStorage tokenStorage;
-  final void Function(String route) _navigateReplacement;
+  final OnboardingResolver onboardingResolver;
+  final void Function(OnboardingResolution resolution) _navigateReplacement;
 
   @observable
   bool obscurePassword = true;
@@ -33,13 +35,11 @@ abstract class RegisterControllerBase with Store {
 
   RegisterControllerBase(
     this.authRepository,
-    this.tokenStorage, {
-    void Function(String route)? navigateReplacement,
-  }) : _navigateReplacement = navigateReplacement ?? _defaultNavigateReplacement;
-
-  static void _defaultNavigateReplacement(String route) {
-    Modular.to.pushReplacementNamed(route);
-  }
+    this.tokenStorage,
+    this.onboardingResolver, {
+    void Function(OnboardingResolution resolution)? navigateReplacement,
+  }) : _navigateReplacement =
+           navigateReplacement ?? navigateOnboardingResolution;
 
   @action
   Future<void> register(String email, String password, String confirmPassword) async {
@@ -60,7 +60,8 @@ abstract class RegisterControllerBase with Store {
           accessToken: token.accessToken,
           refreshToken: token.refreshToken,
         );
-        _navigateReplacement(routeTab);
+        final resolution = await onboardingResolver.resolve();
+        _navigateReplacement(resolution);
     }
   }
 }
