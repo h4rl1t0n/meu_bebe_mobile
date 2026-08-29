@@ -1,17 +1,24 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../../../../repositories/appointments/appointments_repository.dart';
-import '../../../../../../repositories/appointments/appointments_repository_sqlite.dart';
-import '../../../../../../repositories/exams/exams_repository.dart';
-import '../../../../../../repositories/exams/exams_repository_sqlite.dart';
+import '../../../../../../repositories/consulta/consulta_repository.dart';
+import '../../../../../../repositories/consulta/consulta_repository_impl.dart';
+import '../../../../../../repositories/exame/exame_repository.dart';
+import '../../../../../../repositories/exame/exame_repository_impl.dart';
+import '../../../../../../repositories/perfil/perfil_repository.dart';
+import '../../../../../../repositories/perfil/perfil_repository_impl.dart';
+import '../../../../../core/core_module.dart';
 import 'appointments_exams_controller.dart';
 import 'appointments_exams_page.dart';
 
 class AppointmentsExamsModule extends Module {
   @override
+  List<Module> get imports => [CoreModule()];
+
+  @override
   void binds(i) {
-    i.addSingleton<AppointmentsRepository>(AppointmentsRepositoryImpl.new);
-    i.addSingleton<ExamsRepository>(ExamsRepositoryImpl.new);
+    i.addSingleton<PerfilRepository>(PerfilRepositoryImpl.new);
+    i.addSingleton<ConsultaRepository>(ConsultaRepositoryImpl.new);
+    i.addSingleton<ExameRepository>(ExameRepositoryImpl.new);
     i.addSingleton(AppointmentsExamsController.new);
   }
 

@@ -4,6 +4,7 @@ import 'package:meu_bebe/app/core/fp/failure.dart';
 import 'package:meu_bebe/app/model/auth/auth_models.dart';
 import 'package:meu_bebe/app/model/birth.dart';
 import 'package:meu_bebe/app/model/birth_moment.dart';
+import 'package:meu_bebe/app/model/exame/exame_model.dart';
 import 'package:meu_bebe/app/model/expectation.dart';
 import 'package:meu_bebe/app/model/gestacao/gestacao_model.dart';
 import 'package:meu_bebe/app/model/gestante/gestante_model.dart';
@@ -13,6 +14,7 @@ import 'package:meu_bebe/app/model/pain_relief.dart';
 import 'package:meu_bebe/app/modules/main/pages/childbirth/submodules/childbirth_resume/childbirth_resume_controller.dart';
 import 'package:meu_bebe/app/repositories/birth/birth_repository.dart';
 import 'package:meu_bebe/app/repositories/birth_moment/birth_moment_repository.dart';
+import 'package:meu_bebe/app/repositories/exame/exame_repository.dart';
 import 'package:meu_bebe/app/repositories/expectations/expectations_repository.dart';
 import 'package:meu_bebe/app/repositories/historico_obstetrico/historico_obstetrico_repository.dart';
 import 'package:meu_bebe/app/repositories/observations/observations_repository.dart';
@@ -88,6 +90,37 @@ class _FakeHistoricoRepository implements HistoricoObstetricoRepository {
   @override
   Future<Result<HistoricoObstetricoModel, BackendFailure>> saveHistorico(
     HistoricoObstetricoModel historico,
+  ) => throw UnimplementedError();
+}
+
+class _FakeExameRepository implements ExameRepository {
+  _FakeExameRepository({this.onList});
+
+  Future<Result<List<ExameModel>, BackendFailure>> Function(String)? onList;
+
+  @override
+  Future<Result<List<ExameModel>, BackendFailure>> listExames(
+    String gestacaoId,
+  ) =>
+      onList?.call(gestacaoId) ??
+      Future.value(Success<List<ExameModel>, BackendFailure>([]));
+
+  @override
+  Future<Result<ExameModel, BackendFailure>> createExame(
+    String gestacaoId,
+    ExameModel exame,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Result<ExameModel, BackendFailure>> updateExame(
+    String gestacaoId,
+    ExameModel exame,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Result<bool, BackendFailure>> deleteExame(
+    String gestacaoId,
+    String exameId,
   ) => throw UnimplementedError();
 }
 
@@ -181,11 +214,13 @@ void main() {
   ChildbirthResumeController makeController({
     required _FakePerfilRepository perfil,
     _FakeHistoricoRepository? historico,
+    _FakeExameRepository? exame,
   }) {
     return ChildbirthResumeController(
       perfilRepository: perfil,
       historicoObstetricoRepository:
           historico ?? _FakeHistoricoRepository(),
+      exameRepository: exame ?? _FakeExameRepository(),
       expectationsRepository: _FakeExpectationsRepository(),
       birthMomentRepository: _FakeBirthMomentRepository(),
       birthRepository: _FakeBirthRepository(),
@@ -277,6 +312,118 @@ void main() {
       expect(perfil.getGestacaoAtualCalls, 2);
       expect(c.gestacao?.localPreNatal, 'UBS Editada');
       expect(c.isLoading, isFalse);
+    });
+  });
+
+  group('ChildbirthResumeController.firstUltrasound', () {
+    test('com gestação ativa e ultrassom → data mais antiga (fonte: EXAMES)',
+        () async {
+      final c = makeController(
+        perfil: _FakePerfilRepository(
+          onGetGestante: () async => _gestanteResult(_gestante),
+          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(_historico),
+        ),
+        exame: _FakeExameRepository(
+          onList: (_) async => const Success([
+            ExameModel(
+              id: 'e1',
+              titulo: 'USG morfológica',
+              dataExame: '2025-11-01',
+              descricao: 'x',
+              categoria: 'ultrassom',
+            ),
+            ExameModel(
+              id: 'e2',
+              titulo: 'USG inicial',
+              dataExame: '2025-09-15',
+              descricao: 'x',
+              categoria: 'ultrassom',
+            ),
+          ]),
+        ),
+      );
+
+      await c.initialize();
+
+      expect(c.firstUltrasound, '2025-09-15');
+      expect(c.isLoading, isFalse);
+    });
+
+    test('sem ultrassom na lista → firstUltrasound null', () async {
+      final c = makeController(
+        perfil: _FakePerfilRepository(
+          onGetGestante: () async => _gestanteResult(_gestante),
+          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(_historico),
+        ),
+        exame: _FakeExameRepository(
+          onList: (_) async => const Success([
+            ExameModel(
+              id: 'e1',
+              titulo: 'Sangue',
+              dataExame: '2025-10-01',
+              descricao: 'x',
+              categoria: 'sangue',
+            ),
+          ]),
+        ),
+      );
+
+      await c.initialize();
+
+      expect(c.firstUltrasound, isNull);
+    });
+
+    test('sem gestação ativa → firstUltrasound null (não lista exames)', () async {
+      final exame = _FakeExameRepository();
+      final c = makeController(
+        perfil: _FakePerfilRepository(
+          onGetGestante: () async => _gestanteResult(_gestante),
+          onGetGestacaoAtual: () async => _gestacaoResult(null),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(_historico),
+        ),
+        exame: exame,
+      );
+
+      await c.initialize();
+
+      expect(c.firstUltrasound, isNull);
+    });
+
+    test('anti split-brain: 1ª USG não é lida de um campo em GESTAÇÃO', () async {
+      // A 1ª USG é derivada de EXAMES; a gestação não expõe um campo
+      // `first_ultrasound`. A fonte única é ExameRepository.listExames.
+      final c = makeController(
+        perfil: _FakePerfilRepository(
+          onGetGestante: () async => _gestanteResult(_gestante),
+          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(_historico),
+        ),
+        exame: _FakeExameRepository(
+          onList: (_) async => const Success([
+            ExameModel(
+              id: 'e1',
+              titulo: 'USG',
+              dataExame: '2025-10-01',
+              descricao: 'x',
+              categoria: 'ultrassom',
+            ),
+          ]),
+        ),
+      );
+
+      await c.initialize();
+
+      expect(c.firstUltrasound, '2025-10-01');
     });
   });
 }

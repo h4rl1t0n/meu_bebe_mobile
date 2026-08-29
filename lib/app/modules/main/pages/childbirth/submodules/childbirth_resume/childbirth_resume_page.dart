@@ -75,7 +75,7 @@ class _ChildbirthResumePageState extends State<ChildbirthResumePage> {
                 SizedBox(height: Spacing.sm),
                 CurrentGestationCard(
                   lastMenstrualPeriod: _controller.gestacao?.dataUltimaMenstruacao,
-                  firstUltrasound: null,
+                  firstUltrasound: _controller.firstUltrasound,
                   onEdit: () => Modular.to.pushNamed(routeGravidezAtual).then((_) => _controller.initialize()),
                 ),
                 SizedBox(height: Spacing.sm),

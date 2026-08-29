@@ -4,6 +4,8 @@ import '../../../../../../repositories/birth/birth_repository.dart';
 import '../../../../../../repositories/birth/birth_repository_impl.dart';
 import '../../../../../../repositories/birth_moment/birth_moment_repository.dart';
 import '../../../../../../repositories/birth_moment/birth_moment_repository_impl.dart';
+import '../../../../../../repositories/exame/exame_repository.dart';
+import '../../../../../../repositories/exame/exame_repository_impl.dart';
 import '../../../../../../repositories/expectations/expectations_repository.dart';
 import '../../../../../../repositories/expectations/expectations_repository_impl.dart';
 import '../../../../../../repositories/historico_obstetrico/historico_obstetrico_repository.dart';
@@ -26,6 +28,7 @@ class ChildbirthResumeModule extends Module {
   void binds(i) {
     i.addSingleton<PerfilRepository>(PerfilRepositoryImpl.new);
     i.addSingleton<HistoricoObstetricoRepository>(HistoricoObstetricoRepositoryImpl.new);
+    i.addSingleton<ExameRepository>(ExameRepositoryImpl.new);
     i.addSingleton<ExpectationsRepository>(ExpectationsRepositoryImpl.new);
     i.addSingleton<BirthMomentRepository>(BirthMomentRepositoryImpl.new);
     i.addSingleton<BirthRepository>(BirthRepositoryImpl.new);

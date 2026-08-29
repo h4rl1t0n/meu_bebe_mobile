@@ -2,35 +2,54 @@ import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../../../core/helpers/messages.dart';
-import '../../../../../../model/appointment.dart';
-import '../../../../../../model/exam.dart';
-import '../../../../../../repositories/appointments/appointments_repository.dart';
-import '../../../../../../repositories/exams/exams_repository.dart';
+import '../../../../../../model/consulta/consulta_model.dart';
+import '../../../../../../model/exame/exame_model.dart';
+import '../../../../../../repositories/consulta/consulta_repository.dart';
+import '../../../../../../repositories/exame/exame_repository.dart';
+import '../../../../../../repositories/perfil/perfil_repository.dart';
 
 part 'appointments_exams_controller.g.dart';
 
-class AppointmentsExamsController = AppointmentsExamsControllerBase with _$AppointmentsExamsController;
+class AppointmentsExamsController = AppointmentsExamsControllerBase
+    with _$AppointmentsExamsController;
 
+/// Controlador de CONSULTAS + EXAMES (Home), com a API como fonte de verdade.
+///
+/// A gestação ativa é resolvida de [PerfilRepository.getGestacaoAtual]; sem
+/// gestação ativa a tela mostra aviso amigável (nunca 404/JSON/PREGNANCY_NOT_FOUND).
+/// As listas vêm de [ConsultaRepository] / [ExameRepository] (1—N da gestação).
 abstract class AppointmentsExamsControllerBase with Store {
-  final AppointmentsRepository appointmentsRepository;
-  final ExamsRepository examsRepository;
+  final PerfilRepository perfilRepository;
+  final ConsultaRepository consultaRepository;
+  final ExameRepository exameRepository;
 
-  @observable
-  bool updated = false;
+  AppointmentsExamsControllerBase(
+    this.perfilRepository,
+    this.consultaRepository,
+    this.exameRepository,
+  );
 
   @observable
   int index = 0;
 
   @observable
-  var appointments = ObservableList<Appointment>();
+  bool isLoading = false;
+
+  /// `false` quando não há gestação ativa — a tela mostra aviso amigável.
+  @observable
+  bool hasGestacao = false;
 
   @observable
-  var exams = ObservableList<Exam>();
+  var appointments = ObservableList<ConsultaModel>();
 
-  Future<void> initialize() async {
-    await _getAppointments();
-    await _getExams();
-  }
+  @observable
+  var exams = ObservableList<ExameModel>();
+
+  /// UUID real da gestação ativa (resolvido da API). Nunca um id SQLite/0/1.
+  String? _gestacaoId;
+
+  /// Protege contra submit/delete duplo (double-tap) — uma mutação por vez.
+  bool _busy = false;
 
   @action
   void setIndex(int value) {
@@ -38,122 +57,142 @@ abstract class AppointmentsExamsControllerBase with Store {
   }
 
   @action
-  void resetUpdated() => updated = false;
+  Future<void> initialize() async {
+    isLoading = true;
+    try {
+      await _resolveGestacao();
+      final gid = _gestacaoId;
+      if (gid == null) {
+        hasGestacao = false;
+        appointments.clear();
+        exams.clear();
+        return;
+      }
+      hasGestacao = true;
+      await Future.wait([_getAppointments(), _getExams()]);
+    } finally {
+      isLoading = false;
+    }
+  }
 
-  AppointmentsExamsControllerBase(this.appointmentsRepository, this.examsRepository);
+  @action
+  Future<void> _resolveGestacao() async {
+    final result = await perfilRepository.getGestacaoAtual();
+    switch (result) {
+      case Success():
+        _gestacaoId = result.success?.id;
+      case Error():
+        _gestacaoId = null;
+    }
+  }
 
   @action
   Future<void> _getAppointments() async {
-    final result = await appointmentsRepository.getAppointments();
-
+    final result = await consultaRepository.listConsultas(_gestacaoId!);
     switch (result) {
       case Success():
         appointments.clear();
         appointments.addAll(result.success);
-        _sortAppointmentsList();
-      case Error():
-        Messages.showError(result.error.message);
+      case Error(error: final failure):
+        Messages.showError(failure.message);
     }
   }
 
   @action
   Future<void> _getExams() async {
-    final result = await examsRepository.getExams();
-
+    final result = await exameRepository.listExames(_gestacaoId!);
     switch (result) {
       case Success():
         exams.clear();
         exams.addAll(result.success);
-        _sortExamsList();
-      case Error():
-        Messages.showError(result.error.message);
+      case Error(error: final failure):
+        Messages.showError(failure.message);
     }
   }
 
   @action
-  Future<void> saveAppointment(Appointment appointment) async {
-    final result = await appointmentsRepository.saveAppointment(appointment: appointment);
-
-    switch (result) {
-      case Success():
-        appointments.add(result.success);
-        _sortAppointmentsList();
-        updated = true;
-        Messages.showSuccess('Consulta salva');
-      case Error():
-        Messages.showError(result.error.message);
+  Future<void> saveAppointment(ConsultaModel consulta) async {
+    if (_busy) return;
+    final gid = _gestacaoId;
+    if (gid == null) {
+      Messages.showInfo('Cadastre sua gestação para adicionar consultas.');
+      return;
+    }
+    _busy = true;
+    try {
+      final result = await consultaRepository.createConsulta(gid, consulta);
+      switch (result) {
+        case Success():
+          await _getAppointments();
+          Messages.showSuccess('Consulta salva');
+        case Error(error: final failure):
+          Messages.showError(failure.message);
+      }
+    } finally {
+      _busy = false;
     }
   }
 
   @action
-  Future<void> saveExam(Exam exam) async {
-    final result = await examsRepository.saveExam(exam: exam);
-
-    switch (result) {
-      case Success():
-        exams.add(result.success);
-        _sortExamsList();
-        updated = true;
-        Messages.showSuccess('Exame salvo');
-      case Error():
-        Messages.showError(result.error.message);
+  Future<void> saveExam(ExameModel exame) async {
+    if (_busy) return;
+    final gid = _gestacaoId;
+    if (gid == null) {
+      Messages.showInfo('Cadastre sua gestação para adicionar exames.');
+      return;
+    }
+    _busy = true;
+    try {
+      final result = await exameRepository.createExame(gid, exame);
+      switch (result) {
+        case Success():
+          await _getExams();
+          Messages.showSuccess('Exame salvo');
+        case Error(error: final failure):
+          Messages.showError(failure.message);
+      }
+    } finally {
+      _busy = false;
     }
   }
 
   @action
-  Future<void> deleteAppointment(int id) async {
-    final result = await appointmentsRepository.deleteAppointment(id: id);
-
-    switch (result) {
-      case Success():
-        if (result.success) {
-          appointments.removeWhere((appointment) => appointment.id == id);
-          _sortAppointmentsList();
-          updated = true;
+  Future<void> deleteAppointment(String id) async {
+    if (_busy) return;
+    final gid = _gestacaoId;
+    if (gid == null) return;
+    _busy = true;
+    try {
+      final result = await consultaRepository.deleteConsulta(gid, id);
+      switch (result) {
+        case Success():
+          await _getAppointments();
           Messages.showSuccess('Consulta deletada');
-        }
-      case Error(error: final failure):
-        Messages.showError(failure.message);
+        case Error(error: final failure):
+          Messages.showError(failure.message);
+      }
+    } finally {
+      _busy = false;
     }
   }
 
   @action
-  Future<void> deleteExam(int id) async {
-    final result = await examsRepository.deleteExam(id: id);
-
-    switch (result) {
-      case Success():
-        if (result.success) {
-          exams.removeWhere((exam) => exam.id == id);
-          _sortExamsList();
-          updated = true;
+  Future<void> deleteExam(String id) async {
+    if (_busy) return;
+    final gid = _gestacaoId;
+    if (gid == null) return;
+    _busy = true;
+    try {
+      final result = await exameRepository.deleteExame(gid, id);
+      switch (result) {
+        case Success():
+          await _getExams();
           Messages.showSuccess('Exame deletado');
-        }
-      case Error(error: final failure):
-        Messages.showError(failure.message);
+        case Error(error: final failure):
+          Messages.showError(failure.message);
+      }
+    } finally {
+      _busy = false;
     }
-  }
-
-  @action
-  void _sortAppointmentsList() {
-    appointments.sort((a, b) {
-      final dateA = DateTime.parse(_transformDate(a.appointmentDate));
-      final dateB = DateTime.parse(_transformDate(b.appointmentDate));
-      return dateA.compareTo(dateB);
-    });
-  }
-
-  @action
-  void _sortExamsList() {
-    exams.sort((a, b) {
-      final dateA = DateTime.parse(_transformDate(a.examDate));
-      final dateB = DateTime.parse(_transformDate(b.examDate));
-      return dateA.compareTo(dateB);
-    });
-  }
-
-  String _transformDate(String date) {
-    final formatted = '${date.substring(6, 10)}-${date.substring(3, 5)}-${date.substring(0, 2)}';
-    return formatted;
   }
 }

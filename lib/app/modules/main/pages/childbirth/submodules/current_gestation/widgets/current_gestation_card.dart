@@ -7,7 +7,7 @@ import '../../../../../widgets/custom_item_tile.dart';
 import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 /// Card "Gestação atual" do resumo. Recebe a DUM da API (ISO) e a primeira
-/// ultrassonografia, que pertence a EXAMES (FASE 8F) e por ora é `null`.
+/// ultrassonografia (ISO) derivada de EXAMES — nunca um campo de GESTAÇÃO.
 class CurrentGestationCard extends StatelessWidget {
   const CurrentGestationCard({
     super.key,
@@ -19,7 +19,7 @@ class CurrentGestationCard extends StatelessWidget {
   /// `YYYY-MM-DD` (ISO) vinda da API.
   final String? lastMenstrualPeriod;
 
-  /// Domínio EXAMES — ainda não integrado (dívida FASE 8F).
+  /// Primeira ultrassonografia (`YYYY-MM-DD`) derivada de EXAMES (FASE 8F).
   final String? firstUltrasound;
 
   final VoidCallback? onEdit;
@@ -42,7 +42,7 @@ class CurrentGestationCard extends StatelessWidget {
             children: [
               CustomItemTile(flex: 1, title: 'Última menstruação', content: _formatDate(lastMenstrualPeriod)),
               const SizedBox(width: Spacing.sm),
-              CustomItemTile(flex: 1, title: 'Data do ultrassom', content: _getData(firstUltrasound)),
+              CustomItemTile(flex: 1, title: 'Data do ultrassom', content: _formatDate(firstUltrasound)),
             ],
           ),
           const SizedBox(height: Spacing.sm),
@@ -70,15 +70,7 @@ class CurrentGestationCard extends StatelessWidget {
     );
   }
 
-  String _getData(String? raw) {
-    if (raw == null || raw.isEmpty) {
-      return 'Não informado';
-    } else {
-      return raw;
-    }
-  }
-
-  /// Exibe a DUM em `DD/MM/YYYY` a partir do ISO da API.
+  /// Exibe uma data ISO da API em `DD/MM/YYYY` (ou "Não informado").
   String _formatDate(String? iso) {
     if (iso == null || iso.isEmpty) return 'Não informado';
     final parsed = DateTime.tryParse(iso);

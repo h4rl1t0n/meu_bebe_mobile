@@ -270,4 +270,136 @@ void main() {
       expect(navigations, 1);
     });
   });
+
+  group('AuthInterceptor.onError — refresh concorrente (single-flight)', () {
+    test('6 401 simultâneos → UM ÚNICO refresh compartilhado', () async {
+      SharedPreferences.setMockInitialValues({
+        LocalStorageConstants.refreshToken: 'old-refresh',
+      });
+
+      final adapter = _FakeAdapter((options) async {
+        if (options.path == _refreshPath) {
+          return _jsonResponse(200, {
+            'user': {'id': 'u1', 'email': 'a@b.com', 'is_active': true},
+            'access_token': 'new-access',
+            'refresh_token': 'new-refresh',
+          });
+        }
+        return _jsonResponse(200, {'id': 'g1'});
+      });
+      final dio = Dio();
+      dio.httpClientAdapter = adapter;
+
+      var navigations = 0;
+      final session = SessionManager(navigateToLogin: () async => navigations++);
+      final interceptor = AuthInterceptor(client: dio, session: session);
+
+      final handlers =
+          List<_FakeErrorHandler>.generate(6, (_) => _FakeErrorHandler());
+      final futures = <Future<void>>[];
+      for (var i = 0; i < 6; i++) {
+        final err = _unauthorized(extra: {'DIO_AUTH_KEY': true});
+        futures.add(interceptor.onError(err, handlers[i]));
+      }
+
+      await Future.wait(futures);
+
+      final refreshCalls =
+          adapter.requests.where((r) => r.path == _refreshPath).length;
+      expect(refreshCalls, 1);
+      expect(navigations, 0);
+
+      final retries =
+          adapter.requests.where((r) => r.path != _refreshPath).toList();
+      expect(retries, hasLength(6));
+      for (final retry in retries) {
+        expect(retry.extra['DIO_REFRESHED'], isTrue);
+        expect(retry.headers['Authorization'], 'Bearer new-access');
+      }
+      for (final h in handlers) {
+        expect(h.resolved, isNotNull);
+        expect(h.resolved!.statusCode, 200);
+      }
+    });
+
+    test('refresh concorrente falha → UM ÚNICO refresh e UMA ÚNICA navegação',
+        () async {
+      SharedPreferences.setMockInitialValues({
+        LocalStorageConstants.refreshToken: 'old-refresh',
+      });
+
+      final adapter = _FakeAdapter(
+        (options) async =>
+            _jsonResponse(401, {'code': 'unauthorized', 'message': 'expired'}),
+      );
+      final dio = Dio();
+      dio.httpClientAdapter = adapter;
+
+      var navigations = 0;
+      final session = SessionManager(navigateToLogin: () async => navigations++);
+      final interceptor = AuthInterceptor(client: dio, session: session);
+
+      final handlers =
+          List<_FakeErrorHandler>.generate(6, (_) => _FakeErrorHandler());
+      final errs = <DioException>[];
+      final futures = <Future<void>>[];
+      for (var i = 0; i < 6; i++) {
+        final err = _unauthorized(extra: {'DIO_AUTH_KEY': true});
+        errs.add(err);
+        futures.add(interceptor.onError(err, handlers[i]));
+      }
+
+      await Future.wait(futures);
+
+      final refreshCalls =
+          adapter.requests.where((r) => r.path == _refreshPath).length;
+      expect(refreshCalls, 1);
+      expect(navigations, 1);
+
+      for (var i = 0; i < 6; i++) {
+        expect(handlers[i].nextError, same(errs[i]));
+        expect(handlers[i].resolved, isNull);
+      }
+    });
+
+    test('nova onda de 401 após refresh concluído inicia um refresh novo',
+        () async {
+      SharedPreferences.setMockInitialValues({
+        LocalStorageConstants.refreshToken: 'old-refresh',
+      });
+
+      final adapter = _FakeAdapter((options) async {
+        if (options.path == _refreshPath) {
+          return _jsonResponse(200, {
+            'user': {'id': 'u1', 'email': 'a@b.com', 'is_active': true},
+            'access_token': 'new-access',
+            'refresh_token': 'new-refresh',
+          });
+        }
+        return _jsonResponse(200, {'id': 'g1'});
+      });
+      final dio = Dio();
+      dio.httpClientAdapter = adapter;
+
+      var navigations = 0;
+      final session = SessionManager(navigateToLogin: () async => navigations++);
+      final interceptor = AuthInterceptor(client: dio, session: session);
+
+      int refreshCount() =>
+          adapter.requests.where((r) => r.path == _refreshPath).length;
+
+      await interceptor.onError(
+        _unauthorized(extra: {'DIO_AUTH_KEY': true}),
+        _FakeErrorHandler(),
+      );
+      expect(refreshCount(), 1);
+
+      await interceptor.onError(
+        _unauthorized(extra: {'DIO_AUTH_KEY': true}),
+        _FakeErrorHandler(),
+      );
+      expect(refreshCount(), 2);
+      expect(navigations, 0);
+    });
+  });
 }

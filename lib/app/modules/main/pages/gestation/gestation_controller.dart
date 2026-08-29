@@ -1,11 +1,12 @@
 import 'package:mobx/mobx.dart';
 import 'package:multiple_result/multiple_result.dart';
 
+import '../../../../core/helpers/civil_date.dart';
 import '../../../../model/gestacao/gestacao_model.dart';
 import '../../../../model/gestante/gestante_model.dart';
 import '../../../../model/historico_obstetrico/historico_obstetrico_model.dart';
-import '../../../../repositories/appointments/appointments_repository.dart';
-import '../../../../repositories/exams/exams_repository.dart';
+import '../../../../repositories/consulta/consulta_repository.dart';
+import '../../../../repositories/exame/exame_repository.dart';
 import '../../../../repositories/historico_obstetrico/historico_obstetrico_repository.dart';
 import '../../../../repositories/perfil/perfil_repository.dart';
 
@@ -15,25 +16,26 @@ class GestationController = GestationControllerBase with _$GestationController;
 
 /// Controlador (somente leitura) da ABA GESTAÇÃO.
 ///
-/// Fonte de verdade dos domínios migrados (9A/9B):
+/// Fonte de verdade dos domínios migrados:
 ///  - gestante (nome, data de nascimento)  → [PerfilRepository.getGestante]
 ///  - gestação atual (DUM e pré-natal)     → [PerfilRepository.getGestacaoAtual]
 ///  - histórico obstétrico                 → [HistoricoObstetricoRepository.getHistorico]
+///  - consultas                            → [ConsultaRepository.listConsultas]
+///  - exames                               → [ExameRepository.listExames]
 ///
-/// Permanecem locais (SQLite) apenas os domínios ainda NÃO migrados:
-/// consultas e exames. A primeira ultrassonografia pertence a EXAMES (FASE 8F)
-/// e não é exibida nesta aba — dívida registrada, não split-brain.
+/// Consultas/exames pertencem à GESTAÇÃO: só são listados quando há gestação
+/// ativa (UUID real vindo da API — nunca id SQLite/0/1).
 abstract class GestationControllerBase with Store {
   final PerfilRepository perfilRepository;
   final HistoricoObstetricoRepository historicoObstetricoRepository;
-  final AppointmentsRepository appointmentsRepository;
-  final ExamsRepository examsRepository;
+  final ConsultaRepository consultaRepository;
+  final ExameRepository exameRepository;
 
   GestationControllerBase(
     this.perfilRepository,
     this.historicoObstetricoRepository,
-    this.appointmentsRepository,
-    this.examsRepository,
+    this.consultaRepository,
+    this.exameRepository,
   );
 
   @observable
@@ -57,14 +59,25 @@ abstract class GestationControllerBase with Store {
   @action
   Future<void> initialize() async {
     isLoading = true;
-    await Future.wait([
-      _getGestante(),
-      _getGestacao(),
-      _getHistorico(),
-      _getAppointments(),
-      _getExams(),
-    ]);
-    isLoading = false;
+    try {
+      await Future.wait([
+        _getGestante(),
+        _getGestacao(),
+        _getHistorico(),
+      ]);
+      final gestacaoId = gestacao?.id;
+      if (gestacaoId != null) {
+        await Future.wait([
+          _getAppointments(gestacaoId),
+          _getExams(gestacaoId),
+        ]);
+      } else {
+        appointments.clear();
+        exams.clear();
+      }
+    } finally {
+      isLoading = false;
+    }
   }
 
   @action
@@ -101,24 +114,32 @@ abstract class GestationControllerBase with Store {
   }
 
   @action
-  Future<void> _getAppointments() async {
-    final result = await appointmentsRepository.getAppointments();
+  Future<void> _getAppointments(String gestacaoId) async {
+    final result = await consultaRepository.listConsultas(gestacaoId);
     switch (result) {
       case Success():
         appointments.clear();
-        appointments.addAll(result.success.map((a) => '${a.title} - ${a.appointmentDate}'));
+        appointments.addAll(
+          result.success.map(
+            (a) => '${a.titulo} - ${civilDateIsoToDisplay(a.dataConsulta)}',
+          ),
+        );
       case Error():
         break;
     }
   }
 
   @action
-  Future<void> _getExams() async {
-    final result = await examsRepository.getExams();
+  Future<void> _getExams(String gestacaoId) async {
+    final result = await exameRepository.listExames(gestacaoId);
     switch (result) {
       case Success():
         exams.clear();
-        exams.addAll(result.success.map((e) => '${e.title} - ${e.examDate}'));
+        exams.addAll(
+          result.success.map(
+            (e) => '${e.titulo} - ${civilDateIsoToDisplay(e.dataExame)}',
+          ),
+        );
       case Error():
         break;
     }

@@ -63,9 +63,15 @@ class _GestationPageState extends State<GestationPage> {
                 },
               ),
               SizedBox(height: Spacing.sm),
-              PrenatalAppointmentCard(list: _controller.appointments),
+              PrenatalAppointmentCard(
+                list: _controller.appointments,
+                onChanged: () => _controller.initialize(),
+              ),
               SizedBox(height: Spacing.sm),
-              BabyDataCard(list: _controller.exams),
+              BabyDataCard(
+                list: _controller.exams,
+                onChanged: () => _controller.initialize(),
+              ),
               SizedBox(height: Spacing.sm),
               PregnancyHistoryCard(list: _controller.historyItems),
             ],

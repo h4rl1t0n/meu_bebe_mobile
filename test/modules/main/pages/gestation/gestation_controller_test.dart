@@ -1,15 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meu_bebe/app/core/fp/backend_failure.dart';
-import 'package:meu_bebe/app/core/fp/failure.dart';
-import 'package:meu_bebe/app/model/appointment.dart';
 import 'package:meu_bebe/app/model/auth/auth_models.dart';
-import 'package:meu_bebe/app/model/exam.dart';
+import 'package:meu_bebe/app/model/consulta/consulta_model.dart';
+import 'package:meu_bebe/app/model/exame/exame_model.dart';
 import 'package:meu_bebe/app/model/gestacao/gestacao_model.dart';
 import 'package:meu_bebe/app/model/gestante/gestante_model.dart';
 import 'package:meu_bebe/app/model/historico_obstetrico/historico_obstetrico_model.dart';
 import 'package:meu_bebe/app/modules/main/pages/gestation/gestation_controller.dart';
-import 'package:meu_bebe/app/repositories/appointments/appointments_repository.dart';
-import 'package:meu_bebe/app/repositories/exams/exams_repository.dart';
+import 'package:meu_bebe/app/repositories/consulta/consulta_repository.dart';
+import 'package:meu_bebe/app/repositories/exame/exame_repository.dart';
 import 'package:meu_bebe/app/repositories/historico_obstetrico/historico_obstetrico_repository.dart';
 import 'package:meu_bebe/app/repositories/perfil/perfil_repository.dart';
 import 'package:multiple_result/multiple_result.dart';
@@ -81,32 +80,66 @@ class _FakeHistoricoRepository implements HistoricoObstetricoRepository {
   ) => throw UnimplementedError();
 }
 
-class _FakeAppointmentsRepository implements AppointmentsRepository {
-  @override
-  Future<Result<List<Appointment>, Failure>> getAppointments() async =>
-      const Success([]);
+class _FakeConsultaRepository implements ConsultaRepository {
+  _FakeConsultaRepository({this.onList});
+
+  Future<Result<List<ConsultaModel>, BackendFailure>> Function(String)? onList;
 
   @override
-  Future<Result<Appointment, Failure>> saveAppointment({
-    required Appointment appointment,
-  }) => throw UnimplementedError();
+  Future<Result<List<ConsultaModel>, BackendFailure>> listConsultas(
+    String gestacaoId,
+  ) =>
+      onList?.call(gestacaoId) ??
+      Future.value(Success<List<ConsultaModel>, BackendFailure>([]));
 
   @override
-  Future<Result<bool, Failure>> deleteAppointment({required int id}) =>
-      throw UnimplementedError();
+  Future<Result<ConsultaModel, BackendFailure>> createConsulta(
+    String gestacaoId,
+    ConsultaModel consulta,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Result<ConsultaModel, BackendFailure>> updateConsulta(
+    String gestacaoId,
+    ConsultaModel consulta,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Result<bool, BackendFailure>> deleteConsulta(
+    String gestacaoId,
+    String consultaId,
+  ) => throw UnimplementedError();
 }
 
-class _FakeExamsRepository implements ExamsRepository {
-  @override
-  Future<Result<List<Exam>, Failure>> getExams() async => const Success([]);
+class _FakeExameRepository implements ExameRepository {
+  _FakeExameRepository({this.onList});
+
+  Future<Result<List<ExameModel>, BackendFailure>> Function(String)? onList;
 
   @override
-  Future<Result<Exam, Failure>> saveExam({required Exam exam}) =>
-      throw UnimplementedError();
+  Future<Result<List<ExameModel>, BackendFailure>> listExames(
+    String gestacaoId,
+  ) =>
+      onList?.call(gestacaoId) ??
+      Future.value(Success<List<ExameModel>, BackendFailure>([]));
 
   @override
-  Future<Result<bool, Failure>> deleteExam({required int id}) =>
-      throw UnimplementedError();
+  Future<Result<ExameModel, BackendFailure>> createExame(
+    String gestacaoId,
+    ExameModel exame,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Result<ExameModel, BackendFailure>> updateExame(
+    String gestacaoId,
+    ExameModel exame,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Result<bool, BackendFailure>> deleteExame(
+    String gestacaoId,
+    String exameId,
+  ) => throw UnimplementedError();
 }
 
 Result<GestanteModel?, BackendFailure> _gestanteResult(GestanteModel? g) =>
@@ -125,12 +158,14 @@ void main() {
   GestationController makeController({
     _FakePerfilRepository? perfil,
     _FakeHistoricoRepository? historico,
+    _FakeConsultaRepository? consulta,
+    _FakeExameRepository? exame,
   }) {
     return GestationController(
       perfil ?? _FakePerfilRepository(),
       historico ?? _FakeHistoricoRepository(),
-      _FakeAppointmentsRepository(),
-      _FakeExamsRepository(),
+      consulta ?? _FakeConsultaRepository(),
+      exame ?? _FakeExameRepository(),
     );
   }
 
@@ -173,6 +208,97 @@ void main() {
       expect(c.gestacao, isNull);
       expect(c.historico, isNull);
       expect(c.isLoading, isFalse);
+    });
+
+    test('sem gestação ativa → consultas/exames vazios (não lista 404)', () async {
+      final consulta = _FakeConsultaRepository();
+      final exame = _FakeExameRepository();
+      final c = makeController(
+        perfil: _FakePerfilRepository(
+          onGetGestante: () async => _gestanteResult(_gestante),
+          onGetGestacaoAtual: () async => _gestacaoResult(null),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(_historico),
+        ),
+        consulta: consulta,
+        exame: exame,
+      );
+
+      await c.initialize();
+
+      expect(c.appointments, isEmpty);
+      expect(c.exams, isEmpty);
+      expect(c.isLoading, isFalse);
+    });
+  });
+
+  group('consultas/exames — fonte de verdade é a API', () {
+    test('lista e formata as consultas/exames da API', () async {
+      final c = makeController(
+        perfil: _FakePerfilRepository(
+          onGetGestante: () async => _gestanteResult(_gestante),
+          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(_historico),
+        ),
+        consulta: _FakeConsultaRepository(
+          onList: (_) async => const Success([
+            ConsultaModel(
+              id: 'c1',
+              titulo: 'Pré-natal',
+              dataConsulta: '2025-11-01',
+              descricao: 'Rotina',
+            ),
+          ]),
+        ),
+        exame: _FakeExameRepository(
+          onList: (_) async => const Success([
+            ExameModel(
+              id: 'e1',
+              titulo: 'Ultrassom',
+              dataExame: '2025-10-01',
+              descricao: 'Obstétrico',
+              categoria: 'ultrassom',
+            ),
+          ]),
+        ),
+      );
+
+      await c.initialize();
+
+      expect(c.appointments, ['Pré-natal - 01/11/2025']);
+      expect(c.exams, ['Ultrassom - 01/10/2025']);
+    });
+
+    test('anti split-brain: o controlador não depende de SQLite para consultas/exames',
+        () async {
+      // O GestationController só conhece ConsultaRepository/ExameRepository
+      // (API). Não há mais leitura do SQLite (Appointments/Exams legados).
+      final c = makeController(
+        perfil: _FakePerfilRepository(
+          onGetGestante: () async => _gestanteResult(_gestante),
+          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(_historico),
+        ),
+        consulta: _FakeConsultaRepository(
+          onList: (_) async => const Success([
+            ConsultaModel(
+              id: 'c1',
+              titulo: 'Consulta API',
+              dataConsulta: '2025-11-01',
+              descricao: 'x',
+            ),
+          ]),
+        ),
+      );
+
+      await c.initialize();
+
+      expect(c.appointments, contains('Consulta API - 01/11/2025'));
     });
   });
 
@@ -229,8 +355,6 @@ void main() {
 
   group('split-brain (API-novo vs SQLite-antigo)', () {
     test('a API é a única fonte de verdade do pré-natal', () async {
-      // O valor antigo (SQLite PregnantData) não existe mais como dependência
-      // do controlador; a fonte única é PerfilRepository.getGestacaoAtual.
       final c = makeController(
         perfil: _FakePerfilRepository(
           onGetGestante: () async => _gestanteResult(_gestante),
@@ -246,8 +370,6 @@ void main() {
       expect(c.gestacao?.localPreNatal, 'UBS Centro');
       expect(c.gestacao?.profissionalPreNatal, 'Dra. Ana');
       expect(c.gestacao?.contatoLocalPreNatal, '(92) 99999-0000');
-      // Sem leitura legada: o controlador não expõe PregnantData nem lê o
-      // repositório SQLite. A única origem é a API.
       expect(c.gestante?.nome, 'Maria Silva');
     });
   });

@@ -1,19 +1,19 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/auth/token_storage.dart';
-import '../../repositories/appointments/appointments_repository.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../repositories/auth/auth_repository_impl.dart';
+import '../../repositories/consulta/consulta_repository.dart';
+import '../../repositories/consulta/consulta_repository_impl.dart';
+import '../../repositories/exame/exame_repository.dart';
+import '../../repositories/exame/exame_repository_impl.dart';
 import '../../repositories/perfil/perfil_repository.dart';
 import '../../repositories/perfil/perfil_repository_impl.dart';
 import '../core/core_module.dart';
-import '../../repositories/appointments/appointments_repository_sqlite.dart';
 import '../../repositories/birth/birth_repository.dart';
 import '../../repositories/birth/birth_repository_impl.dart';
 import '../../repositories/birth_moment/birth_moment_repository.dart';
 import '../../repositories/birth_moment/birth_moment_repository_impl.dart';
-import '../../repositories/exams/exams_repository.dart';
-import '../../repositories/exams/exams_repository_sqlite.dart';
 import '../../repositories/expectations/expectations_repository.dart';
 import '../../repositories/expectations/expectations_repository_impl.dart';
 import '../../repositories/gestation/gestation_repository.dart';
@@ -55,8 +55,8 @@ class MainModule extends Module {
     i.addSingleton<MedicationRepository>(MedicationRepositoryImpl.new);
     i.addSingleton<HistoricoObstetricoRepository>(HistoricoObstetricoRepositoryImpl.new);
     i.addSingleton<ExpectationsRepository>(ExpectationsRepositoryImpl.new);
-    i.addSingleton<AppointmentsRepository>(AppointmentsRepositoryImpl.new);
-    i.addSingleton<ExamsRepository>(ExamsRepositoryImpl.new);
+    i.addSingleton<ConsultaRepository>(ConsultaRepositoryImpl.new);
+    i.addSingleton<ExameRepository>(ExameRepositoryImpl.new);
     i.addSingleton<BirthMomentRepository>(BirthMomentRepositoryImpl.new);
     i.addSingleton<BirthRepository>(BirthRepositoryImpl.new);
     i.addSingleton<PainReliefRepository>(PainReliefRepositoryImpl.new);

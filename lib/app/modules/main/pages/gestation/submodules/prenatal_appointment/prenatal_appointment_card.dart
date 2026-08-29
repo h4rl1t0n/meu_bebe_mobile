@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:multiple_result/multiple_result.dart';
 
+import '../../../../../../core/helpers/civil_date.dart';
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
-import '../../../../../../model/appointment.dart';
-import '../../../../../../repositories/appointments/appointments_repository.dart';
+import '../../../../../../model/consulta/consulta_model.dart';
+import '../../../../../../repositories/consulta/consulta_repository.dart';
+import '../../../../../../repositories/perfil/perfil_repository.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/item_tile_with_list.dart';
 
 class PrenatalAppointmentCard extends StatefulWidget {
-  const PrenatalAppointmentCard({super.key, required this.list});
+  const PrenatalAppointmentCard({super.key, required this.list, this.onChanged});
 
   final List<String> list;
+  final VoidCallback? onChanged;
 
   @override
   State<PrenatalAppointmentCard> createState() => _PrenatalAppointmentCardState();
 }
 
 class _PrenatalAppointmentCardState extends State<PrenatalAppointmentCard> {
-  late final AppointmentsRepository _repo;
+  late final ConsultaRepository _repo;
+  late final PerfilRepository _perfil;
 
   @override
   void initState() {
     super.initState();
-    _repo = Modular.get<AppointmentsRepository>();
+    _repo = Modular.get<ConsultaRepository>();
+    _perfil = Modular.get<PerfilRepository>();
   }
 
   Future<void> _addAppointment() async {
@@ -68,20 +74,49 @@ class _PrenatalAppointmentCardState extends State<PrenatalAppointmentCard> {
       ),
     );
 
-    if (result == true && titleCtrl.text.isNotEmpty) {
-      await _repo.saveAppointment(
-        appointment: Appointment(
-          id: 0,
-          title: titleCtrl.text,
-          appointmentDate: dateCtrl.text.isNotEmpty ? dateCtrl.text : DateTime.now().toIso8601String(),
-          description: descCtrl.text,
-        ),
-      );
-      if (mounted) {
-        Messages.showSuccess('Consulta adicionada');
-        setState(() {});
-      }
+    if (result != true || titleCtrl.text.trim().isEmpty) return;
+
+    if (!mounted) return;
+    final iso = civilDateDisplayToIso(dateCtrl.text);
+    if (dateCtrl.text.trim().isNotEmpty && iso == null) {
+      Messages.showError('Data inválida. Use DD/MM/AAAA.');
+      return;
     }
+
+    final gestacaoId = await _gestacaoId();
+    if (gestacaoId == null) {
+      if (mounted) {
+        Messages.showInfo('Cadastre sua gestação para adicionar consultas.');
+      }
+      return;
+    }
+
+    final saveResult = await _repo.createConsulta(
+      gestacaoId,
+      ConsultaModel(
+        id: '',
+        titulo: titleCtrl.text.trim(),
+        dataConsulta: iso ?? civilDateTodayIso(),
+        descricao: descCtrl.text.trim(),
+      ),
+    );
+
+    if (!mounted) return;
+    switch (saveResult) {
+      case Success():
+        Messages.showSuccess('Consulta adicionada');
+        widget.onChanged?.call();
+      case Error(error: final failure):
+        Messages.showError(failure.message);
+    }
+  }
+
+  Future<String?> _gestacaoId() async {
+    final result = await _perfil.getGestacaoAtual();
+    return switch (result) {
+      Success() => result.success?.id,
+      Error() => null,
+    };
   }
 
   @override

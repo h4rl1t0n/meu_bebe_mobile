@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:multiple_result/multiple_result.dart';
 
+import '../../../../../../core/helpers/civil_date.dart';
 import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
-import '../../../../../../repositories/exams/exams_repository.dart';
-import '../../../../../../model/exam.dart';
+import '../../../../../../model/exame/exame_model.dart';
+import '../../../../../../repositories/exame/exame_repository.dart';
+import '../../../../../../repositories/perfil/perfil_repository.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/item_tile_with_list.dart';
 
 class BabyDataCard extends StatefulWidget {
-  const BabyDataCard({super.key, required this.list});
+  const BabyDataCard({super.key, required this.list, this.onChanged});
 
   final List<String> list;
+  final VoidCallback? onChanged;
 
   @override
   State<BabyDataCard> createState() => _BabyDataCardState();
 }
 
 class _BabyDataCardState extends State<BabyDataCard> {
-  late final ExamsRepository _repo;
+  late final ExameRepository _repo;
+  late final PerfilRepository _perfil;
 
   @override
   void initState() {
     super.initState();
-    _repo = Modular.get<ExamsRepository>();
+    _repo = Modular.get<ExameRepository>();
+    _perfil = Modular.get<PerfilRepository>();
   }
 
   Future<void> _addExam() async {
@@ -68,20 +74,49 @@ class _BabyDataCardState extends State<BabyDataCard> {
       ),
     );
 
-    if (result == true && titleCtrl.text.isNotEmpty) {
-      await _repo.saveExam(
-        exam: Exam(
-          id: 0,
-          title: titleCtrl.text,
-          examDate: dateCtrl.text.isNotEmpty ? dateCtrl.text : DateTime.now().toIso8601String(),
-          description: descCtrl.text,
-        ),
-      );
-      if (mounted) {
-        Messages.showSuccess('Exame adicionado');
-        setState(() {});
-      }
+    if (result != true || titleCtrl.text.trim().isEmpty) return;
+
+    if (!mounted) return;
+    final iso = civilDateDisplayToIso(dateCtrl.text);
+    if (dateCtrl.text.trim().isNotEmpty && iso == null) {
+      Messages.showError('Data inválida. Use DD/MM/AAAA.');
+      return;
     }
+
+    final gestacaoId = await _gestacaoId();
+    if (gestacaoId == null) {
+      if (mounted) {
+        Messages.showInfo('Cadastre sua gestação para adicionar exames.');
+      }
+      return;
+    }
+
+    final saveResult = await _repo.createExame(
+      gestacaoId,
+      ExameModel(
+        id: '',
+        titulo: titleCtrl.text.trim(),
+        dataExame: iso ?? civilDateTodayIso(),
+        descricao: descCtrl.text.trim(),
+      ),
+    );
+
+    if (!mounted) return;
+    switch (saveResult) {
+      case Success():
+        Messages.showSuccess('Exame adicionado');
+        widget.onChanged?.call();
+      case Error(error: final failure):
+        Messages.showError(failure.message);
+    }
+  }
+
+  Future<String?> _gestacaoId() async {
+    final result = await _perfil.getGestacaoAtual();
+    return switch (result) {
+      Success() => result.success?.id,
+      Error() => null,
+    };
   }
 
   @override
