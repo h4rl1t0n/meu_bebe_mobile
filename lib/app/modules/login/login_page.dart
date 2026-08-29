@@ -162,30 +162,34 @@ class LoginPageState extends State<LoginPage> {
 
                                         const SizedBox(height: 16),
 
-                                        TextFormField(
-                                          controller: passwordTEC,
-                                          obscureText: controller.obscurePassword,
-                                          onTapOutside: (_) => FocusScope.of(context).unfocus(),
-                                          validator: Validatorless.required('Senha obrigatória'),
-                                          style: context.textStyles.textStyle.copyWith(color: colors.darkText),
-                                          decoration: inputDecoration(
-                                            label: 'Senha',
-                                            icon: Icons.lock_outline,
-                                            suffix: IconButton(
-                                              onPressed: controller.passwordToggle,
-                                              icon: Observer(
-                                                builder: (context) {
-                                                  return Icon(
-                                                    size: 20,
-                                                    controller.obscurePassword
-                                                        ? Icons.visibility
-                                                        : Icons.visibility_off,
-                                                    color: colors.darkText,
-                                                  );
-                                                },
+                                        Observer(
+                                          builder: (context) {
+                                            return TextFormField(
+                                              controller: passwordTEC,
+                                              obscureText: controller.obscurePassword,
+                                              onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                                              validator: Validatorless.required('Senha obrigatória'),
+                                              style: context.textStyles.textStyle.copyWith(color: colors.darkText),
+                                              decoration: inputDecoration(
+                                                label: 'Senha',
+                                                icon: Icons.lock_outline,
+                                                suffix: IconButton(
+                                                  onPressed: controller.passwordToggle,
+                                                  icon: Observer(
+                                                    builder: (context) {
+                                                      return Icon(
+                                                        size: 20,
+                                                        controller.obscurePassword
+                                                            ? Icons.visibility
+                                                            : Icons.visibility_off,
+                                                        color: colors.darkText,
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
+                                            );
+                                          },
                                         ),
 
                                         const SizedBox(height: 10),
