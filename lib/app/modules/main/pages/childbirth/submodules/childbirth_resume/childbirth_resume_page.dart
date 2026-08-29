@@ -80,27 +80,27 @@ class _ChildbirthResumePageState extends State<ChildbirthResumePage> {
                 ),
                 SizedBox(height: Spacing.sm),
                 ExpectationsCard(
-                  expectations: _controller.expectationsData,
+                  plano: _controller.plano,
                   onEdit: () => Modular.to.pushNamed(routeExpectativa).then((_) => _controller.initialize()),
                 ),
                 SizedBox(height: Spacing.sm),
                 BirthMomentCard(
-                  birthMoment: _controller.birthMomentData,
+                  plano: _controller.plano,
                   onEdit: () => Modular.to.pushNamed(routeMomentoParto).then((_) => _controller.initialize()),
                 ),
                 SizedBox(height: Spacing.sm),
                 PainReliefCard(
-                  painRelief: _controller.painReliefData,
+                  plano: _controller.plano,
                   onEdit: () => Modular.to.pushNamed(routeAlivioDor).then((_) => _controller.initialize()),
                 ),
                 SizedBox(height: Spacing.sm),
                 BirthExpectationsCard(
-                  birth: _controller.birthData,
+                  plano: _controller.plano,
                   onEdit: () => Modular.to.pushNamed(routeNascimento).then((_) => _controller.initialize()),
                 ),
                 SizedBox(height: Spacing.sm),
                 DesiresExpectationsCard(
-                  observations: _controller.observationsData,
+                  plano: _controller.plano,
                   onEdit: () => Modular.to.pushNamed(routeObservacoes).then((_) => _controller.initialize()),
                 ),
               ],

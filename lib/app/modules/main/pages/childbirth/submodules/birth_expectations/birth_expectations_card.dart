@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/birth.dart';
+import '../../../../../../model/plano_parto/plano_parto_enums.dart';
+import '../../../../../../model/plano_parto/plano_parto_model.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/custom_item_tile.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class BirthExpectationsCard extends StatelessWidget {
-  const BirthExpectationsCard({super.key, required this.birth, this.onEdit});
+  const BirthExpectationsCard({super.key, required this.plano, this.onEdit});
 
-  final Birth? birth;
+  final PlanoPartoModel? plano;
   final VoidCallback? onEdit;
 
   @override
@@ -29,12 +30,12 @@ class BirthExpectationsCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              CustomItemTile(flex: 1, title: 'Corte do cordão', content: _whoCutToString(birth?.whoCut)),
+              CustomItemTile(flex: 1, title: 'Corte do cordão', content: _actor(plano?.quemCortaCordao)),
               const SizedBox(width: Spacing.sm),
               CustomItemTile(
                 flex: 1,
                 title: 'Contato pele a pele',
-                content: _skinContactToString(birth?.skinBabyContact),
+                content: _tri(plano?.contatoPeleAPele),
               ),
             ],
           ),
@@ -42,9 +43,9 @@ class BirthExpectationsCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              CustomItemTile(flex: 1, title: 'Amamentação', content: _breastfeedToString(birth?.breastfeedFirstHour)),
+              CustomItemTile(flex: 1, title: 'Amamentação', content: _tri(plano?.amamentarPrimeiraHora)),
               const SizedBox(width: Spacing.sm),
-              CustomItemTile(flex: 1, title: '1° banho', content: _firstBathToString(birth?.firstBath)),
+              CustomItemTile(flex: 1, title: '1° banho', content: _actor(plano?.primeiroBanho)),
             ],
           ),
           const SizedBox(height: Spacing.lg),
@@ -62,41 +63,9 @@ class BirthExpectationsCard extends StatelessWidget {
     );
   }
 
-  String _whoCutToString(WhoCutUmbilicalCord? v) {
-    return switch (v) {
-      WhoCutUmbilicalCord.professional => 'Profissional',
-      WhoCutUmbilicalCord.companion => 'Acompanhante',
-      WhoCutUmbilicalCord.me => 'Eu',
-      WhoCutUmbilicalCord.dontKnow => 'Não sei',
-      null => 'Não definido',
-    };
-  }
+  String _actor(String? v) =>
+      v == null ? 'Não definido' : ActorChoice.fromValue(v).label;
 
-  String _skinContactToString(SkinBabyContact? v) {
-    return switch (v) {
-      SkinBabyContact.yes => 'Sim',
-      SkinBabyContact.no => 'Não',
-      SkinBabyContact.dontKnow => 'Não sei',
-      null => 'Não definido',
-    };
-  }
-
-  String _breastfeedToString(BreastfeedFirstHour? v) {
-    return switch (v) {
-      BreastfeedFirstHour.yes => 'Sim',
-      BreastfeedFirstHour.no => 'Não',
-      BreastfeedFirstHour.dontKnow => 'Não sei',
-      null => 'Não definido',
-    };
-  }
-
-  String _firstBathToString(FirstBath? v) {
-    return switch (v) {
-      FirstBath.professional => 'Profissional',
-      FirstBath.companion => 'Acompanhante',
-      FirstBath.me => 'Eu',
-      FirstBath.dontKnow => 'Não sei',
-      null => 'Não definido',
-    };
-  }
+  String _tri(String? v) =>
+      v == null ? 'Não definido' : TriState.fromValue(v).label;
 }

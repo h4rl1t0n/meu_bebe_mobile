@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:mobx/mobx.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/birth_moment.dart';
+import '../../../../../../model/plano_parto/plano_parto_enums.dart';
 import '../../../../widgets/base_card.dart';
 import 'birth_moment_controller.dart';
 import 'birth_moment_form_controller.dart';
@@ -20,27 +21,26 @@ class BirthMomentPage extends StatefulWidget {
 class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormController {
   final formKey = GlobalKey<FormState>();
   final _controller = Modular.get<BirthMomentController>();
-
-  int _parseSafely(TextEditingController ctrl, {int fallback = 0}) {
-    final text = ctrl.text;
-    if (text.isEmpty) return fallback;
-    return int.tryParse(text) ?? fallback;
-  }
+  late ReactionDisposer _reactionDisposer;
 
   @override
   void initState() {
     super.initState();
-    _controller.initialize().then((_) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          initializeForm(_controller.birthMoment);
-        }
-      });
-    });
+    // Re-hidrata o formulário sempre que `plano` (observable) mudar, para que
+    // os dados persistidos apareçam SEM interação do usuário.
+    _reactionDisposer = reaction(
+      (_) => _controller.plano,
+      (plano) {
+        initializeForm(plano);
+        if (mounted) setState(() {});
+      },
+    );
+    _controller.initialize();
   }
 
   @override
   void dispose() {
+    _reactionDisposer();
     disposeControllers();
     super.dispose();
   }
@@ -72,35 +72,28 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
                       SizedBox(height: Spacing.lg),
                       Text('Via de parto?', style: textStyles.textStyle),
                       SizedBox(height: Spacing.sm),
-                      _buildTabBar(birthWayEC, const ['Vaginal', 'Cesárea', 'Não sei']),
+                      _buildViaPartoTabBar(),
                       SizedBox(height: Spacing.lg),
                       Text('Anestesia?', style: textStyles.textStyle),
                       SizedBox(height: Spacing.sm),
-                      _buildTabBar(anesthesiaEC, const ['Sim', 'Não', 'Não sei']),
+                      _buildTriTabBar(anesthesiaEC),
                       SizedBox(height: Spacing.lg),
                       Text('Corte vaginal (episiotomia)?', style: textStyles.textStyle),
                       SizedBox(height: Spacing.sm),
-                      _buildTabBar(vaginalCutEC, const ['Sim', 'Não', 'Não sei']),
+                      _buildTriTabBar(vaginalCutEC),
                       SizedBox(height: Spacing.lg),
                       Text('Posição preferida para o parto?', style: textStyles.textStyle),
                       SizedBox(height: Spacing.sm),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: [
-                          _buildPositionTab('Deitada', 0),
-                          _buildPositionTab('Sentada', 1),
-                          _buildPositionTab('Agachada', 2),
-                          _buildPositionTab('De lado', 3),
-                          _buildPositionTab('De joelhos', 4),
-                          _buildPositionTab('Em pé', 5),
-                          _buildPositionTab('Não sei', 6),
-                          _buildPositionTab('Outra', 7),
-                        ],
+                        children: PosicaoParto.values
+                            .map((p) => _buildPositionTab(p.label, p.value))
+                            .toList(),
                       ),
                       Observer(
                         builder: (_) {
-                          if (preferredPositionEC.text == '7') {
+                          if (preferredPositionEC.text == PosicaoParto.outra.value) {
                             return Padding(
                               padding: EdgeInsets.only(top: Spacing.md),
                               child: TextFormField(
@@ -128,39 +121,63 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
     );
   }
 
-  Widget _buildTabBar(TextEditingController controller, List<String> labels) {
+  Widget _buildViaPartoTabBar() {
     return Row(
       spacing: 5,
-      children: List.generate(labels.length, (index) {
+      children: ViaParto.values.map((v) {
         return Expanded(
           child: InkWell(
-            onTap: () => setState(() => controller.text = index.toString()),
+            onTap: () => setState(() => birthWayEC.text = v.value),
             child: Container(
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: RadiusTokens.mdAll,
                 border: Border.all(color: context.colors.darkText),
-                color: controller.text == index.toString() ? context.colors.secondary : context.colors.surface,
+                color: birthWayEC.text == v.value ? context.colors.secondary : context.colors.surface,
                 boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
               ),
-              child: Text(labels[index], style: context.textStyles.caption, textAlign: TextAlign.center),
+              child: Text(v.label, style: context.textStyles.caption, textAlign: TextAlign.center),
             ),
           ),
         );
-      }),
+      }).toList(),
     );
   }
 
-  Widget _buildPositionTab(String label, int index) {
+  Widget _buildTriTabBar(TextEditingController controller) {
+    return Row(
+      spacing: 5,
+      children: TriState.values.map((v) {
+        return Expanded(
+          child: InkWell(
+            onTap: () => setState(() => controller.text = v.value),
+            child: Container(
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: RadiusTokens.mdAll,
+                border: Border.all(color: context.colors.darkText),
+                color: controller.text == v.value ? context.colors.secondary : context.colors.surface,
+                boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
+              ),
+              child: Text(v.label, style: context.textStyles.caption, textAlign: TextAlign.center),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildPositionTab(String label, String value) {
     return InkWell(
-      onTap: () => setState(() => preferredPositionEC.text = index.toString()),
+      onTap: () => setState(() => preferredPositionEC.text = value),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
         decoration: BoxDecoration(
           borderRadius: RadiusTokens.lgAll,
           border: Border.all(color: context.colors.darkText),
-          color: preferredPositionEC.text == index.toString() ? context.colors.secondary : context.colors.surface,
+          color: preferredPositionEC.text == value ? context.colors.secondary : context.colors.surface,
         ),
         child: Text(label, style: context.textStyles.caption),
       ),
@@ -174,17 +191,15 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
       child: ElevatedButton.icon(
         onPressed: () {
           FocusScope.of(context).unfocus();
+          final isOutra = preferredPositionEC.text == PosicaoParto.outra.value;
           _controller.saveBirthMoment(
-            BirthMoment(
-              id: _controller.birthMoment?.id ?? 0,
-              birthWay: BirthWay.values[_parseSafely(birthWayEC)],
-              anesthesia: Anesthesia.values[_parseSafely(anesthesiaEC)],
-              vaginalCut: VaginalCut.values[_parseSafely(vaginalCutEC)],
-              preferredPosition: preferredPositionEC.text.isNotEmpty
-                  ? Positions.values[_parseSafely(preferredPositionEC)]
-                  : null,
-              otherPosition: otherPositionEC.text.isNotEmpty ? otherPositionEC.text : null,
-            ),
+            viaParto: viaParto(),
+            anestesia: triState(anesthesiaEC),
+            corteVaginal: triState(vaginalCutEC),
+            posicaoPreferida: position(),
+            outraPosicao: isOutra && otherPositionEC.text.trim().isNotEmpty
+                ? otherPositionEC.text.trim()
+                : null,
           );
         },
         icon: const Icon(Icons.save, size: 18),

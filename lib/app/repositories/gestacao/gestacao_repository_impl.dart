@@ -13,15 +13,12 @@ class GestacaoRepositoryImpl implements GestacaoRepository {
   final DioForNative client;
   final BackendDioExceptionMapper _mapper;
 
-  GestacaoRepositoryImpl({required this.client})
-    : _mapper = const BackendDioExceptionMapper();
+  GestacaoRepositoryImpl({required this.client}) : _mapper = const BackendDioExceptionMapper();
 
   static const _auth = {'DIO_AUTH_KEY': true};
 
   @override
-  Future<Result<GestacaoModel, BackendFailure>> createGestacao(
-    GestacaoModel gestacao,
-  ) async {
+  Future<Result<GestacaoModel, BackendFailure>> createGestacao(GestacaoModel gestacao) async {
     try {
       final response = await client.post(
         gestacoesPath,
@@ -41,9 +38,7 @@ class GestacaoRepositoryImpl implements GestacaoRepository {
   }
 
   @override
-  Future<Result<GestacaoModel, BackendFailure>> updateGestacao(
-    GestacaoModel gestacao,
-  ) async {
+  Future<Result<GestacaoModel, BackendFailure>> updateGestacao(GestacaoModel gestacao) async {
     try {
       final response = await client.put(
         '$gestacoesPath/${gestacao.id}',

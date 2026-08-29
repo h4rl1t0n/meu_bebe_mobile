@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/birth_moment.dart';
+import '../../../../../../model/plano_parto/plano_parto_enums.dart';
+import '../../../../../../model/plano_parto/plano_parto_model.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/custom_item_tile.dart';
 
 class BirthMomentCard extends StatelessWidget {
-  const BirthMomentCard({super.key, required this.birthMoment, this.onEdit});
+  const BirthMomentCard({super.key, required this.plano, this.onEdit});
 
-  final BirthMoment? birthMoment;
+  final PlanoPartoModel? plano;
   final VoidCallback? onEdit;
 
   @override
@@ -29,18 +30,18 @@ class BirthMomentCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              CustomItemTile(flex: 1, title: 'Via de parto', content: _birthWayToString(birthMoment?.birthWay)),
+              CustomItemTile(flex: 1, title: 'Via de parto', content: _via(plano?.viaParto)),
               const SizedBox(width: Spacing.sm),
-              CustomItemTile(flex: 1, title: 'Corte vaginal', content: _vaginalCutToString(birthMoment?.vaginalCut)),
+              CustomItemTile(flex: 1, title: 'Corte vaginal', content: _tri(plano?.corteVaginal)),
             ],
           ),
           const SizedBox(height: Spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              CustomItemTile(flex: 1, title: 'Anestesia', content: _anesthesiaToString(birthMoment?.anesthesia)),
+              CustomItemTile(flex: 1, title: 'Anestesia', content: _tri(plano?.anestesia)),
               const SizedBox(width: Spacing.sm),
-              CustomItemTile(flex: 1, title: 'Posição', content: _positionToString()),
+              CustomItemTile(flex: 1, title: 'Posição', content: _position()),
             ],
           ),
           const SizedBox(height: Spacing.sm),
@@ -63,48 +64,19 @@ class BirthMomentCard extends StatelessWidget {
     );
   }
 
-  String _birthWayToString(BirthWay? v) {
-    return switch (v) {
-      BirthWay.vaginal => 'Vaginal',
-      BirthWay.cesarean => 'Cesárea',
-      BirthWay.dontKnow => 'Não sei',
-      null => 'Não definido',
-    };
-  }
+  String _via(String? v) =>
+      v == null ? 'Não definido' : ViaParto.fromValue(v).label;
 
-  String _anesthesiaToString(Anesthesia? v) {
-    return switch (v) {
-      Anesthesia.yes => 'Sim',
-      Anesthesia.no => 'Não',
-      Anesthesia.dontKnow => 'Não sei',
-      null => 'Não definido',
-    };
-  }
+  String _tri(String? v) =>
+      v == null ? 'Não definido' : TriState.fromValue(v).label;
 
-  String _vaginalCutToString(VaginalCut? v) {
-    return switch (v) {
-      VaginalCut.yes => 'Sim',
-      VaginalCut.no => 'Não',
-      VaginalCut.dontKnow => 'Não sei',
-      null => 'Não definido',
-    };
-  }
-
-  String _positionToString() {
-    if (birthMoment == null) return 'Não definido';
-    if (birthMoment!.otherPosition != null && birthMoment!.otherPosition!.isNotEmpty) {
-      return birthMoment!.otherPosition!;
-    }
-    return switch (birthMoment!.preferredPosition) {
-      Positions.lyingDown => 'Deitada',
-      Positions.sitting => 'Sentada',
-      Positions.crouched => 'Agachada',
-      Positions.aside => 'De lado',
-      Positions.onKnees => 'De joelhos',
-      Positions.standing => 'Em pé',
-      Positions.dontKnow => 'Não sei',
-      Positions.otherPosition => 'Outra',
-      null => 'Não definido',
-    };
+  String _position() {
+    final data = plano;
+    if (data == null) return 'Não definido';
+    final outra = data.outraPosicao;
+    if (outra != null && outra.isNotEmpty) return outra;
+    final pos = data.posicaoPreferida;
+    if (pos == null || pos.isEmpty) return 'Não definido';
+    return PosicaoParto.fromValue(pos)?.label ?? 'Não definido';
   }
 }

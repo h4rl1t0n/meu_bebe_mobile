@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../model/pain_relief.dart';
+import '../../../../../../model/plano_parto/plano_parto_enums.dart';
+import '../../../../../../model/plano_parto/plano_parto_model.dart';
 import 'pain_relief_page.dart';
 
+/// Mixin de formulário de ALÍVIO DA DOR — persiste STRINGS ESTÁVEIS (nunca
+/// ordinal/`.index`). O "quer alívio da dor" guarda o `value` do enum.
 mixin PainReliefFormController on State<PainReliefPage> {
-  final painReliefEC = TextEditingController(text: '0');
+  final painReliefEC = TextEditingController();
 
   bool massage = false;
   bool ballExercises = false;
@@ -19,27 +22,17 @@ mixin PainReliefFormController on State<PainReliefPage> {
     painReliefEC.dispose();
   }
 
-  void initializeForm(PainRelief? data) {
-    if (data != null) {
-      painReliefEC.text = data.painRelief.index.toString();
-      massage = data.massage;
-      ballExercises = data.ballExercises;
-      breathRelaxExercises = data.breathRelaxExercises;
-      showerBath = data.showerBath;
-      bathtubBath = data.bathtubBath;
-      acupuncture = data.acupuncture;
-      acupressure = data.acupressure;
-      otherMethod = data.otherMethod;
-    } else {
-      painReliefEC.text = '0';
-      massage = false;
-      ballExercises = false;
-      breathRelaxExercises = false;
-      showerBath = false;
-      bathtubBath = false;
-      acupuncture = false;
-      acupressure = false;
-      otherMethod = false;
-    }
+  void initializeForm(PlanoPartoModel? plano) {
+    painReliefEC.text = plano?.querAlivioDor ?? TriState.naoSei.value;
+    massage = plano?.massagem ?? false;
+    ballExercises = plano?.exerciciosBola ?? false;
+    breathRelaxExercises = plano?.exerciciosRespiracao ?? false;
+    showerBath = plano?.banhoChuveiro ?? false;
+    bathtubBath = plano?.banhoBanheira ?? false;
+    acupuncture = plano?.acupuntura ?? false;
+    acupressure = plano?.acupressao ?? false;
+    otherMethod = plano?.outroMetodo ?? false;
   }
+
+  TriState triState() => TriState.fromValue(painReliefEC.text);
 }

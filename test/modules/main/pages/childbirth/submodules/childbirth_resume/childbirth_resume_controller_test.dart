@@ -1,42 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meu_bebe/app/core/fp/backend_failure.dart';
-import 'package:meu_bebe/app/core/fp/failure.dart';
-import 'package:meu_bebe/app/model/auth/auth_models.dart';
-import 'package:meu_bebe/app/model/birth.dart';
-import 'package:meu_bebe/app/model/birth_moment.dart';
 import 'package:meu_bebe/app/model/exame/exame_model.dart';
-import 'package:meu_bebe/app/model/expectation.dart';
 import 'package:meu_bebe/app/model/gestacao/gestacao_model.dart';
-import 'package:meu_bebe/app/model/gestante/gestante_model.dart';
 import 'package:meu_bebe/app/model/historico_obstetrico/historico_obstetrico_model.dart';
-import 'package:meu_bebe/app/model/observations.dart';
-import 'package:meu_bebe/app/model/pain_relief.dart';
+import 'package:meu_bebe/app/model/plano_parto/plano_parto_model.dart';
 import 'package:meu_bebe/app/modules/main/pages/childbirth/submodules/childbirth_resume/childbirth_resume_controller.dart';
-import 'package:meu_bebe/app/repositories/birth/birth_repository.dart';
-import 'package:meu_bebe/app/repositories/birth_moment/birth_moment_repository.dart';
 import 'package:meu_bebe/app/repositories/exame/exame_repository.dart';
-import 'package:meu_bebe/app/repositories/expectations/expectations_repository.dart';
 import 'package:meu_bebe/app/repositories/historico_obstetrico/historico_obstetrico_repository.dart';
-import 'package:meu_bebe/app/repositories/observations/observations_repository.dart';
-import 'package:meu_bebe/app/repositories/pain_relief/pain_relief_repository.dart';
-import 'package:meu_bebe/app/repositories/perfil/perfil_repository.dart';
 import 'package:multiple_result/multiple_result.dart';
 
-const _gestante = GestanteModel(
-  id: 'g1',
-  nome: 'Maria Silva',
-  nomeSocial: 'Má',
-  dataNascimento: '1995-03-20',
-  cns: '898 0000 0000 0000',
-);
-
-const _gestacao = GestacaoModel(
-  id: 'ges1',
-  dataUltimaMenstruacao: '2026-01-10',
-  localPreNatal: 'UBS Centro',
-  profissionalPreNatal: 'Dra. Ana',
-  contatoLocalPreNatal: '(92) 99999-0000',
-);
+import '../plano_parto_test_helpers.dart';
 
 const _historico = HistoricoObstetricoModel(
   id: 'hist-1',
@@ -45,39 +18,6 @@ const _historico = HistoricoObstetricoModel(
   abortionsNumber: 0,
 );
 
-class _FakePerfilRepository implements PerfilRepository {
-  _FakePerfilRepository({this.onGetGestante, this.onGetGestacaoAtual});
-
-  Future<Result<GestanteModel?, BackendFailure>> Function()? onGetGestante;
-  Future<Result<GestacaoModel?, BackendFailure>> Function()? onGetGestacaoAtual;
-
-  int getGestacaoAtualCalls = 0;
-
-  @override
-  Future<Result<GestanteModel?, BackendFailure>> getGestante() =>
-      onGetGestante!();
-
-  @override
-  Future<Result<GestacaoModel?, BackendFailure>> getGestacaoAtual() {
-    getGestacaoAtualCalls++;
-    return onGetGestacaoAtual!();
-  }
-
-  @override
-  Future<Result<UserResponseModel?, BackendFailure>> getUser() =>
-      throw UnimplementedError();
-
-  @override
-  Future<Result<GestanteModel, BackendFailure>> createGestante(
-    GestanteModel gestante,
-  ) => throw UnimplementedError();
-
-  @override
-  Future<Result<GestanteModel, BackendFailure>> updateGestante(
-    GestanteModel gestante,
-  ) => throw UnimplementedError();
-}
-
 class _FakeHistoricoRepository implements HistoricoObstetricoRepository {
   _FakeHistoricoRepository({this.onGet});
 
@@ -85,7 +25,10 @@ class _FakeHistoricoRepository implements HistoricoObstetricoRepository {
 
   @override
   Future<Result<HistoricoObstetricoModel?, BackendFailure>> getHistorico() =>
-      onGet!();
+      onGet?.call() ??
+      Future.value(const Success<HistoricoObstetricoModel?, BackendFailure>(
+        null,
+      ));
 
   @override
   Future<Result<HistoricoObstetricoModel, BackendFailure>> saveHistorico(
@@ -103,7 +46,7 @@ class _FakeExameRepository implements ExameRepository {
     String gestacaoId,
   ) =>
       onList?.call(gestacaoId) ??
-      Future.value(Success<List<ExameModel>, BackendFailure>([]));
+      Future.value(const Success<List<ExameModel>, BackendFailure>([]));
 
   @override
   Future<Result<ExameModel, BackendFailure>> createExame(
@@ -124,86 +67,6 @@ class _FakeExameRepository implements ExameRepository {
   ) => throw UnimplementedError();
 }
 
-class _FakeExpectationsRepository implements ExpectationsRepository {
-  @override
-  Future<Result<Expectation?, Failure>> getExpectations() async =>
-      Success(null);
-
-  @override
-  Future<Result<Expectation, Failure>> saveExpectations({
-    required Expectation expectation,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<Expectation, Failure>> updateExpectations({
-    required Expectation expectation,
-  }) => throw UnimplementedError();
-}
-
-class _FakeBirthMomentRepository implements BirthMomentRepository {
-  @override
-  Future<Result<BirthMoment?, Failure>> getBirthMoment() async => Success(null);
-
-  @override
-  Future<Result<BirthMoment, Failure>> saveBirthMoment({
-    required BirthMoment birthMoment,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BirthMoment, Failure>> updateBirthMoment({
-    required BirthMoment birthMoment,
-  }) => throw UnimplementedError();
-}
-
-class _FakeBirthRepository implements BirthRepository {
-  @override
-  Future<Result<Birth?, Failure>> getBirth() async => Success(null);
-
-  @override
-  Future<Result<Birth, Failure>> saveBirth({required Birth birth}) =>
-      throw UnimplementedError();
-
-  @override
-  Future<Result<Birth, Failure>> updateBirth({required Birth birth}) =>
-      throw UnimplementedError();
-}
-
-class _FakePainReliefRepository implements PainReliefRepository {
-  @override
-  Future<Result<PainRelief?, Failure>> getPainRelief() async => Success(null);
-
-  @override
-  Future<Result<PainRelief, Failure>> savePainRelief({
-    required PainRelief painRelief,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<PainRelief, Failure>> updatePainRelief({
-    required PainRelief painRelief,
-  }) => throw UnimplementedError();
-}
-
-class _FakeObservationsRepository implements ObservationsRepository {
-  @override
-  Future<Result<Observations?, Failure>> getObservations() async => Success(null);
-
-  @override
-  Future<Result<Observations, Failure>> saveObservations({
-    required Observations observations,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<Observations, Failure>> updateObservations({
-    required Observations observations,
-  }) => throw UnimplementedError();
-}
-
-Result<GestanteModel?, BackendFailure> _gestanteResult(GestanteModel? g) =>
-    Success<GestanteModel?, BackendFailure>(g);
-
-Result<GestacaoModel?, BackendFailure> _gestacaoResult(GestacaoModel? g) =>
-    Success<GestacaoModel?, BackendFailure>(g);
-
 Result<HistoricoObstetricoModel?, BackendFailure> _historicoResult(
   HistoricoObstetricoModel? h,
 ) => Success<HistoricoObstetricoModel?, BackendFailure>(h);
@@ -212,29 +75,26 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   ChildbirthResumeController makeController({
-    required _FakePerfilRepository perfil,
+    required FakePerfilRepository perfil,
     _FakeHistoricoRepository? historico,
     _FakeExameRepository? exame,
+    FakePlanoPartoRepository? plano,
   }) {
     return ChildbirthResumeController(
       perfilRepository: perfil,
       historicoObstetricoRepository:
           historico ?? _FakeHistoricoRepository(),
       exameRepository: exame ?? _FakeExameRepository(),
-      expectationsRepository: _FakeExpectationsRepository(),
-      birthMomentRepository: _FakeBirthMomentRepository(),
-      birthRepository: _FakeBirthRepository(),
-      painReliefRepository: _FakePainReliefRepository(),
-      observationsRepository: _FakeObservationsRepository(),
+      planoPartoRepository: plano ?? FakePlanoPartoRepository(),
     );
   }
 
   group('ChildbirthResumeController.initialize', () {
     test('sucesso → carrega API e encerra o loading', () async {
       final c = makeController(
-        perfil: _FakePerfilRepository(
-          onGetGestante: () async => _gestanteResult(_gestante),
-          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        perfil: FakePerfilRepository(
+          onGetGestante: () async => gestanteResult(gestanteAtiva),
+          onGetGestacaoAtual: () async => gestacaoResult(gestacaoAtiva),
         ),
         historico: _FakeHistoricoRepository(
           onGet: () async => _historicoResult(_historico),
@@ -255,9 +115,9 @@ void main() {
     test('erro (Result.Error) em um repository → não deixa loading eterno',
         () async {
       final c = makeController(
-        perfil: _FakePerfilRepository(
+        perfil: FakePerfilRepository(
           onGetGestante: () async => const Error(SessionExpiredFailure()),
-          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+          onGetGestacaoAtual: () async => gestacaoResult(gestacaoAtiva),
         ),
         historico: _FakeHistoricoRepository(
           onGet: () async => _historicoResult(_historico),
@@ -273,9 +133,9 @@ void main() {
 
     test('repository que lança exceção → não deixa loading eterno', () async {
       final c = makeController(
-        perfil: _FakePerfilRepository(
+        perfil: FakePerfilRepository(
           onGetGestante: () async => throw Exception('falha de rede'),
-          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+          onGetGestacaoAtual: () async => gestacaoResult(gestacaoAtiva),
         ),
         historico: _FakeHistoricoRepository(
           onGet: () async => _historicoResult(_historico),
@@ -289,10 +149,10 @@ void main() {
 
     test('retorno de edição → re-inicializa, encerra loading e reflete novos dados',
         () async {
-      var gestacaoAtual = _gestacao;
-      final perfil = _FakePerfilRepository(
-        onGetGestante: () async => _gestanteResult(_gestante),
-        onGetGestacaoAtual: () async => _gestacaoResult(gestacaoAtual),
+      var gestacaoAtual = gestacaoAtiva;
+      final perfil = FakePerfilRepository(
+        onGetGestante: () async => gestanteResult(gestanteAtiva),
+        onGetGestacaoAtual: () async => gestacaoResult(gestacaoAtual),
       );
       final c = makeController(
         perfil: perfil,
@@ -319,9 +179,9 @@ void main() {
     test('com gestação ativa e ultrassom → data mais antiga (fonte: EXAMES)',
         () async {
       final c = makeController(
-        perfil: _FakePerfilRepository(
-          onGetGestante: () async => _gestanteResult(_gestante),
-          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        perfil: FakePerfilRepository(
+          onGetGestante: () async => gestanteResult(gestanteAtiva),
+          onGetGestacaoAtual: () async => gestacaoResult(gestacaoAtiva),
         ),
         historico: _FakeHistoricoRepository(
           onGet: () async => _historicoResult(_historico),
@@ -354,9 +214,9 @@ void main() {
 
     test('sem ultrassom na lista → firstUltrasound null', () async {
       final c = makeController(
-        perfil: _FakePerfilRepository(
-          onGetGestante: () async => _gestanteResult(_gestante),
-          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        perfil: FakePerfilRepository(
+          onGetGestante: () async => gestanteResult(gestanteAtiva),
+          onGetGestacaoAtual: () async => gestacaoResult(gestacaoAtiva),
         ),
         historico: _FakeHistoricoRepository(
           onGet: () async => _historicoResult(_historico),
@@ -382,9 +242,9 @@ void main() {
     test('sem gestação ativa → firstUltrasound null (não lista exames)', () async {
       final exame = _FakeExameRepository();
       final c = makeController(
-        perfil: _FakePerfilRepository(
-          onGetGestante: () async => _gestanteResult(_gestante),
-          onGetGestacaoAtual: () async => _gestacaoResult(null),
+        perfil: FakePerfilRepository(
+          onGetGestante: () async => gestanteResult(gestanteAtiva),
+          onGetGestacaoAtual: () async => gestacaoResult(null),
         ),
         historico: _FakeHistoricoRepository(
           onGet: () async => _historicoResult(_historico),
@@ -396,34 +256,72 @@ void main() {
 
       expect(c.firstUltrasound, isNull);
     });
+  });
 
-    test('anti split-brain: 1ª USG não é lida de um campo em GESTAÇÃO', () async {
-      // A 1ª USG é derivada de EXAMES; a gestação não expõe um campo
-      // `first_ultrasound`. A fonte única é ExameRepository.listExames.
+  group('ChildbirthResumeController.plano', () {
+    test('com gestação ativa e plano → carrega o plano consolidado', () async {
+      final planoRepo = FakePlanoPartoRepository(
+        onGet: (_) async => Success<PlanoPartoModel?, BackendFailure>(
+          PlanoPartoModel.empty().copyWith(
+            viaParto: 'vaginal',
+            acompanhante: 'sim',
+          ),
+        ),
+      );
       final c = makeController(
-        perfil: _FakePerfilRepository(
-          onGetGestante: () async => _gestanteResult(_gestante),
-          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        perfil: FakePerfilRepository(
+          onGetGestante: () async => gestanteResult(gestanteAtiva),
+          onGetGestacaoAtual: () async => gestacaoResult(gestacaoAtiva),
         ),
         historico: _FakeHistoricoRepository(
           onGet: () async => _historicoResult(_historico),
         ),
-        exame: _FakeExameRepository(
-          onList: (_) async => const Success([
-            ExameModel(
-              id: 'e1',
-              titulo: 'USG',
-              dataExame: '2025-10-01',
-              descricao: 'x',
-              categoria: 'ultrassom',
-            ),
-          ]),
-        ),
+        plano: planoRepo,
       );
 
       await c.initialize();
 
-      expect(c.firstUltrasound, '2025-10-01');
+      expect(c.plano?.viaParto, 'vaginal');
+      expect(c.plano?.acompanhante, 'sim');
+    });
+
+    test('404 → plano null', () async {
+      final planoRepo = FakePlanoPartoRepository(
+        onGet: (_) async => const Success(null),
+      );
+      final c = makeController(
+        perfil: FakePerfilRepository(
+          onGetGestante: () async => gestanteResult(gestanteAtiva),
+          onGetGestacaoAtual: () async => gestacaoResult(gestacaoAtiva),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(_historico),
+        ),
+        plano: planoRepo,
+      );
+
+      await c.initialize();
+
+      expect(c.plano, isNull);
+    });
+
+    test('sem gestação ativa → plano null e não lê o plano', () async {
+      final planoRepo = FakePlanoPartoRepository();
+      final c = makeController(
+        perfil: FakePerfilRepository(
+          onGetGestante: () async => gestanteResult(gestanteAtiva),
+          onGetGestacaoAtual: () async => gestacaoResult(null),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(_historico),
+        ),
+        plano: planoRepo,
+      );
+
+      await c.initialize();
+
+      expect(c.plano, isNull);
+      expect(planoRepo.getCalls, 0);
     });
   });
 }

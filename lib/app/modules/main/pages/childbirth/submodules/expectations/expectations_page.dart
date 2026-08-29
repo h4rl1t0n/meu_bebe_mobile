@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:mobx/mobx.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/expectation.dart';
+import '../../../../../../model/plano_parto/plano_parto_enums.dart';
 import '../../../../widgets/base_card.dart';
 import 'expectations_controller.dart';
 import 'expectations_form_controller.dart';
@@ -20,27 +21,28 @@ class ExpectationsPage extends StatefulWidget {
 class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFormController {
   final formKey = GlobalKey<FormState>();
   final _controller = Modular.get<ExpectationsController>();
-
-  int _parseSafely(TextEditingController ctrl, {int fallback = 0}) {
-    final text = ctrl.text;
-    if (text.isEmpty) return fallback;
-    return int.tryParse(text) ?? fallback;
-  }
+  late ReactionDisposer _reactionDisposer;
 
   @override
   void initState() {
     super.initState();
-    _controller.initialize().then((_) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          initializeForm(_controller.expectations);
-        }
-      });
-    });
+    // O formulário mantém o estado de seleção em `TextEditingController.text`
+    // (não-observável). Para que os dados persistidos apareçam SEM interação do
+    // usuário, re-hidratamos o formulário sempre que o `plano` (observable) do
+    // controller mudar — tipicamente ao final do `initialize()`.
+    _reactionDisposer = reaction(
+      (_) => _controller.plano,
+      (plano) {
+        initializeForm(plano);
+        if (mounted) setState(() {});
+      },
+    );
+    _controller.initialize();
   }
 
   @override
   void dispose() {
+    _reactionDisposer();
     disposeControllers();
     super.dispose();
   }
@@ -108,11 +110,15 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
   Widget _customTabBar(TextEditingController controllerEC) {
     return Row(
       spacing: 5,
-      children: [_tab('Sim', 0, controllerEC), _tab('Não', 1, controllerEC), _tab('Não sei', 2, controllerEC)],
+      children: [
+        _tab(TriState.sim.label, TriState.sim, controllerEC),
+        _tab(TriState.nao.label, TriState.nao, controllerEC),
+        _tab(TriState.naoSei.label, TriState.naoSei, controllerEC),
+      ],
     );
   }
 
-  Widget _tab(String content, int index, TextEditingController controllerEC) {
+  Widget _tab(String content, TriState value, TextEditingController controllerEC) {
     return Expanded(
       child: InkWell(
         child: Container(
@@ -120,14 +126,14 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
           decoration: BoxDecoration(
             borderRadius: RadiusTokens.mdAll,
             border: Border.all(color: context.colors.darkText),
-            color: controllerEC.text == index.toString() ? context.colors.secondary : context.colors.surface,
+            color: controllerEC.text == value.value ? context.colors.secondary : context.colors.surface,
             boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
           ),
           child: Center(child: Text(content)),
         ),
         onTap: () {
           setState(() {
-            controllerEC.text = index.toString();
+            controllerEC.text = value.value;
           });
         },
       ),
@@ -144,16 +150,13 @@ class _ExpectationsPageState extends State<ExpectationsPage> with ExpectationsFo
           final valid = formKey.currentState?.validate() ?? false;
           if (valid) {
             _controller.saveExpectations(
-              Expectation(
-                id: _controller.expectations?.id ?? 1,
-                companion: Alternatives.values[_parseSafely(companionEC)],
-                shaveIntimateHair: Alternatives.values[_parseSafely(shaveIntimateHairEC)],
-                bowelWashOrSuppository: Alternatives.values[_parseSafely(bowelWashOrSuppositoryEC)],
-                lowLightEnvironment: Alternatives.values[_parseSafely(lowLightEnvironmentEC)],
-                listenToMusic: Alternatives.values[_parseSafely(listenToMusicEC)],
-                drinkLiquids: Alternatives.values[_parseSafely(drinkLiquidsEC)],
-                recordPhotosOrVideos: Alternatives.values[_parseSafely(recordPhotosOrVideosEC)],
-              ),
+              acompanhante: triState(companionEC),
+              rasparPelosIntimos: triState(shaveIntimateHairEC),
+              lavagemIntestinal: triState(bowelWashOrSuppositoryEC),
+              ambientePoucaLuz: triState(lowLightEnvironmentEC),
+              ouvirMusica: triState(listenToMusicEC),
+              beberLiquidos: triState(drinkLiquidsEC),
+              registrarFotosVideos: triState(recordPhotosOrVideosEC),
             );
           }
         },

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../model/pregnant_data.dart';
+import '../../../../../../core/helpers/civil_date.dart';
+import '../../../../../../model/gestacao/gestacao_model.dart';
+import '../../../../../../model/gestante/gestante_model.dart';
 import 'identification_page.dart';
+
+/// Extrai apenas os dígitos (CPF/CNS trafegam normalizados pelo backend).
+String digitsOnly(String? value) => (value ?? '').replaceAll(RegExp(r'[^0-9]'), '');
 
 mixin IdentificationFormController on State<IdentificationPage> {
   late final TextEditingController nameEC;
@@ -37,29 +42,15 @@ mixin IdentificationFormController on State<IdentificationPage> {
     prenatalPlaceContactEC.dispose();
   }
 
-  void initializeForm(final PregnantData? model) {
-    if (model != null) {
-      nameEC.text = model.name;
-      socialNameEC.text = model.socialName ?? '';
-      birthdayEC.text = model.birthDate ?? '';
-      cpfEC.text = model.cpf ?? '';
-      nationalHealthCardEC.text = model.nationalHealthCard ?? '';
-      prenatalPlaceEC.text = model.prenatalPlace ?? '';
-      profissionalEC.text = model.professionalName ?? '';
-      prenatalPlaceContactEC.text = model.prenatalPlaceContact ?? '';
-    }
-  }
-
-  PregnantData updatePregnant(PregnantData model) {
-    return model.copyWith(
-      name: nameEC.text,
-      socialName: socialNameEC.text,
-      birthDate: birthdayEC.text,
-      cpf: cpfEC.text,
-      nationalHealthCard: nationalHealthCardEC.text,
-      prenatalPlace: prenatalPlaceEC.text,
-      professionalName: profissionalEC.text,
-      prenatalPlaceContact: prenatalPlaceContactEC.text,
-    );
+  /// Preenche o formulário a partir da gestante e da gestação da API.
+  void initializeForm(GestanteModel? gestante, GestacaoModel? gestacao) {
+    nameEC.text = gestante?.nome ?? '';
+    socialNameEC.text = gestante?.nomeSocial ?? '';
+    birthdayEC.text = civilDateIsoToDisplay(gestante?.dataNascimento);
+    cpfEC.text = digitsOnly(gestante?.cpf);
+    nationalHealthCardEC.text = digitsOnly(gestante?.cns);
+    prenatalPlaceEC.text = gestacao?.localPreNatal ?? '';
+    profissionalEC.text = gestacao?.profissionalPreNatal ?? '';
+    prenatalPlaceContactEC.text = gestacao?.contatoLocalPreNatal ?? '';
   }
 }

@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../../model/expectation.dart';
+import '../../../../../../../model/plano_parto/plano_parto_enums.dart';
+import '../../../../../../../model/plano_parto/plano_parto_model.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
 import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class ExpectationsCard extends StatelessWidget {
-  const ExpectationsCard({super.key, required this.expectations, this.onEdit});
+  const ExpectationsCard({super.key, required this.plano, this.onEdit});
 
-  final Expectation? expectations;
+  final PlanoPartoModel? plano;
   final VoidCallback? onEdit;
 
   @override
@@ -29,12 +30,12 @@ class ExpectationsCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              CustomItemTile(flex: 1, title: 'Acompanhante', content: _getData(expectations?.companion)),
+              CustomItemTile(flex: 1, title: 'Acompanhante', content: _tri(plano?.acompanhante)),
               const SizedBox(width: Spacing.sm),
               CustomItemTile(
                 flex: 1,
                 title: 'Raspagem de pelos íntimos',
-                content: _getData(expectations?.shaveIntimateHair),
+                content: _tri(plano?.rasparPelosIntimos),
               ),
             ],
           ),
@@ -45,13 +46,13 @@ class ExpectationsCard extends StatelessWidget {
               CustomItemTile(
                 flex: 1,
                 title: 'Lavagem instestinal',
-                content: _getData(expectations?.bowelWashOrSuppository),
+                content: _tri(plano?.lavagemIntestinal),
               ),
               const SizedBox(width: Spacing.sm),
               CustomItemTile(
                 flex: 1,
                 title: 'Pouca luminosidade',
-                content: _getData(expectations?.lowLightEnvironment),
+                content: _tri(plano?.ambientePoucaLuz),
               ),
             ],
           ),
@@ -59,14 +60,14 @@ class ExpectationsCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              CustomItemTile(flex: 1, title: 'Música', content: _getData(expectations?.listenToMusic)),
+              CustomItemTile(flex: 1, title: 'Música', content: _tri(plano?.ouvirMusica)),
               const SizedBox(width: Spacing.sm),
-              CustomItemTile(flex: 1, title: 'Beber líquidos', content: _getData(expectations?.drinkLiquids)),
+              CustomItemTile(flex: 1, title: 'Beber líquidos', content: _tri(plano?.beberLiquidos)),
               const SizedBox(width: Spacing.sm),
               CustomItemTile(
                 flex: 1,
                 title: 'Fotos e Filmagens',
-                content: _getData(expectations?.recordPhotosOrVideos),
+                content: _tri(plano?.registrarFotosVideos),
               ),
             ],
           ),
@@ -81,12 +82,6 @@ class ExpectationsCard extends StatelessWidget {
     );
   }
 
-  String _getData(Alternatives? alternative) {
-    return switch (alternative) {
-      Alternatives.yes => 'Sim',
-      Alternatives.no => 'Não',
-      Alternatives.dontKnow => 'Não sei',
-      null => 'Não definido',
-    };
-  }
+  String _tri(String? value) =>
+      value == null ? 'Não definido' : TriState.fromValue(value).label;
 }

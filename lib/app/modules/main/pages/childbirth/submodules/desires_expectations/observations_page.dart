@@ -4,7 +4,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/observations.dart';
 import '../../../../widgets/base_card.dart';
 import 'observations_controller.dart';
 import 'observations_form_controller.dart';
@@ -25,7 +24,7 @@ class _ObservationsPageState extends State<ObservationsPage> with ObservationsFo
     _controller.initialize().then((_) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          initializeForm(_controller.observations);
+          initializeForm(_controller.plano);
         }
       });
     });
@@ -91,9 +90,7 @@ class _ObservationsPageState extends State<ObservationsPage> with ObservationsFo
       height: 48,
       child: ElevatedButton.icon(
         onPressed: () {
-          _controller.saveObservations(
-            Observations(id: _controller.observations?.id ?? 0, observations: observationsEC.text),
-          );
+          _controller.saveObservations(observacoes: observationsEC.text);
         },
         icon: const Icon(Icons.save, size: 18),
         label: const Text('Salvar'),

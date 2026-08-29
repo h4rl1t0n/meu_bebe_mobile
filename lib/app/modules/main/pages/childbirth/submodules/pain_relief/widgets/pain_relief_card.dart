@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../../model/pain_relief.dart';
+import '../../../../../../../model/plano_parto/plano_parto_enums.dart';
+import '../../../../../../../model/plano_parto/plano_parto_model.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
 import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class PainReliefCard extends StatelessWidget {
-  const PainReliefCard({super.key, required this.painRelief, this.onEdit});
+  const PainReliefCard({super.key, required this.plano, this.onEdit});
 
-  final PainRelief? painRelief;
+  final PlanoPartoModel? plano;
   final VoidCallback? onEdit;
 
   @override
@@ -32,7 +33,7 @@ class PainReliefCard extends StatelessWidget {
               CustomItemTile(
                 flex: 1,
                 title: 'Deseja alívio da dor?',
-                content: _needPainReliefToString(painRelief?.painRelief),
+                content: _tri(plano?.querAlivioDor),
               ),
             ],
           ),
@@ -58,29 +59,25 @@ class PainReliefCard extends StatelessWidget {
     );
   }
 
+  String _tri(String? v) =>
+      v == null ? 'Não definido' : TriState.fromValue(v).label;
+
   String get _activeMethods {
-    if (painRelief == null) return 'Não definido';
-    if (painRelief!.painRelief == NeedPainRelief.no || painRelief!.painRelief == NeedPainRelief.dontKnow) {
+    final data = plano;
+    if (data == null) return 'Não definido';
+    final quer = TriState.fromValue(data.querAlivioDor);
+    if (quer == TriState.nao || quer == TriState.naoSei) {
       return 'Nenhum';
     }
     final methods = <String>[];
-    if (painRelief!.massage) methods.add('Massagem');
-    if (painRelief!.ballExercises) methods.add('Bola');
-    if (painRelief!.breathRelaxExercises) methods.add('Respiração');
-    if (painRelief!.showerBath) methods.add('Chuveiro');
-    if (painRelief!.bathtubBath) methods.add('Banheira');
-    if (painRelief!.acupuncture) methods.add('Acupuntura');
-    if (painRelief!.acupressure) methods.add('Acupressão');
-    if (painRelief!.otherMethod) methods.add('Outro');
+    if (data.massagem) methods.add('Massagem');
+    if (data.exerciciosBola) methods.add('Bola');
+    if (data.exerciciosRespiracao) methods.add('Respiração');
+    if (data.banhoChuveiro) methods.add('Chuveiro');
+    if (data.banhoBanheira) methods.add('Banheira');
+    if (data.acupuntura) methods.add('Acupuntura');
+    if (data.acupressao) methods.add('Acupressão');
+    if (data.outroMetodo) methods.add('Outro');
     return methods.isEmpty ? 'Nenhum' : methods.join(', ');
-  }
-
-  String _needPainReliefToString(NeedPainRelief? v) {
-    return switch (v) {
-      NeedPainRelief.yes => 'Sim',
-      NeedPainRelief.no => 'Não',
-      NeedPainRelief.dontKnow => 'Não sei',
-      null => 'Não definido',
-    };
   }
 }

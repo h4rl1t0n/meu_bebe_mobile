@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../model/observations.dart';
+import '../../../../../../model/plano_parto/plano_parto_model.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/custom_item_tile.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 class DesiresExpectationsCard extends StatelessWidget {
-  const DesiresExpectationsCard({super.key, required this.observations, this.onEdit});
+  const DesiresExpectationsCard({super.key, required this.plano, this.onEdit});
 
-  final Observations? observations;
+  final PlanoPartoModel? plano;
   final VoidCallback? onEdit;
 
   @override
   Widget build(BuildContext context) {
-    final text = observations?.observations.isNotEmpty == true ? observations!.observations : 'Nenhum outro';
+    final obs = plano?.observacoes ?? '';
+    final text = obs.isNotEmpty ? obs : 'Nenhum outro';
 
     return BaseCard(
       child: Column(

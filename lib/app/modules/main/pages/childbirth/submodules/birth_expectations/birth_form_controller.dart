@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../model/birth.dart';
+import '../../../../../../model/plano_parto/plano_parto_enums.dart';
+import '../../../../../../model/plano_parto/plano_parto_model.dart';
 import 'birth_page.dart';
 
+/// Mixin de formulário de NASCIMENTO — persiste STRINGS ESTÁVEIS (nunca
+/// ordinal/`.index`). Cada controlador guarda o `value` canônico do enum.
 mixin BirthFormController on State<BirthPage> {
-  final whoCutEC = TextEditingController(text: '0');
-  final skinBabyContactEC = TextEditingController(text: '0');
-  final breastfeedFirstHourEC = TextEditingController(text: '0');
-  final firstBathEC = TextEditingController(text: '0');
+  final whoCutEC = TextEditingController();
+  final skinBabyContactEC = TextEditingController();
+  final breastfeedFirstHourEC = TextEditingController();
+  final firstBathEC = TextEditingController();
 
   bool collectStemCells = false;
   bool breastfeedRestrictions = false;
@@ -19,21 +22,19 @@ mixin BirthFormController on State<BirthPage> {
     firstBathEC.dispose();
   }
 
-  void initializeForm(Birth? data) {
-    if (data != null) {
-      whoCutEC.text = data.whoCut.index.toString();
-      skinBabyContactEC.text = data.skinBabyContact.index.toString();
-      breastfeedFirstHourEC.text = data.breastfeedFirstHour.index.toString();
-      firstBathEC.text = data.firstBath.index.toString();
-      collectStemCells = data.collectStemCells;
-      breastfeedRestrictions = data.breastfeedRestrictions;
-    } else {
-      whoCutEC.text = '0';
-      skinBabyContactEC.text = '0';
-      breastfeedFirstHourEC.text = '0';
-      firstBathEC.text = '0';
-      collectStemCells = false;
-      breastfeedRestrictions = false;
-    }
+  void initializeForm(PlanoPartoModel? plano) {
+    whoCutEC.text = plano?.quemCortaCordao ?? ActorChoice.naoSei.value;
+    skinBabyContactEC.text = plano?.contatoPeleAPele ?? TriState.naoSei.value;
+    breastfeedFirstHourEC.text =
+        plano?.amamentarPrimeiraHora ?? TriState.naoSei.value;
+    firstBathEC.text = plano?.primeiroBanho ?? ActorChoice.naoSei.value;
+    collectStemCells = plano?.coletaCelulasTronco ?? false;
+    breastfeedRestrictions = plano?.restricoesAmamentacao ?? false;
   }
+
+  ActorChoice actor(TextEditingController controller) =>
+      ActorChoice.fromValue(controller.text);
+
+  TriState triState(TextEditingController controller) =>
+      TriState.fromValue(controller.text);
 }

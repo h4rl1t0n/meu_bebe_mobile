@@ -5,6 +5,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:validatorless/validatorless.dart';
 
+import '../../../../../../core/helpers/civil_date.dart';
+import '../../../../../../core/helpers/messages.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../widgets/base_card.dart';
@@ -26,7 +28,7 @@ class _IdentificationPageState extends State<IdentificationPage> with Identifica
   void initState() {
     super.initState();
     _controller.initialize().then((_) {
-      initializeForm(_controller.model);
+      initializeForm(_controller.gestante, _controller.gestacao);
     });
   }
 
@@ -143,9 +145,31 @@ class _IdentificationPageState extends State<IdentificationPage> with Identifica
         onPressed: () {
           FocusScope.of(context).unfocus();
           final valid = formKey.currentState?.validate() ?? false;
-          if (valid) {
-            _controller.saveIdentification(updatePregnant(_controller.model!));
+          if (!valid) return;
+
+          final isoDate = civilDateDisplayToIso(birthdayEC.text);
+          if (isoDate == null) {
+            Messages.showError('Data de nascimento inválida.');
+            return;
           }
+
+          final socialName = socialNameEC.text.trim();
+          final cpf = digitsOnly(cpfEC.text);
+          final cns = digitsOnly(nationalHealthCardEC.text);
+          final local = prenatalPlaceEC.text.trim();
+          final profissional = profissionalEC.text.trim();
+          final contato = prenatalPlaceContactEC.text.trim();
+
+          _controller.saveIdentification(
+            nome: nameEC.text.trim(),
+            nomeSocial: socialName.isEmpty ? null : socialName,
+            dataNascimento: isoDate,
+            cpf: cpf.isEmpty ? null : cpf,
+            cns: cns.isEmpty ? null : cns,
+            localPreNatal: local.isEmpty ? null : local,
+            profissionalPreNatal: profissional.isEmpty ? null : profissional,
+            contatoLocalPreNatal: contato.isEmpty ? null : contato,
+          );
         },
         child: const Text('Salvar'),
       ),
