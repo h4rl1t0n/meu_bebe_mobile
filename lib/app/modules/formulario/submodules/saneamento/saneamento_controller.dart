@@ -33,6 +33,15 @@ abstract class SaneamentoControllerBase with Store {
   @observable
   bool isValid = false;
 
+  /// Indica se os erros obrigatórios devem ser exibidos na aba (FASE 9G-FIX2).
+  @observable
+  bool showErrors = false;
+
+  @action
+  void setShowErrors(bool value) {
+    showErrors = value;
+  }
+
   @action
   void setFonteAgua(FonteAgua? value) {
     fonteAgua = value;
@@ -112,6 +121,7 @@ abstract class SaneamentoControllerBase with Store {
     preocupacaoAgua = null;
     cuidadosVetores.clear();
     isValid = false;
+    showErrors = false;
   }
 
   @action

@@ -97,52 +97,66 @@ class _FormularioPageState extends State<FormularioPage> {
 
   Widget _buildNavigation(int currentStep) {
     return BottomAppBar(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          if (currentStep > 0)
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: controller.voltar,
-                icon: const Icon(Icons.navigate_before),
-                label: const Text('Voltar'),
+      // FASE 9G-FIX3 (visual): Voltar secundário (outlined), Próximo/Enviar
+      // primário (elevated), com espaçamento claro entre os botões e padding
+      // que os afasta das bordas do BottomAppBar.
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.sm),
+        child: Row(
+          children: [
+            if (currentStep > 0) ...[
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: controller.voltar,
+                  icon: const Icon(Icons.navigate_before),
+                  label: const Text('Voltar'),
+                ),
               ),
-            ),
-          if (currentStep < 5)
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () => _handleNext(currentStep),
-                iconAlignment: IconAlignment.end,
-                icon: const Icon(Icons.navigate_next),
-                label: const Text('Próximo'),
+              const SizedBox(width: Spacing.md),
+            ],
+            if (currentStep < 5)
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _handleNext(currentStep),
+                  iconAlignment: IconAlignment.end,
+                  icon: const Icon(Icons.navigate_next),
+                  label: const Text('Próximo'),
+                ),
               ),
-            ),
-          if (currentStep == 5)
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _handleSubmit,
-                iconAlignment: IconAlignment.end,
-                icon: const Icon(Icons.check_circle),
-                label: const Text('Enviar'),
+            if (currentStep == 5)
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _handleSubmit,
+                  iconAlignment: IconAlignment.end,
+                  icon: const Icon(Icons.check_circle),
+                  label: const Text('Enviar'),
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   void _handleNext(int currentStep) {
     if (controller.isCurrentStepValid()) {
+      controller.clearStepErrors(currentStep);
       controller.proximo();
     } else {
+      controller.markStepErrors(currentStep);
       Messages.showWarning('Preencha os campos obrigatórios antes de avançar.');
     }
   }
 
   void _handleSubmit() {
-    if (controller.isCurrentStepValid()) {
+    // FASE 9G-FIX2 (item 13/14): o "Enviar" valida TODAS as dimensões; se
+    // qualquer uma estiver inválida, salta até o primeiro passo com erro,
+    // marca os erros e NÃO dispara HTTP.
+    if (controller.validateAll()) {
       _showSummary(controller.consolidatedData);
     } else {
+      controller.markAllErrors();
+      controller.goToStep(controller.firstInvalidStep ?? 0);
       Messages.showWarning('Preencha os campos obrigatórios antes de enviar.');
     }
   }

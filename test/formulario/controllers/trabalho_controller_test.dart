@@ -72,7 +72,7 @@ void main() {
       expect(controller.buildTrabalhoData().faixaRenda, 'entre_1_2_sm');
     });
 
-    test('empregado começa null e isValid exige empregado, faixa_renda e benefícios quando empregada', () {
+    test('empregado começa null e isValid exige os obrigatórios da situação', () {
       final controller = TrabalhoController();
       expect(controller.empregado, isNull);
       expect(controller.isValid, isFalse); // empregado null
@@ -81,7 +81,13 @@ void main() {
       expect(controller.isValid, isFalse); // faixa_renda null
 
       controller.setFaixaRenda(FaixaRenda.ate1Sm);
-      expect(controller.isValid, isTrue); // empregado=false + faixa → válido
+      expect(controller.isValid, isFalse); // recebe_beneficio_social null
+
+      controller.setRecebeBeneficioSocial(false);
+      expect(controller.isValid, isFalse); // motivo_desemprego null (desempregada)
+
+      controller.setMotivoDesemprego(MotivoDesemprego.gestacao);
+      expect(controller.isValid, isTrue); // desempregada completa → válido
 
       controller.setEmpregado(true);
       expect(controller.isValid, isFalse); // tipo_emprego null
@@ -90,6 +96,41 @@ void main() {
       expect(controller.isValid, isFalse); // beneficios vazio
 
       controller.toggleBeneficio(BeneficioTrabalho.valeTransporte);
+      expect(controller.isValid, isTrue);
+    });
+
+    test('recebe_beneficio_social: null invalida, "Não" (false) e "Sim" (true) validam', () {
+      final controller = TrabalhoController();
+      controller.setEmpregado(false);
+      controller.setFaixaRenda(FaixaRenda.ate1Sm);
+      controller.setMotivoDesemprego(MotivoDesemprego.gestacao);
+
+      expect(controller.recebeBeneficioSocial, isNull);
+      expect(controller.isValid, isFalse); // não respondida
+
+      controller.setRecebeBeneficioSocial(false); // "Não" é válido
+      expect(controller.isValid, isTrue);
+      expect(controller.buildTrabalhoData().recebeBeneficioSocial, isFalse);
+
+      controller.setRecebeBeneficioSocial(true); // "Sim" também
+      expect(controller.isValid, isTrue);
+      expect(controller.buildTrabalhoData().recebeBeneficioSocial, isTrue);
+    });
+
+    test('motivo_desemprego é obrigatório apenas quando desempregada', () {
+      final controller = TrabalhoController();
+      controller.setEmpregado(true);
+      controller.setTipoEmprego(TipoEmprego.clt);
+      controller.setFaixaRenda(FaixaRenda.ate1Sm);
+      controller.setRecebeBeneficioSocial(false);
+      controller.toggleBeneficio(BeneficioTrabalho.valeTransporte);
+
+      expect(controller.isValid, isTrue); // empregada: motivo não exigido
+
+      controller.setEmpregado(false);
+      expect(controller.isValid, isFalse); // desempregada: motivo exigido
+
+      controller.setMotivoDesemprego(MotivoDesemprego.gestacao);
       expect(controller.isValid, isTrue);
     });
 

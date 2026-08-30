@@ -264,6 +264,67 @@ def test_422_structural_invariant():
 
 
 # ---------------------------------------------------------------------------
+# 422 — campos obrigatórios da inferência nulos (FASE 9G-FIX2)
+# ---------------------------------------------------------------------------
+# O contrato de PERSISTÊNCIA aceita null (questionário incompleto), mas a
+# INFERÊNCIA exige os campos do X_MODEL. Estes testes garantem que null NÃO
+# chega ao Random Forest: a rota rejeita com 422 no boundary e o runtime NÃO é
+# chamado (defesa em profundidade além do Flutter).
+
+
+def _loc_of(resp, *path: str) -> bool:
+    """True se algum detalhe de validação aponta para o `loc` informado."""
+    locs = [tuple(d.get("loc", ())) for d in resp.json().get("details", [])]
+    return tuple(path) in locs
+
+
+def test_422_cadastrada_ubs_null_blocks_inference():
+    runtime = FakeRuntime(ready=True)
+    resp = _post_invalid(
+        runtime, lambda p: p["saude"].__setitem__("cadastrada_ubs", None)
+    )
+    assert resp.status_code == 422
+    assert resp.json()["code"] == "VALIDATION_ERROR"
+    assert _loc_of(resp, "body", "saude", "cadastrada_ubs")
+    assert runtime.predict_calls == 0
+
+
+def test_422_recebe_beneficio_social_null_blocks_inference():
+    runtime = FakeRuntime(ready=True)
+    resp = _post_invalid(
+        runtime, lambda p: p["trabalho"].__setitem__("recebe_beneficio_social", None)
+    )
+    assert resp.status_code == 422
+    assert resp.json()["code"] == "VALIDATION_ERROR"
+    assert _loc_of(resp, "body", "trabalho", "recebe_beneficio_social")
+    assert runtime.predict_calls == 0
+
+
+def test_200_cadastrada_ubs_false_is_valid_answer():
+    """``false`` ("Não") é resposta válida — NÃO é confundida com null."""
+    runtime = FakeRuntime(probability=0.5)
+    payload = copy.deepcopy(make_valid_payload())
+    payload["saude"]["cadastrada_ubs"] = False
+    with _make_client(runtime) as c:
+        resp = c.post("/api/v1/risk-estimate", json=payload)
+
+    assert resp.status_code == 200
+    assert runtime.predict_calls == 1
+
+
+def test_200_recebe_beneficio_social_false_is_valid_answer():
+    """``false`` ("Não") é resposta válida — NÃO é confundida com null."""
+    runtime = FakeRuntime(probability=0.5)
+    payload = copy.deepcopy(make_valid_payload())
+    payload["trabalho"]["recebe_beneficio_social"] = False
+    with _make_client(runtime) as c:
+        resp = c.post("/api/v1/risk-estimate", json=payload)
+
+    assert resp.status_code == 200
+    assert runtime.predict_calls == 1
+
+
+# ---------------------------------------------------------------------------
 # OpenAPI
 # ---------------------------------------------------------------------------
 

@@ -33,6 +33,15 @@ abstract class AlimentacaoControllerBase with Store {
   @observable
   bool isValid = false;
 
+  /// Indica se os erros obrigatórios devem ser exibidos na aba (FASE 9G-FIX2).
+  @observable
+  bool showErrors = false;
+
+  @action
+  void setShowErrors(bool value) {
+    showErrors = value;
+  }
+
   @action
   void setRefeicoesPorDia(RefeicoesPorDia? value) {
     refeicoesPorDia = value;
@@ -105,6 +114,7 @@ abstract class AlimentacaoControllerBase with Store {
     usaSuplementos = null;
     avaliacaoAlimentacao = null;
     isValid = false;
+    showErrors = false;
   }
 
   @action

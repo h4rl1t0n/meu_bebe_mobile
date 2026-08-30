@@ -3,8 +3,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../core/ui/theme/styles/design_tokens.dart';
-import '../../../../core/ui/theme/styles/text_styles.dart';
 import '../../catalog/saude_options.dart';
+import '../../widgets/dss_question.dart';
 import '../../widgets/item_tab_page.dart';
 import 'saude_controller.dart';
 import 'saude_validator.dart';
@@ -30,7 +30,7 @@ class _SaudeTabState extends State<SaudeTab> {
           children: [
             DropdownButtonFormField<DistanciaUBS>(
               decoration: const InputDecoration(
-                labelText: 'Há uma UBS próxima da sua casa?',
+                labelText: 'Há uma UBS próxima da sua casa? *',
                 border: OutlineInputBorder(),
               ),
               validator: SaudeValidator.distanciaUBS,
@@ -41,59 +41,56 @@ class _SaudeTabState extends State<SaudeTab> {
               onChanged: (v) => controller.setDistanciaUBS(v),
             ),
             SizedBox(height: Spacing.lg),
-            _simNao(
-              'Já faltou a alguma consulta por dificuldade de transporte ou trabalho?',
-              controller.faltouConsulta,
-              controller.setFaltouConsulta,
+            DssBinaryQuestion(
+              title: 'Já faltou a alguma consulta por dificuldade de transporte ou trabalho?',
+              value: controller.faltouConsulta,
+              onChanged: controller.setFaltouConsulta,
             ),
             SizedBox(height: Spacing.lg),
             DropdownButtonFormField<AcessoUBS>(
               decoration: const InputDecoration(
-                labelText: 'Como você costuma chegar à UBS?',
+                labelText: 'Como você costuma chegar à UBS? *',
                 border: OutlineInputBorder(),
               ),
               validator: SaudeValidator.acessoUBS,
               initialValue: controller.acessoUBS,
-              items: AcessoUBS.values
-                  .map((e) => DropdownMenuItem<AcessoUBS>(value: e, child: Text(e.label)))
-                  .toList(),
+              items: AcessoUBS.values.map((e) => DropdownMenuItem<AcessoUBS>(value: e, child: Text(e.label))).toList(),
               onChanged: (v) => controller.setAcessoUBS(v),
             ),
             SizedBox(height: Spacing.lg),
-            SwitchListTile(
-              title: const Text('Você possui cadastro em uma Unidade Básica de Saúde (UBS)?'),
-              value: controller.cadastradaUBS ?? false,
+            DssBinaryQuestion(
+              title: 'Você possui cadastro em uma Unidade Básica de Saúde (UBS)?',
+              value: controller.cadastradaUBS,
               onChanged: controller.setCadastradaUBS,
+              required: true,
+              showError: controller.showErrors,
             ),
             SizedBox(height: Spacing.lg),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Quais serviços de pré-natal você utiliza?', style: context.textStyles.subTitleSmallStyle),
-                ...ServicoPreNatal.values.map(
-                  (s) => CheckboxListTile(
-                    title: Text(s.label),
-                    value: controller.servicosPreNatal.contains(s),
-                    onChanged: (_) => controller.toggleServicoPreNatal(s),
-                  ),
-                ),
-              ],
+            DssMultiChoiceQuestion<ServicoPreNatal>(
+              title: 'Quais serviços de pré-natal você utiliza?',
+              options: ServicoPreNatal.values,
+              selected: controller.servicosPreNatal,
+              labelOf: (s) => s.label,
+              onToggle: controller.toggleServicoPreNatal,
+              required: true,
+              showError: controller.showErrors,
+              exclusive: ServicoPreNatal.nenhumDosListados,
             ),
             SizedBox(height: Spacing.lg),
-            _simNao(
-              'Realizou todos os exames solicitados no pré-natal?',
-              controller.examesPreNatalCompletos,
-              controller.setExamesPreNatalCompletos,
+            DssBinaryQuestion(
+              title: 'Realizou todos os exames solicitados no pré-natal?',
+              value: controller.examesPreNatalCompletos,
+              onChanged: controller.setExamesPreNatalCompletos,
             ),
-            _simNao(
-              'Tomou todas as vacinas indicadas para gestantes?',
-              controller.vacinasEmDia,
-              controller.setVacinasEmDia,
+            DssBinaryQuestion(
+              title: 'Tomou todas as vacinas indicadas para gestantes?',
+              value: controller.vacinasEmDia,
+              onChanged: controller.setVacinasEmDia,
             ),
             SizedBox(height: Spacing.lg),
             DropdownButtonFormField<AvaliacaoPreNatal>(
               decoration: const InputDecoration(
-                labelText: 'Como avalia o atendimento de pré-natal?',
+                labelText: 'Como avalia o atendimento de pré-natal? *',
                 border: OutlineInputBorder(),
               ),
               validator: SaudeValidator.avaliacaoPreNatal,
@@ -104,51 +101,19 @@ class _SaudeTabState extends State<SaudeTab> {
               onChanged: (v) => controller.setAvaliacaoPreNatal(v),
             ),
             SizedBox(height: Spacing.lg),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Quais dificuldades você enfrenta para acessar/utilizar os serviços de saúde?',
-                  style: context.textStyles.subTitleSmallStyle,
-                ),
-                ...DificuldadeSaude.values.map(
-                  (d) => CheckboxListTile(
-                    title: Text(d.label),
-                    value: controller.dificuldadesSaude.contains(d),
-                    onChanged: (_) => controller.toggleDificuldadeSaude(d),
-                  ),
-                ),
-              ],
+            DssMultiChoiceQuestion<DificuldadeSaude>(
+              title: 'Quais dificuldades você enfrenta para acessar/utilizar os serviços de saúde?',
+              options: DificuldadeSaude.values,
+              selected: controller.dificuldadesSaude,
+              labelOf: (d) => d.label,
+              onToggle: controller.toggleDificuldadeSaude,
+              required: true,
+              showError: controller.showErrors,
+              exclusive: DificuldadeSaude.semDificuldades,
             ),
           ],
         ),
       ),
-    );
-  }
-
-  /// Pergunta de Sim/Não com três estados: `null` (ainda não respondido),
-  /// `true` (Sim) e `false` (Não). Nada fica pré-selecionado.
-  Widget _simNao(String title, bool? value, ValueChanged<bool?> onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title),
-        SizedBox(height: Spacing.sm),
-        RadioGroup<bool>(
-          groupValue: value,
-          onChanged: onChanged,
-          child: Row(
-            children: [
-              Expanded(
-                child: RadioListTile<bool>(title: const Text('Sim'), value: true),
-              ),
-              Expanded(
-                child: RadioListTile<bool>(title: const Text('Não'), value: false),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 

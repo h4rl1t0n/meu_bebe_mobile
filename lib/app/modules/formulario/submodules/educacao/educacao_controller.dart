@@ -30,6 +30,15 @@ abstract class EducacaoControllerBase with Store {
   @observable
   bool isValid = false;
 
+  /// Indica se os erros obrigatórios devem ser exibidos na aba (FASE 9G-FIX2).
+  @observable
+  bool showErrors = false;
+
+  @action
+  void setShowErrors(bool value) {
+    showErrors = value;
+  }
+
   @action
   void setEstuda(bool? value) {
     estuda = value;
@@ -93,6 +102,7 @@ abstract class EducacaoControllerBase with Store {
     entendeOrientacoes = null;
     fezCursoQualificacaoProfissional = null;
     isValid = false;
+    showErrors = false;
   }
 
   @action

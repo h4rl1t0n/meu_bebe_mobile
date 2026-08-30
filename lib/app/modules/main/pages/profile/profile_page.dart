@@ -32,8 +32,7 @@ String _formatIsoDate(String? iso) {
 }
 
 /// Valor exibível: o texto trimado ou `—` quando vazio.
-String _orDash(String? value) =>
-    (value == null || value.trim().isEmpty) ? '—' : value.trim();
+String _orDash(String? value) => (value == null || value.trim().isEmpty) ? '—' : value.trim();
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -130,11 +129,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     _gestacaoSection(context),
 
-                    SizedBox(height: Spacing.md),
+                    SizedBox(height: Spacing.lg),
 
                     _dssSection(context),
 
-                    SizedBox(height: Spacing.xxxl),
+                    SizedBox(height: Spacing.lg),
 
                     /// MENU DE OPÇÕES (CARD)
                     Padding(
@@ -248,15 +247,9 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Expanded(
             flex: 2,
-            child: Text(
-              label,
-              style: context.textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
-            ),
+            child: Text(label, style: context.textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant)),
           ),
-          Expanded(
-            flex: 3,
-            child: Text(value, style: context.textStyles.bodyMedium),
-          ),
+          Expanded(flex: 3, child: Text(value, style: context.textStyles.bodyMedium)),
         ],
       ),
     );

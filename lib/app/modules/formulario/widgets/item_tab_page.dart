@@ -26,10 +26,19 @@ class _ItemTabPageState extends State<ItemTabPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: Spacing.xs, vertical: Spacing.lg),
+          padding: EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: Spacing.lg),
           child: Text(title, style: textStyles.titleStyle.copyWith(fontSize: 28, color: colors.darkText)),
         ),
-        Expanded(child: ListView(shrinkWrap: true, children: children)),
+        Expanded(
+          // FASE 9G-FIX3 (visual): padding horizontal consistente entre as 6
+          // abas e respiro inferior para a última pergunta não encostar no
+          // BottomAppBar de navegação.
+          child: ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: Spacing.lg),
+            children: children,
+          ),
+        ),
       ],
     );
   }

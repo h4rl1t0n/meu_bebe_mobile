@@ -39,6 +39,15 @@ abstract class HabitacaoControllerBase with Store {
   @observable
   bool isValid = false;
 
+  /// Indica se os erros obrigatórios devem ser exibidos na aba (FASE 9G-FIX2).
+  @observable
+  bool showErrors = false;
+
+  @action
+  void setShowErrors(bool value) {
+    showErrors = value;
+  }
+
   @action
   void setTipoMoradia(TipoMoradia? value) {
     tipoMoradia = value;
@@ -138,6 +147,7 @@ abstract class HabitacaoControllerBase with Store {
     melhoriasDesejadas.clear();
     facilAcessoSaude = null;
     isValid = false;
+    showErrors = false;
   }
 
   @action

@@ -112,12 +112,15 @@ void main() {
       expect(data.vacinasEmDia, isTrue);
     });
 
-    test('isValid exige servicos_pre_natal e dificuldades_saude não vazios', () {
+    test('isValid exige servicos_pre_natal, dificuldades_saude e cadastrada_ubs', () {
       final controller = SaudeController();
       controller.setDistanciaUBS(DistanciaUBS.distante);
       controller.setAcessoUBS(AcessoUBS.aPe);
       controller.setAvaliacaoPreNatal(AvaliacaoPreNatal.bom);
 
+      expect(controller.isValid, isFalse); // listas vazias + cadastrada_ubs null
+
+      controller.setCadastradaUBS(true);
       expect(controller.isValid, isFalse); // listas vazias
 
       controller.toggleServicoPreNatal(ServicoPreNatal.consultaMedica);
@@ -125,6 +128,26 @@ void main() {
 
       controller.toggleDificuldadeSaude(DificuldadeSaude.semDificuldades);
       expect(controller.isValid, isTrue);
+    });
+
+    test('cadastrada_ubs: null invalida, "Não" (false) e "Sim" (true) validam', () {
+      final controller = SaudeController();
+      controller.setDistanciaUBS(DistanciaUBS.distante);
+      controller.setAcessoUBS(AcessoUBS.aPe);
+      controller.setAvaliacaoPreNatal(AvaliacaoPreNatal.bom);
+      controller.toggleServicoPreNatal(ServicoPreNatal.consultaMedica);
+      controller.toggleDificuldadeSaude(DificuldadeSaude.semDificuldades);
+
+      expect(controller.cadastradaUBS, isNull);
+      expect(controller.isValid, isFalse); // não respondida
+
+      controller.setCadastradaUBS(false); // "Não" é resposta válida
+      expect(controller.isValid, isTrue);
+      expect(controller.buildSaudeData().cadastradaUBS, isFalse);
+
+      controller.setCadastradaUBS(true); // "Sim" também
+      expect(controller.isValid, isTrue);
+      expect(controller.buildSaudeData().cadastradaUBS, isTrue);
     });
   });
 }

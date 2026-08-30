@@ -19,12 +19,14 @@ class SaudeValidator {
   static bool isTabValid({
     required DistanciaUBS? distanciaUBS,
     required AcessoUBS? acessoUBS,
+    required bool? cadastradaUBS,
     required AvaliacaoPreNatal? avaliacaoPreNatal,
     required List<ServicoPreNatal> servicosPreNatal,
     required List<DificuldadeSaude> dificuldadesSaude,
   }) {
     return distanciaUBS != null &&
         acessoUBS != null &&
+        cadastradaUBS != null &&
         avaliacaoPreNatal != null &&
         servicosPreNatal.isNotEmpty &&
         dificuldadesSaude.isNotEmpty;

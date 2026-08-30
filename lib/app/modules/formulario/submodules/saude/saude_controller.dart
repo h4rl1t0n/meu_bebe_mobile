@@ -39,6 +39,17 @@ abstract class SaudeControllerBase with Store {
   @observable
   bool isValid = false;
 
+  /// Indica se os erros obrigatórios devem ser exibidos na aba (FASE 9G-FIX2).
+  /// Acionado pelo `FormularioController` quando o usuário tenta avançar/enviar
+  /// com campos obrigatórios pendentes.
+  @observable
+  bool showErrors = false;
+
+  @action
+  void setShowErrors(bool value) {
+    showErrors = value;
+  }
+
   @action
   void setDistanciaUBS(DistanciaUBS? value) {
     distanciaUBS = value;
@@ -58,7 +69,7 @@ abstract class SaudeControllerBase with Store {
   }
 
   @action
-  void setCadastradaUBS(bool value) {
+  void setCadastradaUBS(bool? value) {
     cadastradaUBS = value;
     validate();
   }
@@ -140,6 +151,7 @@ abstract class SaudeControllerBase with Store {
     avaliacaoPreNatal = null;
     dificuldadesSaude.clear();
     isValid = false;
+    showErrors = false;
   }
 
   @action
@@ -147,6 +159,7 @@ abstract class SaudeControllerBase with Store {
     isValid = SaudeValidator.isTabValid(
       distanciaUBS: distanciaUBS,
       acessoUBS: acessoUBS,
+      cadastradaUBS: cadastradaUBS,
       avaliacaoPreNatal: avaliacaoPreNatal,
       servicosPreNatal: servicosPreNatal,
       dificuldadesSaude: dificuldadesSaude,

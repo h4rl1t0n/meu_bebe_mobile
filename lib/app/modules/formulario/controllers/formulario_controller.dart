@@ -135,6 +135,13 @@ abstract class FormularioControllerBase with Store {
   @action
   Future<void> enviarFormulario() async {
     if (loading) return;
+    // Guard de inferência (FASE 9G-FIX2): NUNCA envia com campos obrigatórios
+    // pendentes. Garante ZERO HTTP antes de qualquer persistência/estimativa,
+    // mesmo se chamado diretamente (defesa em profundidade — item 29).
+    if (!validateAll()) {
+      markAllErrors();
+      return;
+    }
     status = PageStatus.loading;
     error = null;
 
@@ -208,6 +215,76 @@ abstract class FormularioControllerBase with Store {
         return alimentacaoCtrl.isValid;
       default:
         return false;
+    }
+  }
+
+  /// Valida TODAS as dimensões (FASE 9G-FIX2, item 13). Usado pelo "Enviar"
+  /// antes de mostrar o resumo e, em profundidade, pelo guard de
+  /// [enviarFormulario] — garantindo que nenhum HTTP é disparado com campos
+  /// obrigatórios pendentes.
+  bool validateAll() =>
+      educacaoCtrl.isValid &&
+      trabalhoCtrl.isValid &&
+      saneamentoCtrl.isValid &&
+      saudeCtrl.isValid &&
+      habitacaoCtrl.isValid &&
+      alimentacaoCtrl.isValid;
+
+  /// Índice da primeira dimensão inválida (0..5), ou `null` se todas forem
+  /// válidas. Usado para saltar até o primeiro passo com erro (item 14).
+  int? get firstInvalidStep {
+    if (!educacaoCtrl.isValid) return 0;
+    if (!trabalhoCtrl.isValid) return 1;
+    if (!saneamentoCtrl.isValid) return 2;
+    if (!saudeCtrl.isValid) return 3;
+    if (!habitacaoCtrl.isValid) return 4;
+    if (!alimentacaoCtrl.isValid) return 5;
+    return null;
+  }
+
+  /// Exibe os erros obrigatórios em TODAS as dimensões (item 14/16).
+  void markAllErrors() {
+    educacaoCtrl.setShowErrors(true);
+    trabalhoCtrl.setShowErrors(true);
+    saneamentoCtrl.setShowErrors(true);
+    saudeCtrl.setShowErrors(true);
+    habitacaoCtrl.setShowErrors(true);
+    alimentacaoCtrl.setShowErrors(true);
+  }
+
+  /// Exibe os erros obrigatórios somente na dimensão do passo [step].
+  void markStepErrors(int step) {
+    switch (step) {
+      case 0:
+        educacaoCtrl.setShowErrors(true);
+      case 1:
+        trabalhoCtrl.setShowErrors(true);
+      case 2:
+        saneamentoCtrl.setShowErrors(true);
+      case 3:
+        saudeCtrl.setShowErrors(true);
+      case 4:
+        habitacaoCtrl.setShowErrors(true);
+      case 5:
+        alimentacaoCtrl.setShowErrors(true);
+    }
+  }
+
+  /// Remove os erros obrigatórios da dimensão do passo [step] (ao avançar).
+  void clearStepErrors(int step) {
+    switch (step) {
+      case 0:
+        educacaoCtrl.setShowErrors(false);
+      case 1:
+        trabalhoCtrl.setShowErrors(false);
+      case 2:
+        saneamentoCtrl.setShowErrors(false);
+      case 3:
+        saudeCtrl.setShowErrors(false);
+      case 4:
+        habitacaoCtrl.setShowErrors(false);
+      case 5:
+        alimentacaoCtrl.setShowErrors(false);
     }
   }
 

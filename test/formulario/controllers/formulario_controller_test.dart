@@ -22,6 +22,12 @@ import 'package:meu_bebe/app/repositories/perfil/perfil_repository.dart';
 import 'package:meu_bebe/app/repositories/risk_estimate/risk_estimate_failure.dart';
 import 'package:meu_bebe/app/repositories/risk_estimate/risk_estimate_repository.dart';
 import 'package:multiple_result/multiple_result.dart';
+import 'package:meu_bebe/app/modules/formulario/catalog/alimentacao_options.dart';
+import 'package:meu_bebe/app/modules/formulario/catalog/educacao_options.dart';
+import 'package:meu_bebe/app/modules/formulario/catalog/habitacao_options.dart';
+import 'package:meu_bebe/app/modules/formulario/catalog/saneamento_options.dart';
+import 'package:meu_bebe/app/modules/formulario/catalog/saude_options.dart';
+import 'package:meu_bebe/app/modules/formulario/catalog/trabalho_options.dart';
 
 const _successResponse = RiskEstimateResponseModel(
   result: RiskEstimateResultModel(
@@ -135,12 +141,69 @@ class _FakePerfilRepository implements PerfilRepository {
   ) => throw UnimplementedError();
 }
 
+/// Preenche as seis dimensões com respostas válidas, de modo que
+/// `validateAll()` retorne `true` e `enviarFormulario()` prossiga (FASE
+/// 9G-FIX2: o guard de inferência bloqueia formulários incompletos).
+void _fillForm(FormularioController controller) {
+  final educacao = controller.educacaoCtrl;
+  educacao.setEstuda(true);
+  educacao.setEscolaridade(Escolaridade.medioCompleto);
+  educacao.setSituacaoEstudosGestacao(SituacaoEstudosGestacao.naoEstudava);
+  educacao.setEntendeOrientacoes(true);
+  educacao.setFezCursoQualificacaoProfissional(false);
+  educacao.toggleDificuldade(DificuldadeEducacao.semDificuldades);
+
+  final trabalho = controller.trabalhoCtrl;
+  trabalho.setEmpregado(true);
+  trabalho.setTipoEmprego(TipoEmprego.clt);
+  trabalho.setFaixaRenda(FaixaRenda.ate1Sm);
+  trabalho.setRecebeBeneficioSocial(false);
+  trabalho.toggleBeneficio(BeneficioTrabalho.valeTransporte);
+
+  final saneamento = controller.saneamentoCtrl;
+  saneamento.setFonteAgua(FonteAgua.redePublica);
+  saneamento.setInterrupcoesAgua(false);
+  saneamento.setEsgotamentoSanitario(EsgotamentoSanitario.redeColetora);
+  saneamento.setFrequenciaColetaLixo(FrequenciaColetaLixo.regular);
+  saneamento.setPreocupacaoAgua(false);
+  saneamento.toggleCuidadoVetor(CuidadoVetor.semCuidados);
+
+  final saude = controller.saudeCtrl;
+  saude.setDistanciaUBS(DistanciaUBS.muitoProxima);
+  saude.setAcessoUBS(AcessoUBS.aPe);
+  saude.setCadastradaUBS(true);
+  saude.setAvaliacaoPreNatal(AvaliacaoPreNatal.bom);
+  saude.toggleServicoPreNatal(ServicoPreNatal.consultaMedica);
+  saude.toggleDificuldadeSaude(DificuldadeSaude.semDificuldades);
+
+  final habitacao = controller.habitacaoCtrl;
+  habitacao.setTipoMoradia(TipoMoradia.casa);
+  habitacao.setMaterialMoradia(MaterialMoradia.alvenaria);
+  habitacao.setNumeroPessoas(3);
+  habitacao.setNumeroComodos(5);
+  habitacao.setNumeroDormitorios(2);
+  habitacao.setSegurancaResidencia(SegurancaResidencia.segura);
+  habitacao.setFacilAcessoSaude(true);
+  habitacao.toggleItemResidencia(ItemResidencia.aguaEncanada);
+  habitacao.toggleMelhoriaMoradia(MelhoriaMoradia.semMelhorias);
+
+  final alimentacao = controller.alimentacaoCtrl;
+  alimentacao.setRefeicoesPorDia(RefeicoesPorDia.tres);
+  alimentacao.setDeixouComerFaltaDinheiro(false);
+  alimentacao.setMudancaAlimentacaoGestacao(false);
+  alimentacao.setUsaSuplementos(true);
+  alimentacao.setAvaliacaoAlimentacao(AvaliacaoAlimentacao.boa);
+  alimentacao.toggleAlimento(AlimentoConsumido.frutasVerduras);
+  alimentacao.toggleFonteAlimento(FonteAlimentos.supermercadoFeira);
+}
+
 FormularioController _buildController(
   RiskEstimateRepository repository, {
   PerfilRepository? perfilRepository,
   AvaliacaoDssRepository? avaliacaoDssRepository,
+  bool fillForm = true,
 }) {
-  return FormularioController(
+  final controller = FormularioController(
     riskEstimateRepository: repository,
     avaliacaoDssRepository:
         avaliacaoDssRepository ??
@@ -157,6 +220,10 @@ FormularioController _buildController(
     habitacaoCtrl: HabitacaoController(),
     alimentacaoCtrl: AlimentacaoController(),
   );
+  if (fillForm) {
+    _fillForm(controller);
+  }
+  return controller;
 }
 
 void main() {
@@ -440,5 +507,83 @@ void main() {
       expect(controller.consolidatedData, isA<FormularioData>());
       expect(controller.noActiveGestacao, isTrue);
     });
+  });
+
+  group('FormularioController — validação DSS (FASE 9G-FIX2)', () {
+    test(
+      'formulário inválido: enviarFormulario NÃO dispara HTTP e marca erros',
+      () async {
+        final repo = _FakeRiskEstimateRepository((_) async => _success());
+        final avalRepo = _FakeAvaliacaoDssRepository(
+          (_, _) async => const Success(_avaliacao),
+        );
+        final controller = _buildController(
+          repo,
+          fillForm: false,
+          perfilRepository: _FakePerfilRepository(
+            () async => const Success(GestacaoModel(id: 'gestacao-1')),
+          ),
+          avaliacaoDssRepository: avalRepo,
+        );
+
+        expect(controller.validateAll(), isFalse);
+
+        await controller.enviarFormulario();
+
+        // ZERO HTTP: nenhuma estimativa e nenhuma persistência.
+        expect(repo.callCount, 0);
+        expect(avalRepo.callCount, 0);
+        expect(controller.status, PageStatus.initial);
+        // Erros obrigatórios marcados em todas as dimensões.
+        expect(controller.saudeCtrl.showErrors, isTrue);
+        expect(controller.educacaoCtrl.showErrors, isTrue);
+      },
+    );
+
+    test('validateAll reflete a validade das seis dimensões', () {
+      final controller = _buildController(
+        _FakeRiskEstimateRepository((_) async => _success()),
+      );
+      expect(controller.validateAll(), isTrue);
+
+      controller.saudeCtrl.setCadastradaUBS(null); // "não respondida"
+      expect(controller.validateAll(), isFalse);
+    });
+
+    test('firstInvalidStep aponta a primeira dimensão inválida na ordem', () {
+      final controller = _buildController(
+        _FakeRiskEstimateRepository((_) async => _success()),
+      );
+      expect(controller.firstInvalidStep, isNull);
+
+      controller.trabalhoCtrl.setRecebeBeneficioSocial(null); // passo 1
+      controller.saudeCtrl.setCadastradaUBS(null); // passo 3
+      expect(controller.firstInvalidStep, 1); // Trabalho antes de Saúde
+    });
+
+    test(
+      'markStepErrors / clearStepErrors / markAllErrors controlam showErrors',
+      () {
+        final controller = _buildController(
+          _FakeRiskEstimateRepository((_) async => _success()),
+        );
+
+        expect(controller.educacaoCtrl.showErrors, isFalse);
+
+        controller.markStepErrors(0);
+        expect(controller.educacaoCtrl.showErrors, isTrue);
+
+        controller.clearStepErrors(0);
+        expect(controller.educacaoCtrl.showErrors, isFalse);
+
+        controller.markAllErrors();
+        expect(controller.educacaoCtrl.showErrors, isTrue);
+        expect(controller.trabalhoCtrl.showErrors, isTrue);
+        expect(controller.saneamentoCtrl.showErrors, isTrue);
+        expect(controller.saudeCtrl.showErrors, isTrue);
+        expect(controller.habitacaoCtrl.showErrors, isTrue);
+        expect(controller.alimentacaoCtrl.showErrors, isTrue);
+      },
+    );
   });
 }

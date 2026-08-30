@@ -42,6 +42,15 @@ abstract class TrabalhoControllerBase with Store {
   @observable
   bool isValid = false;
 
+  /// Indica se os erros obrigatórios devem ser exibidos na aba (FASE 9G-FIX2).
+  @observable
+  bool showErrors = false;
+
+  @action
+  void setShowErrors(bool value) {
+    showErrors = value;
+  }
+
   @action
   void setEmpregado(bool? value) {
     empregado = value;
@@ -70,19 +79,19 @@ abstract class TrabalhoControllerBase with Store {
   }
 
   @action
-  void setPermitePreNatal(bool value) {
+  void setPermitePreNatal(bool? value) {
     permitePreNatal = value;
     validate();
   }
 
   @action
-  void setAmbienteSeguro(bool value) {
+  void setAmbienteSeguro(bool? value) {
     ambienteSeguro = value;
     validate();
   }
 
   @action
-  void setTemPausas(bool value) {
+  void setTemPausas(bool? value) {
     temPausas = value;
     validate();
   }
@@ -117,7 +126,7 @@ abstract class TrabalhoControllerBase with Store {
   }
 
   @action
-  void setRecebeBeneficioSocial(bool value) {
+  void setRecebeBeneficioSocial(bool? value) {
     recebeBeneficioSocial = value;
     validate();
   }
@@ -142,6 +151,7 @@ abstract class TrabalhoControllerBase with Store {
     recebeBeneficioSocial = null;
     impactoGestacaoTrabalho = null;
     isValid = false;
+    showErrors = false;
   }
 
   @action
@@ -151,6 +161,8 @@ abstract class TrabalhoControllerBase with Store {
       tipoEmprego: tipoEmprego,
       faixaRenda: faixaRenda,
       beneficios: beneficios,
+      motivoDesemprego: motivoDesemprego,
+      recebeBeneficioSocial: recebeBeneficioSocial,
     );
   }
 

@@ -3,8 +3,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../core/ui/theme/styles/design_tokens.dart';
-import '../../../../core/ui/theme/styles/text_styles.dart';
 import '../../catalog/habitacao_options.dart';
+import '../../widgets/dss_question.dart';
 import '../../widgets/item_tab_page.dart';
 import 'habitacao_controller.dart';
 import 'habitacao_validator.dart';
@@ -30,7 +30,7 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
           children: [
             DropdownButtonFormField<TipoMoradia>(
               decoration: const InputDecoration(
-                labelText: 'Tipo de moradia',
+                labelText: 'Tipo de moradia *',
                 border: OutlineInputBorder(),
                 hintText: 'Selecione o tipo de residência',
               ),
@@ -44,7 +44,7 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
             SizedBox(height: Spacing.lg),
             DropdownButtonFormField<MaterialMoradia>(
               decoration: const InputDecoration(
-                labelText: 'Material predominante das paredes',
+                labelText: 'Material predominante das paredes *',
                 border: OutlineInputBorder(),
               ),
               validator: HabitacaoValidator.materialMoradia,
@@ -86,24 +86,20 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
               ],
             ),
             SizedBox(height: Spacing.lg),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Quais destes itens sua casa possui?', style: context.textStyles.subTitleSmallStyle),
-                SizedBox(height: Spacing.sm),
-                ...ItemResidencia.values.map(
-                  (i) => CheckboxListTile(
-                    title: Text(i.label),
-                    value: controller.itensResidencia.contains(i),
-                    onChanged: (_) => controller.toggleItemResidencia(i),
-                  ),
-                ),
-              ],
+            DssMultiChoiceQuestion<ItemResidencia>(
+              title: 'Quais destes itens sua casa possui?',
+              options: ItemResidencia.values,
+              selected: controller.itensResidencia,
+              labelOf: (i) => i.label,
+              onToggle: controller.toggleItemResidencia,
+              required: true,
+              showError: controller.showErrors,
+              exclusive: ItemResidencia.nenhumDosListados,
             ),
             SizedBox(height: Spacing.lg),
             DropdownButtonFormField<SegurancaResidencia>(
               decoration: const InputDecoration(
-                labelText: 'Como você avalia a segurança da sua moradia?',
+                labelText: 'Como você avalia a segurança da sua moradia? *',
                 border: OutlineInputBorder(),
               ),
               validator: HabitacaoValidator.segurancaResidencia,
@@ -114,55 +110,27 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
               onChanged: (v) => controller.setSegurancaResidencia(v),
             ),
             SizedBox(height: Spacing.lg),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Quais melhorias gostaria de fazer na sua moradia?', style: context.textStyles.subTitleSmallStyle),
-                SizedBox(height: Spacing.sm),
-                ...MelhoriaMoradia.values.map(
-                  (m) => CheckboxListTile(
-                    title: Text(m.label),
-                    value: controller.melhoriasDesejadas.contains(m),
-                    onChanged: (_) => controller.toggleMelhoriaMoradia(m),
-                  ),
-                ),
-              ],
+            DssMultiChoiceQuestion<MelhoriaMoradia>(
+              title: 'Quais melhorias gostaria de fazer na sua moradia?',
+              options: MelhoriaMoradia.values,
+              selected: controller.melhoriasDesejadas,
+              labelOf: (m) => m.label,
+              onToggle: controller.toggleMelhoriaMoradia,
+              required: true,
+              showError: controller.showErrors,
+              exclusive: MelhoriaMoradia.semMelhorias,
             ),
             SizedBox(height: Spacing.lg),
-            _simNao(
-              'Tem fácil acesso a serviços de saúde a partir da sua residência?',
-              controller.facilAcessoSaude,
-              controller.setFacilAcessoSaude,
+            DssBinaryQuestion(
+              title: 'Tem fácil acesso a serviços de saúde a partir da sua residência?',
+              value: controller.facilAcessoSaude,
+              onChanged: controller.setFacilAcessoSaude,
+              required: true,
+              showError: controller.showErrors,
             ),
           ],
         ),
       ),
-    );
-  }
-
-  /// Pergunta de Sim/Não com três estados: `null` (ainda não respondido),
-  /// `true` (Sim) e `false` (Não). Nada fica pré-selecionado.
-  Widget _simNao(String title, bool? value, ValueChanged<bool?> onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title),
-        SizedBox(height: Spacing.sm),
-        RadioGroup<bool>(
-          groupValue: value,
-          onChanged: onChanged,
-          child: Row(
-            children: [
-              Expanded(
-                child: RadioListTile<bool>(title: const Text('Sim'), value: true),
-              ),
-              Expanded(
-                child: RadioListTile<bool>(title: const Text('Não'), value: false),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 

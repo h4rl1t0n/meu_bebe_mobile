@@ -17,6 +17,7 @@ from __future__ import annotations
 import logging
 
 from fastapi import APIRouter, Depends
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from ..contracts.dss import DssPayload
@@ -61,6 +62,14 @@ def risk_estimate(
     runtime: ModelRuntime = Depends(get_model_runtime),
 ) -> RiskEstimateResponse | JSONResponse:
     """Estima ``P(descontinuou_pre_natal)`` a partir de um ``DssPayload``."""
+    # FASE 9G-FIX2 (itens 30-34): o contrato de persistência aceita null, mas a
+    # inferência exige os campos efetivamente usados pelo X_MODEL. Rejeita-os
+    # aqui com 422 (nunca 500) e NÃO chama o modelo quando o payload está
+    # incompleto — defesa em profundidade além do Flutter.
+    readiness_errors = payload.inference_readiness_errors()
+    if readiness_errors:
+        raise RequestValidationError(readiness_errors)
+
     if not runtime.is_ready or runtime.metadata is None:
         error = ErrorResponse(
             code=MODEL_NOT_READY_CODE,

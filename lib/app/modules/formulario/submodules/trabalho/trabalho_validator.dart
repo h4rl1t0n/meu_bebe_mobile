@@ -16,12 +16,16 @@ class TrabalhoValidator {
     required TipoEmprego? tipoEmprego,
     required FaixaRenda? faixaRenda,
     required List<BeneficioTrabalho> beneficios,
+    required MotivoDesemprego? motivoDesemprego,
+    required bool? recebeBeneficioSocial,
   }) {
-    // empregado e faixa_renda são obrigatórios independentemente da situação.
+    // empregado, faixa_renda e recebe_beneficio_social são obrigatórios
+    // independentemente da situação.
     if (empregado == null) return false;
     if (faixaRenda == null) return false;
-    // Desempregada: apenas faixa_renda (e empregado) são obrigatórios.
-    if (empregado == false) return true;
+    if (recebeBeneficioSocial == null) return false;
+    // Desempregada: motivo_desemprego é obrigatório.
+    if (empregado == false) return motivoDesemprego != null;
     // Empregada: tipo_emprego e ao menos um benefício são obrigatórios.
     return tipoEmprego != null && beneficios.isNotEmpty;
   }

@@ -474,3 +474,72 @@ class DssPayload(BaseModel):
     saude: SaudeModel
     habitacao: HabitacaoModel
     alimentacao: AlimentacaoModel
+
+    def inference_readiness_errors(self) -> list[dict]:
+        """Campos obrigatórios para a inferência que estão nulos/vazios.
+
+        O contrato de PERSISTÊNCIA aceita ``null`` em vários campos (resposta
+        incompleta do questionário, incluindo ``empregado=null``), mas a
+        INFERÊNCIA exige os 25 campos efetivamente usados pelo X_MODEL que NÃO
+        admitem null estrutural (``boolean_required`` + ``ordinal`` +
+        ``nominal/multiselect`` com ``structural_null: false``). Deixá-los
+        nulos faz o encoder levantar ``ValueError`` (500); rejeitá-los aqui
+        permite devolver 422 no boundary, sem tocar no modelo.
+
+        NÃO é um ``model_validator`` — preserva o contrato de persistência
+        (``empregado=null`` continua válido para o questionário) e é aplicado
+        SOMENTE pela rota ``/risk-estimate``.
+        """
+        errors: list[dict] = []
+
+        def _require(value: object | None, dimension: str, field: str, *, is_list: bool = False) -> None:
+            missing = value is None or (
+                is_list and isinstance(value, list) and len(value) == 0
+            )
+            if missing:
+                errors.append(
+                    {
+                        "loc": ("body", dimension, field),
+                        "msg": "campo obrigatório para a inferência",
+                        "type": "missing",
+                    }
+                )
+
+        e = self.educacao
+        _require(e.estuda_atualmente, "educacao", "estuda_atualmente")
+        _require(e.escolaridade, "educacao", "escolaridade")
+        _require(e.dificuldades_educacao, "educacao", "dificuldades_educacao", is_list=True)
+        _require(e.entende_orientacoes_saude, "educacao", "entende_orientacoes_saude")
+        _require(e.fez_curso_qualificacao_profissional, "educacao", "fez_curso_qualificacao_profissional")
+
+        t = self.trabalho
+        _require(t.empregado, "trabalho", "empregado")
+        _require(t.faixa_renda, "trabalho", "faixa_renda")
+        _require(t.recebe_beneficio_social, "trabalho", "recebe_beneficio_social")
+
+        s = self.saneamento
+        _require(s.fonte_agua, "saneamento", "fonte_agua")
+        _require(s.interrupcoes_agua, "saneamento", "interrupcoes_agua")
+        _require(s.esgotamento_sanitario, "saneamento", "esgotamento_sanitario")
+        _require(s.frequencia_coleta_lixo, "saneamento", "frequencia_coleta_lixo")
+
+        sd = self.saude
+        _require(sd.distancia_ubs, "saude", "distancia_ubs")
+        _require(sd.acesso_ubs, "saude", "acesso_ubs")
+        _require(sd.cadastrada_ubs, "saude", "cadastrada_ubs")
+        _require(sd.dificuldades_saude, "saude", "dificuldades_saude", is_list=True)
+
+        h = self.habitacao
+        _require(h.tipo_moradia, "habitacao", "tipo_moradia")
+        _require(h.material_moradia, "habitacao", "material_moradia")
+        _require(h.itens_residencia, "habitacao", "itens_residencia", is_list=True)
+        _require(h.seguranca_residencia, "habitacao", "seguranca_residencia")
+
+        a = self.alimentacao
+        _require(a.refeicoes_por_dia, "alimentacao", "refeicoes_por_dia")
+        _require(a.deixou_de_comer_falta_dinheiro, "alimentacao", "deixou_de_comer_falta_dinheiro")
+        _require(a.alimentos_consumidos, "alimentacao", "alimentos_consumidos", is_list=True)
+        _require(a.fonte_alimentos, "alimentacao", "fonte_alimentos", is_list=True)
+        _require(a.avaliacao_alimentacao, "alimentacao", "avaliacao_alimentacao")
+
+        return errors
