@@ -23,9 +23,10 @@ import 'package:modular_core/modular_core.dart';
 
 /// Monta um container ÚNICO com o escopo compartilhado ([CoreModule]) + o
 /// `binds` do módulo sob teste. Sem `commit()` de propósito: `commit()` chama
-/// `startSingletons()` e resolve TODOS os singletons (inclusive `DB.instance` →
-/// sqflite), o que quebraria o teste. Para UM único `AutoInjector`, `get<T>()`
-/// resolve o grafo via BFS sobre `injector.binds` diretamente.
+/// `startSingletons()` e resolve TODOS os singletons (clientes HTTP, configs),
+/// o que aciona efeitos colaterais desnecessários para o teste. Para UM único
+/// `AutoInjector`, `get<T>()` resolve o grafo via BFS sobre `injector.binds`
+/// diretamente.
 T _resolve<T>(Module module) {
   final injector = AutoInjector();
   CoreModule().exportedBinds(injector);
