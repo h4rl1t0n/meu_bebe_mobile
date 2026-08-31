@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../../../../app_module.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../widgets/base_card.dart';
 import '../../../../widgets/item_tile_with_list.dart';
 
 class PregnancyHistoryCard extends StatelessWidget {
-  const PregnancyHistoryCard({super.key, required this.list});
+  const PregnancyHistoryCard({super.key, required this.list, required this.onEdit});
 
   final List<String> list;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,7 @@ class PregnancyHistoryCard extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: () => Modular.to.pushNamed(routeHistoria),
+              onPressed: onEdit,
               child: const Text('Editar historico'),
             ),
           ),

@@ -73,7 +73,17 @@ class _GestationPageState extends State<GestationPage> {
                 onChanged: () => _controller.initialize(),
               ),
               SizedBox(height: Spacing.sm),
-              PregnancyHistoryCard(list: _controller.historyItems),
+              PregnancyHistoryCard(
+                list: _controller.historyItems,
+                onEdit: () async {
+                  // `true` = o formulário salvou; recarrega só o histórico para
+                  // refletir os novos valores sem trocar de aba (FASE 9J-PRE-FIX1).
+                  final saved = await Modular.to.pushNamed(routeHistoria);
+                  if (saved == true) {
+                    _controller.refreshHistorico();
+                  }
+                },
+              ),
             ],
           );
         },

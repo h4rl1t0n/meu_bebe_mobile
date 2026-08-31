@@ -353,6 +353,53 @@ void main() {
     });
   });
 
+  group('refreshHistorico — atualiza sem trocar de aba (FASE 9J-PRE-FIX1)', () {
+    test('após salvar, historyItems reflete os novos valores (2/2 → 3/1)',
+        () async {
+      // A "resposta" do repositório muda a cada leitura — simulando o usuário
+      // ter editado o histórico na tela "Gestações Anteriores" e voltado.
+      var current = const HistoricoObstetricoModel(
+        id: 'h',
+        pregnancyNumber: 2,
+        givenBirthNumber: 2,
+        abortionsNumber: 0,
+      );
+      final c = makeController(
+        perfil: _FakePerfilRepository(
+          onGetGestante: () async => _gestanteResult(_gestante),
+          onGetGestacaoAtual: () async => _gestacaoResult(_gestacao),
+        ),
+        historico: _FakeHistoricoRepository(
+          onGet: () async => _historicoResult(current),
+        ),
+      );
+
+      await c.initialize();
+      expect(c.historyItems, [
+        'Gravidezes anteriores: 2',
+        'Partos anteriores: 2',
+        'Abortos: 0',
+      ]);
+
+      current = const HistoricoObstetricoModel(
+        id: 'h',
+        pregnancyNumber: 3,
+        givenBirthNumber: 1,
+        abortionsNumber: 0,
+      );
+
+      // Sem novo `initialize()` (sem loading) e sem troca de aba: apenas o
+      // histórico é recarregado e o Observable recompõe o computed.
+      await c.refreshHistorico();
+
+      expect(c.historyItems, [
+        'Gravidezes anteriores: 3',
+        'Partos anteriores: 1',
+        'Abortos: 0',
+      ]);
+    });
+  });
+
   group('split-brain (API-novo vs SQLite-antigo)', () {
     test('a API é a única fonte de verdade do pré-natal', () async {
       final c = makeController(

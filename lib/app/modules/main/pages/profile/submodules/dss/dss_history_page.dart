@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
@@ -38,11 +39,7 @@ class _DssHistoryPageState extends State<DssHistoryPage> {
 
     return Scaffold(
       backgroundColor: colors.secondary,
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        title: Text('Avaliações DSS', style: textStyles.titleSmallStyle),
-      ),
+      appBar: AppBar(centerTitle: true, elevation: 0, title: Text('Avaliações DSS', style: textStyles.titleSmallStyle)),
       body: FutureBuilder<void>(
         future: _initFuture,
         builder: (context, snapshot) {
@@ -87,16 +84,13 @@ class _DssHistoryPageState extends State<DssHistoryPage> {
           padding: const EdgeInsets.all(Spacing.lg),
           child: Row(
             children: [
-              Icon(Icons.description_outlined, color: colors.darkText),
+              Icon(CupertinoIcons.doc_fill, color: colors.darkText),
               const SizedBox(width: Spacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Avaliação em ${formatDssDate(avaliacao.createdAt)}',
-                      style: textStyles.bodyMedium,
-                    ),
+                    Text('Avaliação em ${formatDssDate(avaliacao.createdAt)}', style: textStyles.bodyMedium),
                     Text(
                       'Versão ${avaliacao.schemaVersion}',
                       style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),

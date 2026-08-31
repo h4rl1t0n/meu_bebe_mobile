@@ -49,11 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: const Text('Criar conta'),
-        ),
+        appBar: AppBar(backgroundColor: Colors.white, elevation: 0, title: const Text('Criar conta')),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: Spacing.xl),
           child: Center(
@@ -64,11 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      'Cadastre-se para começar',
-                      textAlign: TextAlign.center,
-                      style: context.textStyles.titleStyle,
-                    ),
+                    Text('Cadastre-se para começar', textAlign: TextAlign.center, style: context.textStyles.titleStyle),
                     const SizedBox(height: Spacing.xxxl),
                     _field(
                       controller: emailTEC,
@@ -81,19 +73,19 @@ class _RegisterPageState extends State<RegisterPage> {
                       ]),
                     ),
                     const SizedBox(height: Spacing.lg),
-                    _field(
-                      controller: passwordTEC,
-                      label: 'Senha',
-                      icon: Icons.lock_outline,
-                      obscureText: controller.obscurePassword,
-                      validator: Validatorless.multiple([
-                        Validatorless.required('Senha obrigatória'),
-                        Validatorless.min(8, 'Senha deve ter no mínimo 8 caracteres'),
-                      ]),
-                      suffix: IconButton(
-                        onPressed: controller.passwordToggle,
-                        icon: Observer(
-                          builder: (_) => Icon(
+                    Observer(
+                      builder: (_) => _field(
+                        controller: passwordTEC,
+                        label: 'Senha',
+                        icon: Icons.lock_outline,
+                        obscureText: controller.obscurePassword,
+                        validator: Validatorless.multiple([
+                          Validatorless.required('Senha obrigatória'),
+                          Validatorless.min(8, 'Senha deve ter no mínimo 8 caracteres'),
+                        ]),
+                        suffix: IconButton(
+                          onPressed: controller.passwordToggle,
+                          icon: Icon(
                             controller.obscurePassword ? Icons.visibility : Icons.visibility_off,
                             size: 20,
                             color: colors.darkText,
@@ -102,23 +94,21 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     const SizedBox(height: Spacing.lg),
-                    _field(
-                      controller: confirmPasswordTEC,
-                      label: 'Confirmar senha',
-                      icon: Icons.lock_outline,
-                      obscureText: controller.obscureConfirmPassword,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Confirmação obrigatória';
-                        if (value != passwordTEC.text) return 'As senhas não conferem';
-                        return null;
-                      },
-                      suffix: IconButton(
-                        onPressed: controller.confirmPasswordToggle,
-                        icon: Observer(
-                          builder: (_) => Icon(
-                            controller.obscureConfirmPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                    Observer(
+                      builder: (_) => _field(
+                        controller: confirmPasswordTEC,
+                        label: 'Confirmar senha',
+                        icon: Icons.lock_outline,
+                        obscureText: controller.obscureConfirmPassword,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Confirmação obrigatória';
+                          if (value != passwordTEC.text) return 'As senhas não conferem';
+                          return null;
+                        },
+                        suffix: IconButton(
+                          onPressed: controller.confirmPasswordToggle,
+                          icon: Icon(
+                            controller.obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
                             size: 20,
                             color: colors.darkText,
                           ),
@@ -135,11 +125,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             : () {
                                 final valid = formKey.currentState?.validate() ?? false;
                                 if (valid) {
-                                  controller.register(
-                                    emailTEC.text,
-                                    passwordTEC.text,
-                                    confirmPasswordTEC.text,
-                                  );
+                                  controller.register(emailTEC.text, passwordTEC.text, confirmPasswordTEC.text);
                                 }
                               },
                         child: Observer(
@@ -153,9 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             }
                             return Text(
                               'Criar conta',
-                              style: context.textStyles.buttonLargeStyle.copyWith(
-                                color: Colors.white,
-                              ),
+                              style: context.textStyles.buttonLargeStyle.copyWith(color: Colors.white),
                             );
                           },
                         ),

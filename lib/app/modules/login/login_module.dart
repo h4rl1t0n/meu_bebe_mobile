@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../core/auth/credential_storage.dart';
 import '../../core/auth/token_storage.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../repositories/auth/auth_repository_impl.dart';
@@ -16,6 +17,7 @@ class LoginModule extends Module {
   void binds(i) {
     i.addSingleton<AuthRepository>(AuthRepositoryImpl.new);
     i.addSingleton<TokenStorage>(TokenStorage.new);
+    i.addSingleton<CredentialStorage>(SecureCredentialStorage.new);
     i.addSingleton(LoginController.new);
   }
 

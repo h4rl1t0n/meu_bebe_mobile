@@ -12,6 +12,10 @@ part 'pain_relief_controller.g.dart';
 class PainReliefController = PainReliefControllerBase with _$PainReliefController;
 
 /// Controlador de ALÍVIO DA DOR (seção do Plano de Parto) — API como fonte.
+///
+/// O estado de seleção do formulário vive AQUI (observables), não em
+/// `TextEditingController`/bools locais da página: a UI apenas lê e chama os
+/// setters, sem `setState`.
 abstract class PainReliefControllerBase with Store {
   final PlanoPartoRepository planoPartoRepository;
   final PerfilRepository perfilRepository;
@@ -30,6 +34,33 @@ abstract class PainReliefControllerBase with Store {
   @observable
   PlanoPartoModel? plano;
 
+  @observable
+  TriState querAlivioDor = TriState.naoSei;
+
+  @observable
+  bool massagem = false;
+
+  @observable
+  bool exerciciosBola = false;
+
+  @observable
+  bool exerciciosRespiracao = false;
+
+  @observable
+  bool banhoChuveiro = false;
+
+  @observable
+  bool banhoBanheira = false;
+
+  @observable
+  bool acupuntura = false;
+
+  @observable
+  bool acupressao = false;
+
+  @observable
+  bool outroMetodo = false;
+
   String? _gestacaoId;
   bool _busy = false;
 
@@ -47,6 +78,7 @@ abstract class PainReliefControllerBase with Store {
       if (gid == null) {
         hasGestacao = false;
         plano = null;
+        _hydrate(null);
         return;
       }
       hasGestacao = true;
@@ -54,10 +86,12 @@ abstract class PainReliefControllerBase with Store {
       switch (result) {
         case Success():
           plano = result.success ?? PlanoPartoModel.empty();
+          _hydrate(plano);
         case Error(error: final failure):
           Messages.showError(failure.message);
           plano = null;
           loadFailed = true;
+          _hydrate(null);
       }
     } finally {
       isLoading = false;
@@ -75,18 +109,49 @@ abstract class PainReliefControllerBase with Store {
     }
   }
 
+  /// Re-hidrata o estado de seleção a partir do plano carregado.
   @action
-  Future<void> savePainRelief({
-    required TriState querAlivioDor,
-    required bool massagem,
-    required bool exerciciosBola,
-    required bool exerciciosRespiracao,
-    required bool banhoChuveiro,
-    required bool banhoBanheira,
-    required bool acupuntura,
-    required bool acupressao,
-    required bool outroMetodo,
-  }) async {
+  void _hydrate(PlanoPartoModel? plano) {
+    querAlivioDor = TriState.fromValue(plano?.querAlivioDor);
+    massagem = plano?.massagem ?? false;
+    exerciciosBola = plano?.exerciciosBola ?? false;
+    exerciciosRespiracao = plano?.exerciciosRespiracao ?? false;
+    banhoChuveiro = plano?.banhoChuveiro ?? false;
+    banhoBanheira = plano?.banhoBanheira ?? false;
+    acupuntura = plano?.acupuntura ?? false;
+    acupressao = plano?.acupressao ?? false;
+    outroMetodo = plano?.outroMetodo ?? false;
+  }
+
+  @action
+  void setQuerAlivioDor(TriState value) => querAlivioDor = value;
+
+  @action
+  void setMassagem(bool value) => massagem = value;
+
+  @action
+  void setExerciciosBola(bool value) => exerciciosBola = value;
+
+  @action
+  void setExerciciosRespiracao(bool value) => exerciciosRespiracao = value;
+
+  @action
+  void setBanhoChuveiro(bool value) => banhoChuveiro = value;
+
+  @action
+  void setBanhoBanheira(bool value) => banhoBanheira = value;
+
+  @action
+  void setAcupuntura(bool value) => acupuntura = value;
+
+  @action
+  void setAcupressao(bool value) => acupressao = value;
+
+  @action
+  void setOutroMetodo(bool value) => outroMetodo = value;
+
+  @action
+  Future<void> savePainRelief() async {
     if (_busy) return;
     final gid = _gestacaoId;
     if (gid == null) {
@@ -94,9 +159,7 @@ abstract class PainReliefControllerBase with Store {
       return;
     }
     if (loadFailed) {
-      Messages.showInfo(
-        'Não foi possível carregar o plano de parto. Tente novamente antes de salvar.',
-      );
+      Messages.showInfo('Não foi possível carregar o plano de parto. Tente novamente antes de salvar.');
       return;
     }
     _busy = true;

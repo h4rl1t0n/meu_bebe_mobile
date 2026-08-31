@@ -31,7 +31,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Observer(builder: (_) => Text(controller.titulo))),
+      appBar: AppBar(elevation: 0, title: Observer(builder: (_) => Text(controller.titulo))),
       body: TabBarView(
         controller: tabController,
         physics: const NeverScrollableScrollPhysics(),

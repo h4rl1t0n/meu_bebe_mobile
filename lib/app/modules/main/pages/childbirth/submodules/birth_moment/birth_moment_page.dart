@@ -9,7 +9,6 @@ import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/plano_parto/plano_parto_enums.dart';
 import '../../../../widgets/base_card.dart';
 import 'birth_moment_controller.dart';
-import 'birth_moment_form_controller.dart';
 
 class BirthMomentPage extends StatefulWidget {
   const BirthMomentPage({super.key});
@@ -18,30 +17,26 @@ class BirthMomentPage extends StatefulWidget {
   State<BirthMomentPage> createState() => _BirthMomentPageState();
 }
 
-class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormController {
+class _BirthMomentPageState extends State<BirthMomentPage> {
   final formKey = GlobalKey<FormState>();
   final _controller = Modular.get<BirthMomentController>();
+  final otherPositionEC = TextEditingController();
   late ReactionDisposer _reactionDisposer;
 
   @override
   void initState() {
     super.initState();
-    // Re-hidrata o formulário sempre que `plano` (observable) mudar, para que
-    // os dados persistidos apareçam SEM interação do usuário.
-    _reactionDisposer = reaction(
-      (_) => _controller.plano,
-      (plano) {
-        initializeForm(plano);
-        if (mounted) setState(() {});
-      },
-    );
+    // Hidrata apenas o texto livre da posição "Outra" (único campo não-enum)
+    // quando o plano carrega. O restante do estado vive nos observables do
+    // controller. Nenhum `setState`: o TextField escuta o próprio controller.
+    _reactionDisposer = reaction((_) => _controller.plano, (plano) => otherPositionEC.text = plano?.outraPosicao ?? '');
     _controller.initialize();
   }
 
   @override
   void dispose() {
     _reactionDisposer();
-    disposeControllers();
+    otherPositionEC.dispose();
     super.dispose();
   }
 
@@ -72,42 +67,34 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
                       SizedBox(height: Spacing.lg),
                       Text('Via de parto?', style: textStyles.textStyle),
                       SizedBox(height: Spacing.sm),
-                      _buildViaPartoTabBar(),
+                      _buildViaPartoTabBar(_controller.viaParto, _controller.setViaParto),
                       SizedBox(height: Spacing.lg),
                       Text('Anestesia?', style: textStyles.textStyle),
                       SizedBox(height: Spacing.sm),
-                      _buildTriTabBar(anesthesiaEC),
+                      _buildTriTabBar(_controller.anestesia, _controller.setAnestesia),
                       SizedBox(height: Spacing.lg),
                       Text('Corte vaginal (episiotomia)?', style: textStyles.textStyle),
                       SizedBox(height: Spacing.sm),
-                      _buildTriTabBar(vaginalCutEC),
+                      _buildTriTabBar(_controller.corteVaginal, _controller.setCorteVaginal),
                       SizedBox(height: Spacing.lg),
                       Text('Posição preferida para o parto?', style: textStyles.textStyle),
                       SizedBox(height: Spacing.sm),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: PosicaoParto.values
-                            .map((p) => _buildPositionTab(p.label, p.value))
-                            .toList(),
+                        children: PosicaoParto.values.map((p) => _buildPositionTab(p)).toList(),
                       ),
-                      Observer(
-                        builder: (_) {
-                          if (preferredPositionEC.text == PosicaoParto.outra.value) {
-                            return Padding(
-                              padding: EdgeInsets.only(top: Spacing.md),
-                              child: TextFormField(
-                                controller: otherPositionEC,
-                                decoration: const InputDecoration(
-                                  label: Text('Descreva a posição'),
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
+                      if (_controller.posicaoPreferida == PosicaoParto.outra)
+                        Padding(
+                          padding: EdgeInsets.only(top: Spacing.md),
+                          child: TextFormField(
+                            controller: otherPositionEC,
+                            decoration: const InputDecoration(
+                              label: Text('Descreva a posição'),
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
                       SizedBox(height: Spacing.xxl),
                       _saveButton(),
                     ],
@@ -121,20 +108,20 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
     );
   }
 
-  Widget _buildViaPartoTabBar() {
+  Widget _buildViaPartoTabBar(ViaParto selected, ValueChanged<ViaParto> onSelect) {
     return Row(
       spacing: 5,
       children: ViaParto.values.map((v) {
         return Expanded(
           child: InkWell(
-            onTap: () => setState(() => birthWayEC.text = v.value),
+            onTap: () => onSelect(v),
             child: Container(
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: RadiusTokens.mdAll,
                 border: Border.all(color: context.colors.darkText),
-                color: birthWayEC.text == v.value ? context.colors.secondary : context.colors.surface,
+                color: selected == v ? context.colors.secondary : context.colors.surface,
                 boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
               ),
               child: Text(v.label, style: context.textStyles.caption, textAlign: TextAlign.center),
@@ -145,20 +132,20 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
     );
   }
 
-  Widget _buildTriTabBar(TextEditingController controller) {
+  Widget _buildTriTabBar(TriState selected, ValueChanged<TriState> onSelect) {
     return Row(
       spacing: 5,
       children: TriState.values.map((v) {
         return Expanded(
           child: InkWell(
-            onTap: () => setState(() => controller.text = v.value),
+            onTap: () => onSelect(v),
             child: Container(
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: RadiusTokens.mdAll,
                 border: Border.all(color: context.colors.darkText),
-                color: controller.text == v.value ? context.colors.secondary : context.colors.surface,
+                color: selected == v ? context.colors.secondary : context.colors.surface,
                 boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
               ),
               child: Text(v.label, style: context.textStyles.caption, textAlign: TextAlign.center),
@@ -169,17 +156,17 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
     );
   }
 
-  Widget _buildPositionTab(String label, String value) {
+  Widget _buildPositionTab(PosicaoParto value) {
     return InkWell(
-      onTap: () => setState(() => preferredPositionEC.text = value),
+      onTap: () => _controller.setPosicaoPreferida(value),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.sm),
         decoration: BoxDecoration(
           borderRadius: RadiusTokens.lgAll,
           border: Border.all(color: context.colors.darkText),
-          color: preferredPositionEC.text == value ? context.colors.secondary : context.colors.surface,
+          color: _controller.posicaoPreferida == value ? context.colors.secondary : context.colors.surface,
         ),
-        child: Text(label, style: context.textStyles.caption),
+        child: Text(value.label, style: context.textStyles.caption),
       ),
     );
   }
@@ -191,15 +178,9 @@ class _BirthMomentPageState extends State<BirthMomentPage> with BirthMomentFormC
       child: ElevatedButton.icon(
         onPressed: () {
           FocusScope.of(context).unfocus();
-          final isOutra = preferredPositionEC.text == PosicaoParto.outra.value;
+          final isOutra = _controller.posicaoPreferida == PosicaoParto.outra;
           _controller.saveBirthMoment(
-            viaParto: viaParto(),
-            anestesia: triState(anesthesiaEC),
-            corteVaginal: triState(vaginalCutEC),
-            posicaoPreferida: position(),
-            outraPosicao: isOutra && otherPositionEC.text.trim().isNotEmpty
-                ? otherPositionEC.text.trim()
-                : null,
+            outraPosicao: isOutra && otherPositionEC.text.trim().isNotEmpty ? otherPositionEC.text.trim() : null,
           );
         },
         icon: const Icon(Icons.save, size: 18),

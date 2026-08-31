@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
+import 'configuracoes_controller.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
   const ConfiguracoesPage({super.key});
@@ -12,61 +15,78 @@ class ConfiguracoesPage extends StatefulWidget {
 }
 
 class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
-  bool _notificacoesAtivas = true;
-  bool _lembretesConsulta = true;
-  bool _lembretesVacina = true;
-  bool _lembretesMedicacao = true;
+  final _controller = Modular.get<ConfiguracoesController>();
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final textStyles = context.textStyles;
 
-    return Scaffold(
-      backgroundColor: colors.secondary,
-      appBar: AppBar(title: const Text('Configuracoes'), centerTitle: true),
-      body: ListView(
-        padding: const EdgeInsets.all(Spacing.lg),
-        children: [
-          _sectionTitle('Notificacoes', textStyles),
-          _switchTile('Notificacoes ativas', _notificacoesAtivas, (v) => setState(() => _notificacoesAtivas = v)),
-          const Divider(),
-          _sectionTitle('Lembretes', textStyles),
-          _switchTile('Lembretes de consulta', _lembretesConsulta, (v) => setState(() => _lembretesConsulta = v)),
-          _switchTile('Lembretes de vacina', _lembretesVacina, (v) => setState(() => _lembretesVacina = v)),
-          _switchTile('Lembretes de medicacao', _lembretesMedicacao, (v) => setState(() => _lembretesMedicacao = v)),
-          const Divider(),
-          _sectionTitle('Conta', textStyles),
-          ListTile(
-            title: const Text('Alterar senha'),
-            leading: const Icon(Icons.lock_outline),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {},
-          ),
-          ListTile(
-            title: const Text('Excluir conta'),
-            leading: Icon(Icons.delete_outline, color: colors.error),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: const Text('Excluir conta'),
-                  content: const Text('Tem certeza que deseja excluir sua conta? Esta acao nao pode ser desfeita.'),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      style: ElevatedButton.styleFrom(backgroundColor: colors.error),
-                      child: Text('Excluir', style: context.textStyles.buttonTextStyle.copyWith(color: Colors.white)),
+    return Observer(
+      builder: (_) {
+        return Scaffold(
+          backgroundColor: colors.secondary,
+          appBar: AppBar(title: const Text('Configuracoes'), centerTitle: true),
+          body: ListView(
+            padding: const EdgeInsets.all(Spacing.lg),
+            children: [
+              _sectionTitle('Notificacoes', textStyles),
+              _switchTile(
+                'Notificacoes ativas',
+                _controller.notificacoesAtivas,
+                _controller.setNotificacoesAtivas,
+              ),
+              const Divider(),
+              _sectionTitle('Lembretes', textStyles),
+              _switchTile(
+                'Lembretes de consulta',
+                _controller.lembretesConsulta,
+                _controller.setLembretesConsulta,
+              ),
+              _switchTile(
+                'Lembretes de vacina',
+                _controller.lembretesVacina,
+                _controller.setLembretesVacina,
+              ),
+              _switchTile(
+                'Lembretes de medicacao',
+                _controller.lembretesMedicacao,
+                _controller.setLembretesMedicacao,
+              ),
+              const Divider(),
+              _sectionTitle('Conta', textStyles),
+              ListTile(
+                title: const Text('Alterar senha'),
+                leading: const Icon(Icons.lock_outline),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {},
+              ),
+              ListTile(
+                title: const Text('Excluir conta'),
+                leading: Icon(Icons.delete_outline, color: colors.error),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Excluir conta'),
+                      content: const Text('Tem certeza que deseja excluir sua conta? Esta acao nao pode ser desfeita.'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          style: ElevatedButton.styleFrom(backgroundColor: colors.error),
+                          child: Text('Excluir', style: context.textStyles.buttonTextStyle.copyWith(color: Colors.white)),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            },
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

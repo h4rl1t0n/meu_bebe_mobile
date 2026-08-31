@@ -167,4 +167,29 @@ void main() {
       expect(repo.registerCalls, 1);
     });
   });
+
+  group('RegisterController — obscureText (FASE 9J)', () {
+    test('senha e confirmação iniciam ocultas', () {
+      final c = makeController(_FakeAuthRepository((_, _) async => Success(_token())));
+      expect(c.obscurePassword, isTrue);
+      expect(c.obscureConfirmPassword, isTrue);
+    });
+
+    test('passwordToggle alterna obscurePassword', () {
+      final c = makeController(_FakeAuthRepository((_, _) async => Success(_token())));
+      c.passwordToggle();
+      expect(c.obscurePassword, isFalse);
+      c.passwordToggle();
+      expect(c.obscurePassword, isTrue);
+    });
+
+    test('confirmPasswordToggle alterna obscureConfirmPassword de forma independente', () {
+      final c = makeController(_FakeAuthRepository((_, _) async => Success(_token())));
+      c.confirmPasswordToggle();
+      expect(c.obscureConfirmPassword, isFalse);
+      expect(c.obscurePassword, isTrue);
+      c.confirmPasswordToggle();
+      expect(c.obscureConfirmPassword, isTrue);
+    });
+  });
 }

@@ -34,8 +34,17 @@ class _InicializarAppPageState extends State<InicializarAppPage> with SingleTick
       // Estado de sessão: se já há tokens persistidos, resolve o destino a
       // partir do estado REAL do backend (gestante/gestação/DSS); caso
       // contrário, vai para o login.
-      final hasSession = await const TokenStorage().hasSession();
+      final storage = const TokenStorage();
+      final hasSession = await storage.hasSession();
       if (!hasSession) {
+        Modular.to.pushReplacementNamed(routeLogin);
+        return;
+      }
+      // "Lembrar-me" desmarcado no último login: a sessão NÃO deve sobreviver
+      // a esta abertura. Descarta os tokens persistidos (a senha nunca foi
+      // armazenada) e volta ao login.
+      if (!await storage.getRememberMe()) {
+        await storage.clear();
         Modular.to.pushReplacementNamed(routeLogin);
         return;
       }

@@ -14,6 +14,10 @@ class ExpectationsController = ExpectationsControllerBase with _$ExpectationsCon
 /// Controlador de EXPECTATIVAS (seção do Plano de Parto), com a API como fonte
 /// de verdade. Cada salvamento faz GET (em memória) → merge da seção → PUT do
 /// plano COMPLETO (28 campos), preservando as demais seções.
+///
+/// O estado de seleção do formulário vive AQUI (observables), não em
+/// `TextEditingController` locais da página: a UI apenas lê e chama os setters,
+/// sem `setState`.
 abstract class ExpectationsControllerBase with Store {
   final PlanoPartoRepository planoPartoRepository;
   final PerfilRepository perfilRepository;
@@ -32,6 +36,27 @@ abstract class ExpectationsControllerBase with Store {
   @observable
   PlanoPartoModel? plano;
 
+  @observable
+  TriState acompanhante = TriState.naoSei;
+
+  @observable
+  TriState rasparPelosIntimos = TriState.naoSei;
+
+  @observable
+  TriState lavagemIntestinal = TriState.naoSei;
+
+  @observable
+  TriState ambientePoucaLuz = TriState.naoSei;
+
+  @observable
+  TriState ouvirMusica = TriState.naoSei;
+
+  @observable
+  TriState beberLiquidos = TriState.naoSei;
+
+  @observable
+  TriState registrarFotosVideos = TriState.naoSei;
+
   String? _gestacaoId;
   bool _busy = false;
 
@@ -49,6 +74,7 @@ abstract class ExpectationsControllerBase with Store {
       if (gid == null) {
         hasGestacao = false;
         plano = null;
+        _hydrate(null);
         return;
       }
       hasGestacao = true;
@@ -56,10 +82,12 @@ abstract class ExpectationsControllerBase with Store {
       switch (result) {
         case Success():
           plano = result.success ?? PlanoPartoModel.empty();
+          _hydrate(plano);
         case Error(error: final failure):
           Messages.showError(failure.message);
           plano = null;
           loadFailed = true;
+          _hydrate(null);
       }
     } finally {
       isLoading = false;
@@ -77,16 +105,41 @@ abstract class ExpectationsControllerBase with Store {
     }
   }
 
+  /// Re-hidrata o estado de seleção a partir do plano carregado.
   @action
-  Future<void> saveExpectations({
-    required TriState acompanhante,
-    required TriState rasparPelosIntimos,
-    required TriState lavagemIntestinal,
-    required TriState ambientePoucaLuz,
-    required TriState ouvirMusica,
-    required TriState beberLiquidos,
-    required TriState registrarFotosVideos,
-  }) async {
+  void _hydrate(PlanoPartoModel? plano) {
+    acompanhante = TriState.fromValue(plano?.acompanhante);
+    rasparPelosIntimos = TriState.fromValue(plano?.rasparPelosIntimos);
+    lavagemIntestinal = TriState.fromValue(plano?.lavagemIntestinal);
+    ambientePoucaLuz = TriState.fromValue(plano?.ambientePoucaLuz);
+    ouvirMusica = TriState.fromValue(plano?.ouvirMusica);
+    beberLiquidos = TriState.fromValue(plano?.beberLiquidos);
+    registrarFotosVideos = TriState.fromValue(plano?.registrarFotosVideos);
+  }
+
+  @action
+  void setAcompanhante(TriState value) => acompanhante = value;
+
+  @action
+  void setRasparPelosIntimos(TriState value) => rasparPelosIntimos = value;
+
+  @action
+  void setLavagemIntestinal(TriState value) => lavagemIntestinal = value;
+
+  @action
+  void setAmbientePoucaLuz(TriState value) => ambientePoucaLuz = value;
+
+  @action
+  void setOuvirMusica(TriState value) => ouvirMusica = value;
+
+  @action
+  void setBeberLiquidos(TriState value) => beberLiquidos = value;
+
+  @action
+  void setRegistrarFotosVideos(TriState value) => registrarFotosVideos = value;
+
+  @action
+  Future<void> saveExpectations() async {
     if (_busy) return;
     final gid = _gestacaoId;
     if (gid == null) {
@@ -94,9 +147,7 @@ abstract class ExpectationsControllerBase with Store {
       return;
     }
     if (loadFailed) {
-      Messages.showInfo(
-        'Não foi possível carregar o plano de parto. Tente novamente antes de salvar.',
-      );
+      Messages.showInfo('Não foi possível carregar o plano de parto. Tente novamente antes de salvar.');
       return;
     }
     _busy = true;

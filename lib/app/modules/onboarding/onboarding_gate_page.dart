@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/design_tokens.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
-import 'onboarding_navigator.dart';
-import 'onboarding_resolution.dart';
-import 'onboarding_resolver.dart';
+import 'onboarding_gate_controller.dart';
 
 /// Tela de verificação/retry (FASE 9G-FIX1). Re-resolve o estado do onboarding
 /// e encaminha o usuário (retry ou próximo passo). Nunca libera a Main sem
@@ -19,29 +18,12 @@ class OnboardingGatePage extends StatefulWidget {
 }
 
 class _OnboardingGatePageState extends State<OnboardingGatePage> {
-  bool _checking = true;
+  final _controller = Modular.get<OnboardingGateController>();
 
   @override
   void initState() {
     super.initState();
-    _resolve();
-  }
-
-  Future<void> _resolve() async {
-    setState(() => _checking = true);
-    final resolver = Modular.get<OnboardingResolver>();
-    final resolution = await resolver.resolve();
-    if (!mounted) return;
-    switch (resolution) {
-      case OnboardingComplete():
-      case OnboardingNextStep():
-        navigateOnboardingResolution(resolution);
-      case OnboardingFailure():
-        setState(() => _checking = false);
-      case OnboardingSessionExpired():
-        // SessionManager já navegou ao login; nada a fazer.
-        break;
-    }
+    _controller.resolve();
   }
 
   @override
@@ -49,18 +31,22 @@ class _OnboardingGatePageState extends State<OnboardingGatePage> {
     final colors = context.colors;
     final textStyles = context.textStyles;
 
-    return Scaffold(
-      backgroundColor: colors.scaffoldBackground,
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(Spacing.xxl),
-            child: _checking
-                ? const CircularProgressIndicator.adaptive()
-                : _buildRetry(colors, textStyles),
+    return Observer(
+      builder: (_) {
+        return Scaffold(
+          backgroundColor: colors.scaffoldBackground,
+          body: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(Spacing.xxl),
+                child: _controller.checking
+                    ? const CircularProgressIndicator.adaptive()
+                    : _buildRetry(colors, textStyles),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -77,7 +63,7 @@ class _OnboardingGatePageState extends State<OnboardingGatePage> {
         ),
         SizedBox(height: Spacing.xl),
         ElevatedButton.icon(
-          onPressed: _resolve,
+          onPressed: _controller.resolve,
           icon: const Icon(Icons.refresh),
           label: const Text('Tentar novamente'),
         ),

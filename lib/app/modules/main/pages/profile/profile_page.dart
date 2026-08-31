@@ -81,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         // Fundo do Cabeçalho
                         Container(
-                          height: 125,
+                          height: 75,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -142,7 +142,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         padding: EdgeInsets.all(Spacing.md),
                         decoration: BoxDecoration(
                           color: colors.surface,
-                          borderRadius: RadiusTokens.xxlAll,
+                          borderRadius: RadiusTokens.xlAll,
                           boxShadow: [ElevationTokens.raisedShadow(colors.onSurface)],
                         ),
                         child: Column(
@@ -213,7 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: EdgeInsets.all(Spacing.lg),
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: RadiusTokens.xxlAll,
+          borderRadius: RadiusTokens.xlAll,
           boxShadow: [ElevationTokens.raisedShadow(colors.onSurface)],
         ),
         child: Column(
@@ -275,7 +275,7 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: EdgeInsets.all(Spacing.md),
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: RadiusTokens.xxlAll,
+          borderRadius: RadiusTokens.xlAll,
           boxShadow: [ElevationTokens.raisedShadow(colors.onSurface)],
         ),
         child: Column(

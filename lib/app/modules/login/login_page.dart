@@ -34,6 +34,20 @@ class LoginPageState extends State<LoginPage> {
     formKey = GlobalKey<FormState>();
     emailTEC = TextEditingController();
     passwordTEC = TextEditingController();
+    _hydrateRememberedCredentials();
+  }
+
+  /// Restaura e-mail e senha lembrados após logout/abertura (FASE 9J-PRE-FIX1).
+  ///
+  /// Lê a flag "Lembrar-me" + credenciais do armazenamento seguro e preenche os
+  /// `TextEditingController` — sem `setState` (o controller do campo notifica o
+  /// `TextFormField` sozinho). A senha chega obscurecida (`obscureText` segue
+  /// `true` no controller).
+  Future<void> _hydrateRememberedCredentials() async {
+    await controller.initialize();
+    if (!mounted) return;
+    emailTEC.text = controller.rememberedEmail ?? '';
+    passwordTEC.text = controller.rememberedPassword ?? '';
   }
 
   @override
@@ -194,12 +208,14 @@ class LoginPageState extends State<LoginPage> {
 
                                         const SizedBox(height: 10),
 
-                                        CheckboxListTile(
-                                          contentPadding: EdgeInsets.zero,
-                                          controlAffinity: ListTileControlAffinity.leading,
-                                          title: const Text('Lembrar-me', style: TextStyle(fontSize: 14)),
-                                          value: true,
-                                          onChanged: (value) {},
+                                        Observer(
+                                          builder: (_) => CheckboxListTile(
+                                            contentPadding: EdgeInsets.zero,
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text('Lembrar-me', style: TextStyle(fontSize: 14)),
+                                            value: controller.rememberMe,
+                                            onChanged: controller.toggleRememberMe,
+                                          ),
                                         ),
 
                                         const SizedBox(height: 10),

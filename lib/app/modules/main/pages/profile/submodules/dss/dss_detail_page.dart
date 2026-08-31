@@ -64,17 +64,11 @@ class DssDetailPage extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(Spacing.lg),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: RadiusTokens.lgAll,
-      ),
+      decoration: BoxDecoration(color: colors.surface, borderRadius: RadiusTokens.lgAll),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Avaliação em ${formatDssDate(avaliacao.createdAt)}',
-            style: textStyles.subTitleStyle,
-          ),
+          Text('Avaliação em ${formatDssDate(avaliacao.createdAt)}', style: textStyles.subTitleStyle),
           const SizedBox(height: Spacing.xs),
           Text(
             'Versão do questionário: ${avaliacao.schemaVersion}',
@@ -99,19 +93,13 @@ class DssDetailPage extends StatelessWidget {
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(Spacing.lg),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: RadiusTokens.lgAll,
-          ),
+          decoration: BoxDecoration(color: colors.surface, borderRadius: RadiusTokens.lgAll),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label, style: textStyles.subTitleStyle),
               const SizedBox(height: Spacing.sm),
-              if (value is Map)
-                ..._fields(context, value)
-              else
-                Text(_formatValue(value), style: textStyles.bodyMedium),
+              if (value is Map) ..._fields(context, value) else Text(_formatValue(value), style: textStyles.bodyMedium),
             ],
           ),
         ),
@@ -135,16 +123,9 @@ class DssDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                flex: 2,
-                child: Text(
-                  '$key',
-                  style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
-                ),
+                child: Text('$key', style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant)),
               ),
-              Expanded(
-                flex: 3,
-                child: Text(_formatValue(v), style: textStyles.bodyMedium),
-              ),
+              Expanded(child: Text(_formatValue(v), style: textStyles.bodyMedium)),
             ],
           ),
         ),

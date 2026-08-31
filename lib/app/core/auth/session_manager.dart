@@ -13,11 +13,9 @@ final class SessionManager {
   final TokenStorage storage;
   final Future<void> Function() _navigateToLogin;
 
-  SessionManager({
-    TokenStorage? storage,
-    Future<void> Function()? navigateToLogin,
-  })  : storage = storage ?? const TokenStorage(),
-        _navigateToLogin = navigateToLogin ?? _defaultNavigateToLogin;
+  SessionManager({TokenStorage? storage, Future<void> Function()? navigateToLogin})
+    : storage = storage ?? const TokenStorage(),
+      _navigateToLogin = navigateToLogin ?? _defaultNavigateToLogin;
 
   static Future<void> _defaultNavigateToLogin() async {
     await Modular.to.pushReplacementNamed(routeLogin);

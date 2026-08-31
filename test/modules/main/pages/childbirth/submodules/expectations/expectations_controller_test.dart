@@ -28,6 +28,7 @@ void main() {
 
       expect(c.hasGestacao, isTrue);
       expect(c.plano?.acompanhante, 'sim');
+      expect(c.acompanhante, TriState.sim);
       expect(c.isLoading, isFalse);
       expect(planoRepo.getCalls, 1);
     });
@@ -45,6 +46,7 @@ void main() {
 
       expect(c.hasGestacao, isTrue);
       expect(c.plano?.acompanhante, 'nao_sei');
+      expect(c.acompanhante, TriState.naoSei);
       expect(c.isLoading, isFalse);
     });
 
@@ -97,15 +99,14 @@ void main() {
       final c = ExpectationsController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveExpectations(
-        acompanhante: TriState.sim,
-        rasparPelosIntimos: TriState.nao,
-        lavagemIntestinal: TriState.naoSei,
-        ambientePoucaLuz: TriState.sim,
-        ouvirMusica: TriState.nao,
-        beberLiquidos: TriState.sim,
-        registrarFotosVideos: TriState.naoSei,
-      );
+      c.setAcompanhante(TriState.sim);
+      c.setRasparPelosIntimos(TriState.nao);
+      c.setLavagemIntestinal(TriState.naoSei);
+      c.setAmbientePoucaLuz(TriState.sim);
+      c.setOuvirMusica(TriState.nao);
+      c.setBeberLiquidos(TriState.sim);
+      c.setRegistrarFotosVideos(TriState.naoSei);
+      await c.saveExpectations();
 
       expect(c.saved, isTrue);
       expect(planoRepo.upsertCalls, 1);
@@ -130,15 +131,14 @@ void main() {
       final c = ExpectationsController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveExpectations(
-        acompanhante: TriState.sim,
-        rasparPelosIntimos: TriState.nao,
-        lavagemIntestinal: TriState.naoSei,
-        ambientePoucaLuz: TriState.sim,
-        ouvirMusica: TriState.nao,
-        beberLiquidos: TriState.sim,
-        registrarFotosVideos: TriState.naoSei,
-      );
+      c.setAcompanhante(TriState.sim);
+      c.setRasparPelosIntimos(TriState.nao);
+      c.setLavagemIntestinal(TriState.naoSei);
+      c.setAmbientePoucaLuz(TriState.sim);
+      c.setOuvirMusica(TriState.nao);
+      c.setBeberLiquidos(TriState.sim);
+      c.setRegistrarFotosVideos(TriState.naoSei);
+      await c.saveExpectations();
 
       expect(c.saved, isFalse);
       expect(planoRepo.upsertCalls, 0);
@@ -155,15 +155,14 @@ void main() {
       final c = ExpectationsController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveExpectations(
-        acompanhante: TriState.sim,
-        rasparPelosIntimos: TriState.nao,
-        lavagemIntestinal: TriState.naoSei,
-        ambientePoucaLuz: TriState.sim,
-        ouvirMusica: TriState.nao,
-        beberLiquidos: TriState.sim,
-        registrarFotosVideos: TriState.naoSei,
-      );
+      c.setAcompanhante(TriState.sim);
+      c.setRasparPelosIntimos(TriState.nao);
+      c.setLavagemIntestinal(TriState.naoSei);
+      c.setAmbientePoucaLuz(TriState.sim);
+      c.setOuvirMusica(TriState.nao);
+      c.setBeberLiquidos(TriState.sim);
+      c.setRegistrarFotosVideos(TriState.naoSei);
+      await c.saveExpectations();
 
       expect(c.saved, isFalse);
       expect(planoRepo.upsertCalls, 1);
@@ -181,15 +180,14 @@ void main() {
       final c = ExpectationsController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveExpectations(
-        acompanhante: TriState.sim,
-        rasparPelosIntimos: TriState.nao,
-        lavagemIntestinal: TriState.naoSei,
-        ambientePoucaLuz: TriState.sim,
-        ouvirMusica: TriState.nao,
-        beberLiquidos: TriState.sim,
-        registrarFotosVideos: TriState.naoSei,
-      );
+      c.setAcompanhante(TriState.sim);
+      c.setRasparPelosIntimos(TriState.nao);
+      c.setLavagemIntestinal(TriState.naoSei);
+      c.setAmbientePoucaLuz(TriState.sim);
+      c.setOuvirMusica(TriState.nao);
+      c.setBeberLiquidos(TriState.sim);
+      c.setRegistrarFotosVideos(TriState.naoSei);
+      await c.saveExpectations();
 
       expect(planoRepo.upsertCalls, 0);
       expect(c.saved, isFalse);
@@ -212,27 +210,25 @@ void main() {
       final c = ExpectationsController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveExpectations(
-        acompanhante: TriState.sim,
-        rasparPelosIntimos: TriState.nao,
-        lavagemIntestinal: TriState.naoSei,
-        ambientePoucaLuz: TriState.sim,
-        ouvirMusica: TriState.nao,
-        beberLiquidos: TriState.sim,
-        registrarFotosVideos: TriState.naoSei,
-      );
+      c.setAcompanhante(TriState.sim);
+      c.setRasparPelosIntimos(TriState.nao);
+      c.setLavagemIntestinal(TriState.naoSei);
+      c.setAmbientePoucaLuz(TriState.sim);
+      c.setOuvirMusica(TriState.nao);
+      c.setBeberLiquidos(TriState.sim);
+      c.setRegistrarFotosVideos(TriState.naoSei);
+      await c.saveExpectations();
       expect(c.saved, isTrue);
 
       shouldFail = true;
-      await c.saveExpectations(
-        acompanhante: TriState.nao,
-        rasparPelosIntimos: TriState.sim,
-        lavagemIntestinal: TriState.nao,
-        ambientePoucaLuz: TriState.nao,
-        ouvirMusica: TriState.sim,
-        beberLiquidos: TriState.nao,
-        registrarFotosVideos: TriState.sim,
-      );
+      c.setAcompanhante(TriState.nao);
+      c.setRasparPelosIntimos(TriState.sim);
+      c.setLavagemIntestinal(TriState.nao);
+      c.setAmbientePoucaLuz(TriState.nao);
+      c.setOuvirMusica(TriState.sim);
+      c.setBeberLiquidos(TriState.nao);
+      c.setRegistrarFotosVideos(TriState.sim);
+      await c.saveExpectations();
       expect(c.saved, isFalse);
     });
 
@@ -248,25 +244,23 @@ void main() {
       final c = ExpectationsController(planoRepo, perfil);
       await c.initialize();
 
-      final first = c.saveExpectations(
-        acompanhante: TriState.sim,
-        rasparPelosIntimos: TriState.nao,
-        lavagemIntestinal: TriState.naoSei,
-        ambientePoucaLuz: TriState.sim,
-        ouvirMusica: TriState.nao,
-        beberLiquidos: TriState.sim,
-        registrarFotosVideos: TriState.naoSei,
-      );
+      c.setAcompanhante(TriState.sim);
+      c.setRasparPelosIntimos(TriState.nao);
+      c.setLavagemIntestinal(TriState.naoSei);
+      c.setAmbientePoucaLuz(TriState.sim);
+      c.setOuvirMusica(TriState.nao);
+      c.setBeberLiquidos(TriState.sim);
+      c.setRegistrarFotosVideos(TriState.naoSei);
+      final first = c.saveExpectations();
       // Chamada concorrente enquanto a 1ª ainda está pendente.
-      await c.saveExpectations(
-        acompanhante: TriState.nao,
-        rasparPelosIntimos: TriState.sim,
-        lavagemIntestinal: TriState.nao,
-        ambientePoucaLuz: TriState.nao,
-        ouvirMusica: TriState.sim,
-        beberLiquidos: TriState.nao,
-        registrarFotosVideos: TriState.sim,
-      );
+      c.setAcompanhante(TriState.nao);
+      c.setRasparPelosIntimos(TriState.sim);
+      c.setLavagemIntestinal(TriState.nao);
+      c.setAmbientePoucaLuz(TriState.nao);
+      c.setOuvirMusica(TriState.sim);
+      c.setBeberLiquidos(TriState.nao);
+      c.setRegistrarFotosVideos(TriState.sim);
+      await c.saveExpectations();
 
       completer.complete(Success(PlanoPartoModel.empty()));
       await first;

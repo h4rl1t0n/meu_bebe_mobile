@@ -12,6 +12,10 @@ part 'birth_moment_controller.g.dart';
 class BirthMomentController = BirthMomentControllerBase with _$BirthMomentController;
 
 /// Controlador de MOMENTO DO PARTO (seção do Plano de Parto) — API como fonte.
+///
+/// O estado de seleção do formulário vive AQUI (observables), não em
+/// `TextEditingController` locais da página. A única exceção é o texto livre da
+/// posição "Outra", que continua sendo passado à [saveBirthMoment] pela página.
 abstract class BirthMomentControllerBase with Store {
   final PlanoPartoRepository planoPartoRepository;
   final PerfilRepository perfilRepository;
@@ -30,6 +34,18 @@ abstract class BirthMomentControllerBase with Store {
   @observable
   PlanoPartoModel? plano;
 
+  @observable
+  ViaParto viaParto = ViaParto.naoSei;
+
+  @observable
+  TriState anestesia = TriState.naoSei;
+
+  @observable
+  TriState corteVaginal = TriState.naoSei;
+
+  @observable
+  PosicaoParto? posicaoPreferida;
+
   String? _gestacaoId;
   bool _busy = false;
 
@@ -47,6 +63,7 @@ abstract class BirthMomentControllerBase with Store {
       if (gid == null) {
         hasGestacao = false;
         plano = null;
+        _hydrate(null);
         return;
       }
       hasGestacao = true;
@@ -54,10 +71,12 @@ abstract class BirthMomentControllerBase with Store {
       switch (result) {
         case Success():
           plano = result.success ?? PlanoPartoModel.empty();
+          _hydrate(plano);
         case Error(error: final failure):
           Messages.showError(failure.message);
           plano = null;
           loadFailed = true;
+          _hydrate(null);
       }
     } finally {
       isLoading = false;
@@ -75,14 +94,29 @@ abstract class BirthMomentControllerBase with Store {
     }
   }
 
+  /// Re-hidrata o estado de seleção a partir do plano carregado.
   @action
-  Future<void> saveBirthMoment({
-    required ViaParto viaParto,
-    required TriState anestesia,
-    required TriState corteVaginal,
-    PosicaoParto? posicaoPreferida,
-    String? outraPosicao,
-  }) async {
+  void _hydrate(PlanoPartoModel? plano) {
+    viaParto = ViaParto.fromValue(plano?.viaParto);
+    anestesia = TriState.fromValue(plano?.anestesia);
+    corteVaginal = TriState.fromValue(plano?.corteVaginal);
+    posicaoPreferida = PosicaoParto.fromValue(plano?.posicaoPreferida);
+  }
+
+  @action
+  void setViaParto(ViaParto value) => viaParto = value;
+
+  @action
+  void setAnestesia(TriState value) => anestesia = value;
+
+  @action
+  void setCorteVaginal(TriState value) => corteVaginal = value;
+
+  @action
+  void setPosicaoPreferida(PosicaoParto? value) => posicaoPreferida = value;
+
+  @action
+  Future<void> saveBirthMoment({String? outraPosicao}) async {
     if (_busy) return;
     final gid = _gestacaoId;
     if (gid == null) {
@@ -90,9 +124,7 @@ abstract class BirthMomentControllerBase with Store {
       return;
     }
     if (loadFailed) {
-      Messages.showInfo(
-        'Não foi possível carregar o plano de parto. Tente novamente antes de salvar.',
-      );
+      Messages.showInfo('Não foi possível carregar o plano de parto. Tente novamente antes de salvar.');
       return;
     }
     _busy = true;

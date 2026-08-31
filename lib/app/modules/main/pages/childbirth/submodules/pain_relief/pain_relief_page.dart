@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:mobx/mobx.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
@@ -9,7 +8,6 @@ import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/plano_parto/plano_parto_enums.dart';
 import '../../../../widgets/base_card.dart';
 import 'pain_relief_controller.dart';
-import 'pain_relief_form_controller.dart';
 
 class PainReliefPage extends StatefulWidget {
   const PainReliefPage({super.key});
@@ -18,30 +16,13 @@ class PainReliefPage extends StatefulWidget {
   State<PainReliefPage> createState() => _PainReliefPageState();
 }
 
-class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormController {
+class _PainReliefPageState extends State<PainReliefPage> {
   final _controller = Modular.get<PainReliefController>();
-  late ReactionDisposer _reactionDisposer;
 
   @override
   void initState() {
     super.initState();
-    // Re-hidrata o formulário sempre que `plano` (observable) mudar, para que
-    // os dados persistidos apareçam SEM interação do usuário.
-    _reactionDisposer = reaction(
-      (_) => _controller.plano,
-      (plano) {
-        initializeForm(plano);
-        if (mounted) setState(() {});
-      },
-    );
     _controller.initialize();
-  }
-
-  @override
-  void dispose() {
-    _reactionDisposer();
-    disposeControllers();
-    super.dispose();
   }
 
   @override
@@ -67,58 +48,32 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
                   children: [
                     Text('Deseja medidas para alívio da dor?', style: textStyles.titleSmallStyle),
                     SizedBox(height: Spacing.md),
-                    _buildTabBar(),
-                    Observer(
-                      builder: (_) {
-                        if (painReliefEC.text == TriState.sim.value) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: Spacing.xl),
-                              Text('Quais métodos você prefere?', style: textStyles.titleSmallStyle),
-                              SizedBox(height: Spacing.sm),
-                              _buildCheckbox('Massagem', massage, (v) => setState(() => massage = v ?? false)),
-                              _buildCheckbox(
-                                'Exercícios com bola',
-                                ballExercises,
-                                (v) => setState(() => ballExercises = v ?? false),
-                              ),
-                              _buildCheckbox(
-                                'Respiração e relaxamento',
-                                breathRelaxExercises,
-                                (v) => setState(() => breathRelaxExercises = v ?? false),
-                              ),
-                              _buildCheckbox(
-                                'Banho de chuveiro',
-                                showerBath,
-                                (v) => setState(() => showerBath = v ?? false),
-                              ),
-                              _buildCheckbox(
-                                'Banho de banheira',
-                                bathtubBath,
-                                (v) => setState(() => bathtubBath = v ?? false),
-                              ),
-                              _buildCheckbox(
-                                'Acupuntura',
-                                acupuncture,
-                                (v) => setState(() => acupuncture = v ?? false),
-                              ),
-                              _buildCheckbox(
-                                'Acupressão',
-                                acupressure,
-                                (v) => setState(() => acupressure = v ?? false),
-                              ),
-                              _buildCheckbox(
-                                'Outro método',
-                                otherMethod,
-                                (v) => setState(() => otherMethod = v ?? false),
-                              ),
-                            ],
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
+                    _buildTabBar(_controller.querAlivioDor, _controller.setQuerAlivioDor),
+                    if (_controller.querAlivioDor == TriState.sim)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: Spacing.xl),
+                          Text('Quais métodos você prefere?', style: textStyles.titleSmallStyle),
+                          SizedBox(height: Spacing.sm),
+                          _buildCheckbox('Massagem', _controller.massagem, _controller.setMassagem),
+                          _buildCheckbox(
+                            'Exercícios com bola',
+                            _controller.exerciciosBola,
+                            _controller.setExerciciosBola,
+                          ),
+                          _buildCheckbox(
+                            'Respiração e relaxamento',
+                            _controller.exerciciosRespiracao,
+                            _controller.setExerciciosRespiracao,
+                          ),
+                          _buildCheckbox('Banho de chuveiro', _controller.banhoChuveiro, _controller.setBanhoChuveiro),
+                          _buildCheckbox('Banho de banheira', _controller.banhoBanheira, _controller.setBanhoBanheira),
+                          _buildCheckbox('Acupuntura', _controller.acupuntura, _controller.setAcupuntura),
+                          _buildCheckbox('Acupressão', _controller.acupressao, _controller.setAcupressao),
+                          _buildCheckbox('Outro método', _controller.outroMetodo, _controller.setOutroMetodo),
+                        ],
+                      ),
                     SizedBox(height: Spacing.xxl),
                     _saveButton(),
                   ],
@@ -131,19 +86,19 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildTabBar(TriState selected, ValueChanged<TriState> onSelect) {
     return Row(
       children: TriState.values.map((v) {
         return Expanded(
           child: InkWell(
-            onTap: () => setState(() => painReliefEC.text = v.value),
+            onTap: () => onSelect(v),
             child: Container(
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: RadiusTokens.mdAll,
                 border: Border.all(color: context.colors.darkText),
-                color: painReliefEC.text == v.value ? context.colors.secondary : context.colors.surface,
+                color: selected == v ? context.colors.secondary : context.colors.surface,
                 boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
               ),
               child: Text(v.label, textAlign: TextAlign.center),
@@ -154,13 +109,13 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
     );
   }
 
-  Widget _buildCheckbox(String label, bool value, ValueChanged<bool?> onChanged) {
+  Widget _buildCheckbox(String label, bool value, ValueChanged<bool> onChanged) {
     return Material(
       color: Colors.transparent,
       child: CheckboxListTile(
         title: Text(label, style: context.textStyles.textStyle),
         value: value,
-        onChanged: onChanged,
+        onChanged: (v) => onChanged(v ?? false),
         activeColor: context.colors.text,
         contentPadding: EdgeInsets.zero,
         controlAffinity: ListTileControlAffinity.leading,
@@ -174,19 +129,7 @@ class _PainReliefPageState extends State<PainReliefPage> with PainReliefFormCont
       width: double.infinity,
       height: 48,
       child: ElevatedButton.icon(
-        onPressed: () {
-          _controller.savePainRelief(
-            querAlivioDor: triState(),
-            massagem: massage,
-            exerciciosBola: ballExercises,
-            exerciciosRespiracao: breathRelaxExercises,
-            banhoChuveiro: showerBath,
-            banhoBanheira: bathtubBath,
-            acupuntura: acupuncture,
-            acupressao: acupressure,
-            outroMetodo: otherMethod,
-          );
-        },
+        onPressed: _controller.savePainRelief,
         icon: const Icon(Icons.save, size: 18),
         label: const Text('Salvar'),
       ),

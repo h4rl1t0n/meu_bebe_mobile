@@ -26,6 +26,7 @@ void main() {
 
       expect(c.hasGestacao, isTrue);
       expect(c.plano?.viaParto, 'vaginal');
+      expect(c.viaParto, ViaParto.vaginal);
       expect(c.isLoading, isFalse);
     });
 
@@ -60,13 +61,11 @@ void main() {
       final c = BirthMomentController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveBirthMoment(
-        viaParto: ViaParto.cesarea,
-        anestesia: TriState.sim,
-        corteVaginal: TriState.nao,
-        posicaoPreferida: PosicaoParto.outra,
-        outraPosicao: 'De cócoras',
-      );
+      c.setViaParto(ViaParto.cesarea);
+      c.setAnestesia(TriState.sim);
+      c.setCorteVaginal(TriState.nao);
+      c.setPosicaoPreferida(PosicaoParto.outra);
+      await c.saveBirthMoment(outraPosicao: 'De cócoras');
 
       final sent = planoRepo.lastUpserted!;
       expect(sent.viaParto, 'cesarea');
@@ -90,13 +89,11 @@ void main() {
       final c = BirthMomentController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveBirthMoment(
-        viaParto: ViaParto.vaginal,
-        anestesia: TriState.naoSei,
-        corteVaginal: TriState.naoSei,
-        posicaoPreferida: PosicaoParto.deitada,
-        outraPosicao: null,
-      );
+      c.setViaParto(ViaParto.vaginal);
+      c.setAnestesia(TriState.naoSei);
+      c.setCorteVaginal(TriState.naoSei);
+      c.setPosicaoPreferida(PosicaoParto.deitada);
+      await c.saveBirthMoment();
 
       final sent = planoRepo.lastUpserted!;
       expect(sent.posicaoPreferida, 'deitada');
@@ -114,11 +111,10 @@ void main() {
       final c = BirthMomentController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveBirthMoment(
-        viaParto: ViaParto.vaginal,
-        anestesia: TriState.sim,
-        corteVaginal: TriState.nao,
-      );
+      c.setViaParto(ViaParto.vaginal);
+      c.setAnestesia(TriState.sim);
+      c.setCorteVaginal(TriState.nao);
+      await c.saveBirthMoment();
 
       expect(c.saved, isFalse);
     });
@@ -133,11 +129,10 @@ void main() {
       final c = BirthMomentController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveBirthMoment(
-        viaParto: ViaParto.vaginal,
-        anestesia: TriState.sim,
-        corteVaginal: TriState.nao,
-      );
+      c.setViaParto(ViaParto.vaginal);
+      c.setAnestesia(TriState.sim);
+      c.setCorteVaginal(TriState.nao);
+      await c.saveBirthMoment();
 
       expect(planoRepo.upsertCalls, 0);
       expect(c.saved, isFalse);

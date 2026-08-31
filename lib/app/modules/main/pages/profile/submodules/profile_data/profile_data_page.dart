@@ -79,9 +79,8 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
         },
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Observer(
-          builder: (_) => controller.formEnabled ? _saveButton() : _editButton(),
-        ),
+        color: Colors.white,
+        child: Observer(builder: (_) => controller.formEnabled ? _saveButton() : _editButton()),
       ),
     );
   }
@@ -150,10 +149,7 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
       return null;
     },
     keyboardType: TextInputType.number,
-    inputFormatters: [
-      FilteringTextInputFormatter.digitsOnly,
-      LengthLimitingTextInputFormatter(11),
-    ],
+    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)],
   );
 
   Widget _cnsField() => CustomTextField(
@@ -167,10 +163,7 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
       return null;
     },
     keyboardType: TextInputType.number,
-    inputFormatters: [
-      FilteringTextInputFormatter.digitsOnly,
-      LengthLimitingTextInputFormatter(15),
-    ],
+    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(15)],
   );
 
   Widget _emailField() => TextFormField(
@@ -182,10 +175,7 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
 
   // -------- Buttons ----------
 
-  SizedBox _saveButton() => _actionButton(
-    label: 'Salvar',
-    onPressed: controller.loading ? null : _handleSave,
-  );
+  Widget _saveButton() => _actionButton(label: 'Salvar', onPressed: controller.loading ? null : _handleSave);
 
   Future<void> _handleSave() async {
     FocusScope.of(context).unfocus();
@@ -222,17 +212,13 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
     }
   }
 
-  SizedBox _editButton() => _actionButton(label: 'Editar', onPressed: () => controller.setFormEnabled(true));
+  Widget _editButton() => _actionButton(label: 'Editar', onPressed: () => controller.setFormEnabled(true));
 
-  SizedBox _actionButton({required String label, required VoidCallback? onPressed}) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: RadiusTokens.mdAll)),
-        onPressed: onPressed,
-        child: Text(label, style: context.textStyles.buttonTextStyle),
-      ),
+  Widget _actionButton({required String label, required VoidCallback? onPressed}) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: RadiusTokens.mdAll)),
+      onPressed: onPressed,
+      child: Text(label, style: context.textStyles.buttonTextStyle),
     );
   }
 }

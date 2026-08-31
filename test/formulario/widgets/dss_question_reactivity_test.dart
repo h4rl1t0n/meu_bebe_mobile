@@ -7,13 +7,14 @@ import 'package:meu_bebe/app/modules/formulario/submodules/saude/saude_controlle
 import 'package:meu_bebe/app/modules/formulario/submodules/trabalho/trabalho_controller.dart';
 import 'package:meu_bebe/app/modules/formulario/widgets/dss_question.dart';
 
-/// Testes de REATIVIDADE MobX (FASE 9G-FIX3).
+/// Testes de REATIVIDADE MobX (FASE 9G-FIX3 / 9J-PRE-FIX1).
 ///
-/// Provam que o tap num `FilterChip` produz `ação MobX → estado reativo muda →
-/// Observer detecta → chip redesenha imediatamente`, SEM depender de responder
-/// outra pergunta. O `DssMultiChoiceQuestion` é testado SEM `Observer` externo
-/// — a reação vem do `Observer` INTERNO adicionado no fix (o `Observer` da aba
-/// lê apenas a referência do ObservableList, nunca o conteúdo).
+/// Provam que o tap numa opção `DssMultiOption` produz `ação MobX → estado
+/// reativo muda → Observer detecta → opção redesenha imediatamente`, SEM
+/// depender de responder outra pergunta. O `DssMultiChoiceQuestion` é testado
+/// SEM `Observer` externo — a reação vem do `Observer` INTERNO adicionado no
+/// fix (o `Observer` da aba lê apenas a referência do ObservableList, nunca o
+/// conteúdo).
 
 Widget _wrap(Widget child) {
   return MaterialApp(
@@ -24,9 +25,9 @@ Widget _wrap(Widget child) {
   );
 }
 
-FilterChip _chipOf(WidgetTester tester, String label) {
-  return tester.widget<FilterChip>(
-    find.widgetWithText(FilterChip, label),
+DssMultiOption _optionOf(WidgetTester tester, String label) {
+  return tester.widget<DssMultiOption>(
+    find.byWidgetPredicate((w) => w is DssMultiOption && w.label == label),
   );
 }
 
@@ -52,14 +53,14 @@ void main() {
 
       await tester.pumpWidget(_wrap(_servicosQuestion(controller)));
 
-      expect(_chipOf(tester, 'Consulta médica regular').selected, isFalse);
+      expect(_optionOf(tester, 'Consulta médica regular').selected, isFalse);
       expect(find.text('Campo obrigatório'), findsOneWidget);
 
       await tester.tap(find.text('Consulta médica regular'));
       await tester.pump();
 
       // Chip A redesenhado imediatamente + erro inline some no mesmo frame.
-      expect(_chipOf(tester, 'Consulta médica regular').selected, isTrue);
+      expect(_optionOf(tester, 'Consulta médica regular').selected, isTrue);
       expect(find.text('Campo obrigatório'), findsNothing);
       expect(controller.servicosPreNatal, contains(ServicoPreNatal.consultaMedica));
     });
@@ -74,8 +75,8 @@ void main() {
       await tester.tap(find.text('Grupo de gestantes'));
       await tester.pump();
 
-      expect(_chipOf(tester, 'Consulta médica regular').selected, isTrue);
-      expect(_chipOf(tester, 'Grupo de gestantes').selected, isTrue);
+      expect(_optionOf(tester, 'Consulta médica regular').selected, isTrue);
+      expect(_optionOf(tester, 'Grupo de gestantes').selected, isTrue);
       expect(
         controller.servicosPreNatal,
         containsAll([ServicoPreNatal.consultaMedica, ServicoPreNatal.grupoGestantes]),
@@ -93,8 +94,8 @@ void main() {
       await tester.tap(find.text('Nenhum dos serviços listados'));
       await tester.pump();
 
-      expect(_chipOf(tester, 'Nenhum dos serviços listados').selected, isTrue);
-      expect(_chipOf(tester, 'Consulta médica regular').selected, isFalse);
+      expect(_optionOf(tester, 'Nenhum dos serviços listados').selected, isTrue);
+      expect(_optionOf(tester, 'Consulta médica regular').selected, isFalse);
       expect(controller.servicosPreNatal, [ServicoPreNatal.nenhumDosListados]);
     });
 
@@ -105,12 +106,12 @@ void main() {
 
       await tester.tap(find.text('Nenhum dos serviços listados'));
       await tester.pump();
-      expect(_chipOf(tester, 'Nenhum dos serviços listados').selected, isTrue);
+      expect(_optionOf(tester, 'Nenhum dos serviços listados').selected, isTrue);
 
       await tester.tap(find.text('Nenhum dos serviços listados'));
       await tester.pump();
 
-      expect(_chipOf(tester, 'Nenhum dos serviços listados').selected, isFalse);
+      expect(_optionOf(tester, 'Nenhum dos serviços listados').selected, isFalse);
       expect(controller.servicosPreNatal, isEmpty);
     });
 
@@ -125,7 +126,7 @@ void main() {
       await tester.tap(find.text('Consulta médica regular'));
       await tester.pump();
 
-      expect(_chipOf(tester, 'Consulta médica regular').selected, isFalse);
+      expect(_optionOf(tester, 'Consulta médica regular').selected, isFalse);
       expect(controller.servicosPreNatal, isEmpty);
     });
   });

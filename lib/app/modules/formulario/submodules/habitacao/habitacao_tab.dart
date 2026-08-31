@@ -26,113 +26,110 @@ class _HabitacaoTabState extends State<HabitacaoTab> {
       key: formKey,
       child: Observer(
         builder: (_) => ItemTabPage(
-          title: 'Habitação',
           children: [
-            DropdownButtonFormField<TipoMoradia>(
-              decoration: const InputDecoration(
-                labelText: 'Tipo de moradia *',
-                border: OutlineInputBorder(),
-                hintText: 'Selecione o tipo de residência',
+            DssQuestionCard(
+              child: DssDropdownQuestion<TipoMoradia>(
+                title: 'Tipo de moradia',
+                value: controller.tipoMoradia,
+                options: TipoMoradia.values,
+                labelOf: (e) => e.label,
+                onChanged: controller.setTipoMoradia,
+                required: true,
+                validator: HabitacaoValidator.tipoMoradia,
               ),
-              validator: HabitacaoValidator.tipoMoradia,
-              initialValue: controller.tipoMoradia,
-              items: TipoMoradia.values
-                  .map((e) => DropdownMenuItem<TipoMoradia>(value: e, child: Text(e.label)))
-                  .toList(),
-              onChanged: (v) => controller.setTipoMoradia(v),
             ),
             SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<MaterialMoradia>(
-              decoration: const InputDecoration(
-                labelText: 'Material predominante das paredes *',
-                border: OutlineInputBorder(),
+            DssQuestionCard(
+              child: DssDropdownQuestion<MaterialMoradia>(
+                title: 'Material predominante das paredes',
+                value: controller.materialMoradia,
+                options: MaterialMoradia.values,
+                labelOf: (e) => e.label,
+                onChanged: controller.setMaterialMoradia,
+                required: true,
+                validator: HabitacaoValidator.materialMoradia,
               ),
-              validator: HabitacaoValidator.materialMoradia,
-              initialValue: controller.materialMoradia,
-              items: MaterialMoradia.values
-                  .map((e) => DropdownMenuItem<MaterialMoradia>(value: e, child: Text(e.label)))
-                  .toList(),
-              onChanged: (v) => controller.setMaterialMoradia(v),
             ),
             SizedBox(height: Spacing.lg),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: 'Nº de pessoas', border: OutlineInputBorder()),
+            DssQuestionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
                     keyboardType: TextInputType.number,
+                    decoration: dssInputDecoration(context, labelText: 'Nº de pessoas na casa *'),
                     validator: HabitacaoValidator.numeroPessoas,
                     onChanged: (v) => controller.setNumeroPessoas(int.tryParse(v) ?? 0),
                   ),
-                ),
-                SizedBox(width: Spacing.lg),
-                Expanded(
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: 'Nº de cômodos', border: OutlineInputBorder()),
+                  SizedBox(height: Spacing.lg),
+                  TextFormField(
                     keyboardType: TextInputType.number,
+                    decoration: dssInputDecoration(context, labelText: 'Nº de cômodos *'),
                     validator: HabitacaoValidator.numeroComodos,
                     onChanged: (v) => controller.setNumeroComodos(int.tryParse(v) ?? 0),
                   ),
-                ),
-                SizedBox(width: Spacing.lg),
-                Expanded(
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: 'Cômodos usados para dormir', border: OutlineInputBorder()),
+                  SizedBox(height: Spacing.lg),
+                  TextFormField(
                     keyboardType: TextInputType.number,
-                    validator: (v) => HabitacaoValidator.numeroDormitorios(v, numeroComodos: controller.numeroComodos),
+                    decoration: dssInputDecoration(context, labelText: 'Cômodos usados para dormir *'),
+                    validator: (v) =>
+                        HabitacaoValidator.numeroDormitorios(v, numeroComodos: controller.numeroComodos),
                     onChanged: (v) => controller.setNumeroDormitorios(int.tryParse(v) ?? 0),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: Spacing.lg),
-            DssMultiChoiceQuestion<ItemResidencia>(
-              title: 'Quais destes itens sua casa possui?',
-              options: ItemResidencia.values,
-              selected: controller.itensResidencia,
-              labelOf: (i) => i.label,
-              onToggle: controller.toggleItemResidencia,
-              required: true,
-              showError: controller.showErrors,
-              exclusive: ItemResidencia.nenhumDosListados,
-            ),
-            SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<SegurancaResidencia>(
-              decoration: const InputDecoration(
-                labelText: 'Como você avalia a segurança da sua moradia? *',
-                border: OutlineInputBorder(),
+                ],
               ),
-              validator: HabitacaoValidator.segurancaResidencia,
-              initialValue: controller.segurancaResidencia,
-              items: SegurancaResidencia.values
-                  .map((e) => DropdownMenuItem<SegurancaResidencia>(value: e, child: Text(e.label)))
-                  .toList(),
-              onChanged: (v) => controller.setSegurancaResidencia(v),
             ),
             SizedBox(height: Spacing.lg),
-            DssMultiChoiceQuestion<MelhoriaMoradia>(
-              title: 'Quais melhorias gostaria de fazer na sua moradia?',
-              options: MelhoriaMoradia.values,
-              selected: controller.melhoriasDesejadas,
-              labelOf: (m) => m.label,
-              onToggle: controller.toggleMelhoriaMoradia,
-              required: true,
-              showError: controller.showErrors,
-              exclusive: MelhoriaMoradia.semMelhorias,
+            DssQuestionCard(
+              child: DssMultiChoiceQuestion<ItemResidencia>(
+                title: 'Quais destes itens sua casa possui?',
+                options: ItemResidencia.values,
+                selected: controller.itensResidencia,
+                labelOf: (i) => i.label,
+                onToggle: controller.toggleItemResidencia,
+                required: true,
+                showError: controller.showErrors,
+                exclusive: ItemResidencia.nenhumDosListados,
+              ),
             ),
             SizedBox(height: Spacing.lg),
-            DssBinaryQuestion(
-              title: 'Tem fácil acesso a serviços de saúde a partir da sua residência?',
-              value: controller.facilAcessoSaude,
-              onChanged: controller.setFacilAcessoSaude,
-              required: true,
-              showError: controller.showErrors,
+            DssQuestionCard(
+              child: DssDropdownQuestion<SegurancaResidencia>(
+                title: 'Como você avalia a segurança da sua moradia?',
+                value: controller.segurancaResidencia,
+                options: SegurancaResidencia.values,
+                labelOf: (e) => e.label,
+                onChanged: controller.setSegurancaResidencia,
+                required: true,
+                validator: HabitacaoValidator.segurancaResidencia,
+              ),
+            ),
+            SizedBox(height: Spacing.lg),
+            DssQuestionCard(
+              child: DssMultiChoiceQuestion<MelhoriaMoradia>(
+                title: 'Quais melhorias gostaria de fazer na sua moradia?',
+                options: MelhoriaMoradia.values,
+                selected: controller.melhoriasDesejadas,
+                labelOf: (m) => m.label,
+                onToggle: controller.toggleMelhoriaMoradia,
+                required: true,
+                showError: controller.showErrors,
+                exclusive: MelhoriaMoradia.semMelhorias,
+              ),
+            ),
+            SizedBox(height: Spacing.lg),
+            DssQuestionCard(
+              child: DssBinaryQuestion(
+                title: 'Tem fácil acesso a serviços de saúde a partir da sua residência?',
+                value: controller.facilAcessoSaude,
+                onChanged: controller.setFacilAcessoSaude,
+                required: true,
+                showError: controller.showErrors,
+              ),
             ),
           ],
         ),
       ),
     );
   }
-
-  bool validateTab() => formKey.currentState?.validate() ?? false;
 }

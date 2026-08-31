@@ -26,6 +26,7 @@ void main() {
 
       expect(c.hasGestacao, isTrue);
       expect(c.plano?.quemCortaCordao, 'eu');
+      expect(c.quemCortaCordao, ActorChoice.eu);
       expect(c.isLoading, isFalse);
     });
 
@@ -42,6 +43,7 @@ void main() {
 
       expect(c.hasGestacao, isTrue);
       expect(c.plano?.quemCortaCordao, 'nao_sei');
+      expect(c.quemCortaCordao, ActorChoice.naoSei);
     });
   });
 
@@ -58,14 +60,13 @@ void main() {
       final c = BirthController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveBirth(
-        quemCortaCordao: ActorChoice.acompanhante,
-        coletaCelulasTronco: true,
-        contatoPeleAPele: TriState.sim,
-        amamentarPrimeiraHora: TriState.sim,
-        restricoesAmamentacao: false,
-        primeiroBanho: ActorChoice.profissional,
-      );
+      c.setQuemCortaCordao(ActorChoice.acompanhante);
+      c.setColetaCelulasTronco(true);
+      c.setContatoPeleAPele(TriState.sim);
+      c.setAmamentarPrimeiraHora(TriState.sim);
+      c.setRestricoesAmamentacao(false);
+      c.setPrimeiroBanho(ActorChoice.profissional);
+      await c.saveBirth();
 
       final sent = planoRepo.lastUpserted!;
       expect(sent.quemCortaCordao, 'acompanhante');
@@ -88,14 +89,13 @@ void main() {
       final c = BirthController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveBirth(
-        quemCortaCordao: ActorChoice.eu,
-        coletaCelulasTronco: false,
-        contatoPeleAPele: TriState.naoSei,
-        amamentarPrimeiraHora: TriState.naoSei,
-        restricoesAmamentacao: false,
-        primeiroBanho: ActorChoice.eu,
-      );
+      c.setQuemCortaCordao(ActorChoice.eu);
+      c.setColetaCelulasTronco(false);
+      c.setContatoPeleAPele(TriState.naoSei);
+      c.setAmamentarPrimeiraHora(TriState.naoSei);
+      c.setRestricoesAmamentacao(false);
+      c.setPrimeiroBanho(ActorChoice.eu);
+      await c.saveBirth();
 
       expect(c.saved, isFalse);
       expect(planoRepo.upsertCalls, 0);
@@ -112,14 +112,13 @@ void main() {
       final c = BirthController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveBirth(
-        quemCortaCordao: ActorChoice.eu,
-        coletaCelulasTronco: false,
-        contatoPeleAPele: TriState.naoSei,
-        amamentarPrimeiraHora: TriState.naoSei,
-        restricoesAmamentacao: false,
-        primeiroBanho: ActorChoice.eu,
-      );
+      c.setQuemCortaCordao(ActorChoice.eu);
+      c.setColetaCelulasTronco(false);
+      c.setContatoPeleAPele(TriState.naoSei);
+      c.setAmamentarPrimeiraHora(TriState.naoSei);
+      c.setRestricoesAmamentacao(false);
+      c.setPrimeiroBanho(ActorChoice.eu);
+      await c.saveBirth();
 
       expect(c.saved, isFalse);
     });
@@ -134,14 +133,13 @@ void main() {
       final c = BirthController(planoRepo, perfil);
       await c.initialize();
 
-      await c.saveBirth(
-        quemCortaCordao: ActorChoice.eu,
-        coletaCelulasTronco: false,
-        contatoPeleAPele: TriState.naoSei,
-        amamentarPrimeiraHora: TriState.naoSei,
-        restricoesAmamentacao: false,
-        primeiroBanho: ActorChoice.eu,
-      );
+      c.setQuemCortaCordao(ActorChoice.eu);
+      c.setColetaCelulasTronco(false);
+      c.setContatoPeleAPele(TriState.naoSei);
+      c.setAmamentarPrimeiraHora(TriState.naoSei);
+      c.setRestricoesAmamentacao(false);
+      c.setPrimeiroBanho(ActorChoice.eu);
+      await c.saveBirth();
 
       expect(planoRepo.upsertCalls, 0);
       expect(c.saved, isFalse);

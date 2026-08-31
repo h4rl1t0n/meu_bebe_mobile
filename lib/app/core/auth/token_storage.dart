@@ -20,10 +20,7 @@ final class TokenStorage {
     return (await _prefs).getString(LocalStorageConstants.refreshToken);
   }
 
-  Future<void> saveTokens({
-    required String accessToken,
-    required String refreshToken,
-  }) async {
+  Future<void> saveTokens({required String accessToken, required String refreshToken}) async {
     final prefs = await _prefs;
     await prefs.setString(LocalStorageConstants.accessToken, accessToken);
     await prefs.setString(LocalStorageConstants.refreshToken, refreshToken);
@@ -39,5 +36,17 @@ final class TokenStorage {
   Future<bool> hasSession() async {
     final token = await getAccessToken();
     return token != null && token.isNotEmpty;
+  }
+
+  /// Flag "Lembrar-me" persistida. `true` (default) mantém a sessão entre
+  /// aberturas; `false` indica que a sessão deve ser descartada na próxima
+  /// abertura. Persiste apenas um booleano — NUNCA a senha.
+  Future<bool> getRememberMe() async {
+    return (await _prefs).getBool(LocalStorageConstants.rememberMe) ?? true;
+  }
+
+  Future<void> setRememberMe(bool value) async {
+    final prefs = await _prefs;
+    await prefs.setBool(LocalStorageConstants.rememberMe, value);
   }
 }

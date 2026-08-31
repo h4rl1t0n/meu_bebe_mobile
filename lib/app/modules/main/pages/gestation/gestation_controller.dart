@@ -113,6 +113,15 @@ abstract class GestationControllerBase with Store {
     }
   }
 
+  /// Recarrega SOMENTE o histórico obstétrico (chamado ao voltar da edição de
+  /// "Gestações Anteriores"). Não alterna [isLoading] para não piscar a tela
+  /// inteira — a aba permanece montada e o [Observer] redesenha os cards
+  /// imediatamente, sem troca de aba e sem `setState`.
+  @action
+  Future<void> refreshHistorico() async {
+    await _getHistorico();
+  }
+
   @action
   Future<void> _getAppointments(String gestacaoId) async {
     final result = await consultaRepository.listConsultas(gestacaoId);

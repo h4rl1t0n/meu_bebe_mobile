@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:meu_bebe/app/core/auth/credential_storage.dart';
 import 'package:meu_bebe/app/core/auth/token_storage.dart';
 import 'package:meu_bebe/app/core/fp/backend_failure.dart';
 import 'package:meu_bebe/app/model/auth/auth_models.dart';
@@ -68,6 +69,36 @@ class _FakeAuthRepository implements AuthRepository {
   Future<Result<UserResponseModel, BackendFailure>> me() => throw UnimplementedError();
 }
 
+/// CredentialStorage em memória (os testes rodam na VM, sem canais nativos do
+/// `flutter_secure_storage`). Guarda e-mail + senha em campos simples e conta
+/// as chamadas para provar o comportamento "Lembrar-me".
+class _FakeCredentialStorage implements CredentialStorage {
+  String? email;
+  String? password;
+  int saveCalls = 0;
+  int clearCalls = 0;
+
+  @override
+  Future<String?> getEmail() async => email;
+
+  @override
+  Future<String?> getPassword() async => password;
+
+  @override
+  Future<void> save({required String email, required String password}) async {
+    saveCalls++;
+    this.email = email;
+    this.password = password;
+  }
+
+  @override
+  Future<void> clear() async {
+    clearCalls++;
+    email = null;
+    password = null;
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -78,10 +109,12 @@ void main() {
   LoginController makeController(
     _FakeAuthRepository repo, {
     List<OnboardingResolution>? navigations,
+    _FakeCredentialStorage? credentialStorage,
   }) {
     return LoginController(
       repo,
       const TokenStorage(),
+      credentialStorage ?? _FakeCredentialStorage(),
       _StubOnboardingResolver(),
       navigateReplacement: (resolution) => navigations?.add(resolution),
     );
@@ -154,6 +187,160 @@ void main() {
       await future;
 
       expect(c.loading, isFalse);
+    });
+  });
+
+  group('LoginController — Lembrar-me (FASE 9J)', () {
+    test('rememberMe é true por padrão e toggleRememberMe inverte', () {
+      final c = makeController(_FakeAuthRepository((_, _) async => Success(_token())));
+      expect(c.rememberMe, isTrue);
+
+      c.toggleRememberMe(false);
+      expect(c.rememberMe, isFalse);
+    });
+
+    test('remember=true persiste a flag no TokenStorage', () async {
+      final c = makeController(_FakeAuthRepository((_, _) async => Success(_token())));
+      c.toggleRememberMe(true);
+      await c.login('maria@example.com', 'senha123');
+
+      expect(await const TokenStorage().getRememberMe(), isTrue);
+    });
+
+    test('remember=false persiste flag false (tokens ainda salvos p/ sessão atual)', () async {
+      final c = makeController(_FakeAuthRepository((_, _) async => Success(_token())));
+      c.toggleRememberMe(false);
+      await c.login('maria@example.com', 'senha123');
+
+      expect(await const TokenStorage().getRememberMe(), isFalse);
+      // A sessão atual ainda guarda os tokens; é a flag false que fará o
+      // inicializar_app descartá-los na PRÓXIMA abertura.
+      expect(await const TokenStorage().getAccessToken(), 'access');
+    });
+
+    test('a senha nunca é persistida em SharedPreferences (só no secure storage)', () async {
+      final c = makeController(_FakeAuthRepository((_, _) async => Success(_token())));
+      await c.login('maria@example.com', 'senha123');
+
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs
+          .getKeys()
+          .where((k) => k.toLowerCase().contains('senha') || k.toLowerCase().contains('password'));
+      expect(keys, isEmpty);
+    });
+  });
+
+  group('LoginController — Lembrar-me completo (FASE 9J-PRE-FIX1)', () {
+    test('A) remember=true: tokens + credenciais persistidos e sessão recuperável',
+        () async {
+      final creds = _FakeCredentialStorage();
+      final c = makeController(
+        _FakeAuthRepository((_, _) async => Success(_token())),
+        credentialStorage: creds,
+      );
+      await c.login('maria@example.com', 'senha123');
+
+      // Sessão recuperável na próxima abertura: tokens + flag presentes.
+      expect(await const TokenStorage().hasSession(), isTrue);
+      expect(await const TokenStorage().getRememberMe(), isTrue);
+      // Credenciais lembradas em armazenamento seguro (e-mail + senha).
+      expect(creds.saveCalls, 1);
+      expect(creds.email, 'maria@example.com');
+      expect(creds.password, 'senha123');
+    });
+
+    test('B) remember=false: credenciais limpas e flag false p/ próxima abertura',
+        () async {
+      final creds = _FakeCredentialStorage();
+      final c = makeController(
+        _FakeAuthRepository((_, _) async => Success(_token())),
+        credentialStorage: creds,
+      );
+      c.toggleRememberMe(false);
+      await c.login('maria@example.com', 'senha123');
+
+      // Tokens da sessão atual seguem salvos; a flag false faz o inicializar_app
+      // descartá-los na PRÓXIMA abertura.
+      expect(await const TokenStorage().getRememberMe(), isFalse);
+      expect(await const TokenStorage().getAccessToken(), 'access');
+      // "Lembrar-me" desmarcado NÃO retém credenciais.
+      expect(creds.clearCalls, 1);
+      expect(creds.email, isNull);
+      expect(creds.password, isNull);
+    });
+
+    test('C) senha vai para o secure storage, nunca para SharedPreferences', () async {
+      final creds = _FakeCredentialStorage();
+      final c = makeController(
+        _FakeAuthRepository((_, _) async => Success(_token())),
+        credentialStorage: creds,
+      );
+      await c.login('maria@example.com', 'senha123');
+
+      expect(creds.password, 'senha123');
+      final prefs = await SharedPreferences.getInstance();
+      expect(
+        prefs.getKeys().where((k) => k.contains('senha') || k.contains('password')),
+        isEmpty,
+      );
+    });
+
+    test('D) logout limpa tokens, mas preserva credenciais quando remember=true',
+        () async {
+      final creds = _FakeCredentialStorage();
+      final c = makeController(
+        _FakeAuthRepository((_, _) async => Success(_token())),
+        credentialStorage: creds,
+      );
+      await c.login('maria@example.com', 'senha123');
+
+      // Logout = TokenStorage.clear() (sessão). Credenciais lembradas ficam.
+      await const TokenStorage().clear();
+
+      expect(await const TokenStorage().hasSession(), isFalse);
+      expect(creds.email, 'maria@example.com');
+      expect(creds.password, 'senha123');
+    });
+
+    test('E) initialize restaura e-mail e senha lembrados após logout', () async {
+      final creds = _FakeCredentialStorage();
+      final c1 = makeController(
+        _FakeAuthRepository((_, _) async => Success(_token())),
+        credentialStorage: creds,
+      );
+      await c1.login('maria@example.com', 'senha123');
+      await const TokenStorage().clear(); // logout
+
+      // Nova instância (reabertura do Login) hidrata a partir do secure storage.
+      final c2 = makeController(
+        _FakeAuthRepository((_, _) async => Success(_token())),
+        credentialStorage: creds,
+      );
+      await c2.initialize();
+
+      expect(c2.rememberMe, isTrue);
+      expect(c2.rememberedEmail, 'maria@example.com');
+      expect(c2.rememberedPassword, 'senha123');
+    });
+
+    test('F) remember=false → initialize volta vazio (login limpo)', () async {
+      final creds = _FakeCredentialStorage();
+      final c = makeController(
+        _FakeAuthRepository((_, _) async => Success(_token())),
+        credentialStorage: creds,
+      );
+      c.toggleRememberMe(false);
+      await c.login('maria@example.com', 'senha123');
+
+      final c2 = makeController(
+        _FakeAuthRepository((_, _) async => Success(_token())),
+        credentialStorage: creds,
+      );
+      await c2.initialize();
+
+      expect(c2.rememberMe, isFalse);
+      expect(c2.rememberedEmail, isNull);
+      expect(c2.rememberedPassword, isNull);
     });
   });
 }

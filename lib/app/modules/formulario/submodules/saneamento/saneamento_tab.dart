@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../core/ui/theme/styles/design_tokens.dart';
-import '../../../../core/ui/theme/styles/text_styles.dart';
 import '../../catalog/saneamento_options.dart';
 import '../../widgets/dss_question.dart';
 import '../../widgets/item_tab_page.dart';
@@ -28,103 +26,97 @@ class _SaneamentoTabState extends State<SaneamentoTab> {
       key: formKey,
       child: Observer(
         builder: (_) => ItemTabPage(
-          title: 'Saneamento Básico',
           children: [
-            DropdownButtonFormField<FonteAgua>(
-              decoration: const InputDecoration(
-                labelText: 'Qual a principal fonte de água da sua residência? *',
-                border: OutlineInputBorder(),
+            DssQuestionCard(
+              child: DssDropdownQuestion<FonteAgua>(
+                title: 'Qual a principal fonte de água da sua residência?',
+                value: controller.fonteAgua,
+                options: FonteAgua.values,
+                labelOf: (e) => e.label,
+                onChanged: controller.setFonteAgua,
+                required: true,
+                validator: SaneamentoValidator.fonteAgua,
               ),
-              validator: SaneamentoValidator.fonteAgua,
-              initialValue: controller.fonteAgua,
-              items: FonteAgua.values
-                  .map((e) => DropdownMenuItem<FonteAgua>(value: e, child: Text(e.label)))
-                  .toList(),
-              onChanged: (v) => controller.setFonteAgua(v),
             ),
             SizedBox(height: Spacing.lg),
-            DssBinaryQuestion(
-              title: 'Há interrupções frequentes no fornecimento de água?',
-              value: controller.interrupcoesAgua,
-              onChanged: controller.setInterrupcoesAgua,
-              required: true,
-              showError: controller.showErrors,
-            ),
-            SizedBox(height: Spacing.lg),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Como é o esgotamento sanitário na sua residência? *',
-                  style: context.textStyles.subTitleSmallStyle.copyWith(color: context.colors.onSurface),
-                ),
-                SizedBox(height: Spacing.sm),
-                RadioGroup<EsgotamentoSanitario>(
-                  groupValue: controller.esgotamentoSanitario,
-                  onChanged: (v) => controller.setEsgotamentoSanitario(v),
-                  child: Column(
-                    children: EsgotamentoSanitario.values
-                        .map((e) => RadioListTile<EsgotamentoSanitario>(title: Text(e.label), value: e))
-                        .toList(),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<FrequenciaColetaLixo>(
-              decoration: const InputDecoration(
-                labelText: 'Com que regularidade o lixo da sua residência é coletado pelo serviço de coleta? *',
-                border: OutlineInputBorder(),
+            DssQuestionCard(
+              child: DssBinaryQuestion(
+                title: 'Há interrupções frequentes no fornecimento de água?',
+                value: controller.interrupcoesAgua,
+                onChanged: controller.setInterrupcoesAgua,
+                required: true,
+                showError: controller.showErrors,
               ),
-              validator: SaneamentoValidator.frequenciaColetaLixo,
-              initialValue: controller.frequenciaColetaLixo,
-              items: FrequenciaColetaLixo.values
-                  .map((e) => DropdownMenuItem<FrequenciaColetaLixo>(value: e, child: Text(e.label)))
-                  .toList(),
-              onChanged: (v) => controller.setFrequenciaColetaLixo(v),
             ),
             SizedBox(height: Spacing.lg),
+            DssQuestionCard(
+              child: DssSingleChoiceQuestion<EsgotamentoSanitario>(
+                title: 'Como é o esgotamento sanitário na sua residência?',
+                value: controller.esgotamentoSanitario,
+                options: EsgotamentoSanitario.values,
+                labelOf: (e) => e.label,
+                onChanged: controller.setEsgotamentoSanitario,
+                required: true,
+                showError: controller.showErrors,
+              ),
+            ),
+            SizedBox(height: Spacing.lg),
+            DssQuestionCard(
+              child: DssDropdownQuestion<FrequenciaColetaLixo>(
+                title: 'Com que regularidade o lixo da sua residência é coletado pelo serviço de coleta?',
+                value: controller.frequenciaColetaLixo,
+                options: FrequenciaColetaLixo.values,
+                labelOf: (e) => e.label,
+                onChanged: controller.setFrequenciaColetaLixo,
+                required: true,
+                validator: SaneamentoValidator.frequenciaColetaLixo,
+              ),
+            ),
             if (controller.frequenciaColetaLixo != null &&
-                controller.frequenciaColetaLixo != FrequenciaColetaLixo.regular)
-              DropdownButtonFormField<DestinoLixoSemColeta>(
-                decoration: const InputDecoration(
-                  labelText: 'Quando o lixo não é recolhido pelo serviço de coleta, qual é a principal forma de destinação? *',
-                  border: OutlineInputBorder(),
+                controller.frequenciaColetaLixo != FrequenciaColetaLixo.regular) ...[
+              SizedBox(height: Spacing.lg),
+              DssQuestionCard(
+                child: DssDropdownQuestion<DestinoLixoSemColeta>(
+                  title: 'Quando o lixo não é recolhido pelo serviço de coleta, qual é a principal forma de destinação?',
+                  value: controller.destinoLixoSemColeta,
+                  options: DestinoLixoSemColeta.values
+                      .where((e) =>
+                          controller.frequenciaColetaLixo != FrequenciaColetaLixo.naoPossui ||
+                          e != DestinoLixoSemColeta.aguardaProximaColeta)
+                      .toList(),
+                  labelOf: (e) => e.label,
+                  onChanged: controller.setDestinoLixoSemColeta,
+                  required: true,
+                  validator: SaneamentoValidator.destinoLixoSemColeta,
                 ),
-                validator: SaneamentoValidator.destinoLixoSemColeta,
-                initialValue: controller.destinoLixoSemColeta,
-                items: DestinoLixoSemColeta.values
-                    .where((e) =>
-                        controller.frequenciaColetaLixo != FrequenciaColetaLixo.naoPossui ||
-                        e != DestinoLixoSemColeta.aguardaProximaColeta)
-                    .map((e) => DropdownMenuItem<DestinoLixoSemColeta>(value: e, child: Text(e.label)))
-                    .toList(),
-                onChanged: (v) => controller.setDestinoLixoSemColeta(v),
               ),
+            ],
             SizedBox(height: Spacing.lg),
-            DssBinaryQuestion(
-              title: 'Já teve algum problema de saúde por conta da água?',
-              value: controller.preocupacaoAgua,
-              onChanged: controller.setPreocupacaoAgua,
-              required: true,
-              showError: controller.showErrors,
+            DssQuestionCard(
+              child: DssBinaryQuestion(
+                title: 'Já teve algum problema de saúde por conta da água?',
+                value: controller.preocupacaoAgua,
+                onChanged: controller.setPreocupacaoAgua,
+                required: true,
+                showError: controller.showErrors,
+              ),
             ),
             SizedBox(height: Spacing.lg),
-            DssMultiChoiceQuestion<CuidadoVetor>(
-              title: 'Quais cuidados você adota para evitar mosquitos/vetores?',
-              options: CuidadoVetor.values,
-              selected: controller.cuidadosVetores,
-              labelOf: (c) => c.label,
-              onToggle: controller.toggleCuidadoVetor,
-              required: true,
-              showError: controller.showErrors,
-              exclusive: CuidadoVetor.semCuidados,
+            DssQuestionCard(
+              child: DssMultiChoiceQuestion<CuidadoVetor>(
+                title: 'Quais cuidados você adota para evitar mosquitos/vetores?',
+                options: CuidadoVetor.values,
+                selected: controller.cuidadosVetores,
+                labelOf: (c) => c.label,
+                onToggle: controller.toggleCuidadoVetor,
+                required: true,
+                showError: controller.showErrors,
+                exclusive: CuidadoVetor.semCuidados,
+              ),
             ),
           ],
         ),
       ),
     );
   }
-
-  bool validateTab() => formKey.currentState?.validate() ?? false;
 }

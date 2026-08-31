@@ -5,11 +5,10 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../app_module.dart';
 import '../../core/constants/images.dart';
 import '../../core/helpers/messages.dart';
-import '../../enum/page_status.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/design_tokens.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
-import '../../core/ui/widgets/stepper_header/stepper_header.dart';
+import '../../enum/page_status.dart';
 import '../onboarding/onboarding_resolver.dart';
 import '../onboarding/onboarding_route_args.dart';
 import 'controllers/formulario_controller.dart';
@@ -32,13 +31,13 @@ class FormularioPage extends StatefulWidget {
 class _FormularioPageState extends State<FormularioPage> {
   late final FormularioController controller;
 
-  static const _stepTitles = [
-    'Educação',
-    'Trabalho',
-    'Saneamento',
-    'Saúde',
-    'Habitação',
-    'Alimentação',
+  static const _dimensions = [
+    (icon: Icons.school_outlined, title: 'Educação'),
+    (icon: Icons.work_outline, title: 'Trabalho'),
+    (icon: Icons.water_drop_outlined, title: 'Saneamento'),
+    (icon: Icons.health_and_safety_outlined, title: 'Saúde'),
+    (icon: Icons.home_outlined, title: 'Habitação'),
+    (icon: Icons.restaurant_outlined, title: 'Alimentação'),
   ];
 
   @override
@@ -54,88 +53,176 @@ class _FormularioPageState extends State<FormularioPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Formulário'),
+        elevation: 0,
         centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
-          child: Observer(
-            builder: (_) => StepperHeader(
-              currentStep: controller.currentStep,
-              stepTitles: _stepTitles,
+        title: Text('Formulário'),
+        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: _handleBack),
+      ),
+      body: Column(
+        children: [
+          Observer(builder: (_) => _buildHeader(controller.currentStep)),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                // Imagem de fundo MUITO discreta (opacidade reduzida).
+                image: DecorationImage(opacity: .03, fit: BoxFit.contain, image: AssetImage(Images.mother)),
+              ),
+              child: Observer(
+                builder: (_) => IndexedStack(
+                  index: controller.currentStep,
+                  children: const [
+                    EducacaoTab(),
+                    TrabalhoTab(),
+                    SaneamentoTab(),
+                    SaudeTab(),
+                    HabitacaoTab(),
+                    AlimentacaoTab(),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
-      body: Container(
-        padding: EdgeInsets.all(Spacing.sm),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            opacity: .05,
-            fit: BoxFit.contain,
-            image: AssetImage(Images.mother),
-          ),
-        ),
-        child: Observer(
-          builder: (_) => IndexedStack(
-            index: controller.currentStep,
-            children: const [
-              EducacaoTab(),
-              TrabalhoTab(),
-              SaneamentoTab(),
-              SaudeTab(),
-              HabitacaoTab(),
-              AlimentacaoTab(),
+      bottomNavigationBar: Observer(builder: (_) => _buildActionButton(controller.currentStep)),
+    );
+  }
+
+  /// Cabeçalho da dimensão (FASE 9J-PRE-FIX1): ícone + "QUESTIONÁRIO DSS" +
+  /// título da dimensão + badge "X de 6" + barra de progresso segmentada +
+  /// "Próxima etapa".
+  Widget _buildHeader(int step) {
+    final colors = context.colors;
+    final textStyles = context.textStyles;
+    final dimension = _dimensions[step];
+
+    return Container(
+      color: colors.surface,
+      padding: const EdgeInsets.fromLTRB(Spacing.pageH, Spacing.md, Spacing.pageH, Spacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(dimension.icon, size: 18, color: colors.primary500),
+              const SizedBox(width: Spacing.xs),
+              Text(
+                'QUESTIONÁRIO DETERMINANTES SOCIAIS DE SAÚDE',
+                style: textStyles.overline.copyWith(
+                  color: colors.primary500,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.1,
+                ),
+              ),
             ],
           ),
-        ),
-      ),
-      bottomNavigationBar: Observer(
-        builder: (_) => _buildNavigation(controller.currentStep),
+          const SizedBox(height: Spacing.xs),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(dimension.title, style: textStyles.titleSmallStyle.copyWith(color: colors.onSurface)),
+              ),
+              const SizedBox(width: Spacing.sm),
+              _stepBadge(step),
+            ],
+          ),
+          const SizedBox(height: Spacing.md),
+          _segmentedProgress(step),
+          const SizedBox(height: Spacing.sm),
+          Text('A seguir: ${_nextTitle(step)}', style: textStyles.caption.copyWith(color: colors.onSurfaceVariant)),
+        ],
       ),
     );
   }
 
-  Widget _buildNavigation(int currentStep) {
-    return BottomAppBar(
-      // FASE 9G-FIX3 (visual): Voltar secundário (outlined), Próximo/Enviar
-      // primário (elevated), com espaçamento claro entre os botões e padding
-      // que os afasta das bordas do BottomAppBar.
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.sm),
-        child: Row(
-          children: [
-            if (currentStep > 0) ...[
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: controller.voltar,
-                  icon: const Icon(Icons.navigate_before),
-                  label: const Text('Voltar'),
-                ),
-              ),
-              const SizedBox(width: Spacing.md),
-            ],
-            if (currentStep < 5)
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => _handleNext(currentStep),
-                  iconAlignment: IconAlignment.end,
-                  icon: const Icon(Icons.navigate_next),
-                  label: const Text('Próximo'),
-                ),
-              ),
-            if (currentStep == 5)
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _handleSubmit,
-                  iconAlignment: IconAlignment.end,
-                  icon: const Icon(Icons.check_circle),
-                  label: const Text('Enviar'),
-                ),
-              ),
-          ],
-        ),
+  Widget _stepBadge(int step) {
+    final colors = context.colors;
+    final textStyles = context.textStyles;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.xs),
+      decoration: BoxDecoration(color: colors.primary50, borderRadius: RadiusTokens.smAll),
+      child: Text(
+        '${step + 1} de ${_dimensions.length}',
+        style: textStyles.caption.copyWith(color: colors.primary600, fontWeight: FontWeight.w600),
       ),
     );
+  }
+
+  /// Barra de progresso em 6 segmentos: o segmento atual em primary, os
+  /// pendentes em cinza.
+  Widget _segmentedProgress(int step) {
+    final colors = context.colors;
+    return Row(
+      children: List.generate(_dimensions.length, (i) {
+        return Expanded(
+          child: Container(
+            height: 6,
+            margin: EdgeInsets.only(right: i < _dimensions.length - 1 ? Spacing.xs : 0),
+            decoration: BoxDecoration(
+              color: i <= step ? colors.primary500 : colors.gray300,
+              borderRadius: RadiusTokens.smAll,
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  String _nextTitle(int step) {
+    if (step >= _dimensions.length - 1) return 'Enviar avaliação';
+    return _dimensions[step + 1].title;
+  }
+
+  /// Barra inferior de ação (FASE 9J-PRE-FIX1 — correção).
+  ///
+  /// Etapa 1: somente "Próximo". Etapas 2–5: "Voltar" (ação secundária,
+  /// OutlinedButton) + "Próximo" (primária). Etapa 6: "Voltar" + "Enviar
+  /// avaliação". A seta superior do AppBar NÃO substitui o "Voltar" inferior —
+  /// aquela navega a rota; este volta à etapa anterior do questionário.
+  Widget _buildActionButton(int step) {
+    final isFirst = step == 0;
+    final isLast = step == _dimensions.length - 1;
+    return BottomAppBar(
+      color: Colors.white,
+      child: Row(
+        children: [
+          if (!isFirst) ...[Expanded(child: _backButton()), const SizedBox(width: Spacing.md)],
+          Expanded(child: _forwardButton(step, isLast)),
+        ],
+      ),
+    );
+  }
+
+  /// Botão secundário "← Voltar": retorna à etapa anterior do questionário.
+  Widget _backButton() {
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade300, foregroundColor: Colors.grey.shade700),
+      onPressed: controller.voltar,
+      iconAlignment: IconAlignment.start,
+      icon: const Icon(Icons.arrow_back),
+      label: const Text('Voltar'),
+    );
+  }
+
+  /// Botão primário "Próximo →" / "Enviar avaliação →".
+  Widget _forwardButton(int step, bool isLast) {
+    return ElevatedButton.icon(
+      onPressed: isLast ? _handleSubmit : () => _handleNext(step),
+      iconAlignment: IconAlignment.end,
+      icon: const Icon(Icons.arrow_forward),
+      label: Text(isLast ? 'Enviar avaliação' : 'Próximo'),
+    );
+  }
+
+  /// Seta superior do AppBar: navegação da PÁGINA/ROTA (não volta a etapa).
+  ///
+  /// FASE 9J-PRE-FIX1 (correção): a seta NÃO substitui o botão "Voltar"
+  /// inferior — quem volta à etapa anterior do questionário é o "Voltar"
+  /// inferior (`controller.voltar()`), enquanto esta seta apenas desempilha a
+  /// rota atual.
+  void _handleBack() {
+    Modular.to.pop();
   }
 
   void _handleNext(int currentStep) {
@@ -179,14 +266,8 @@ class _FormularioPageState extends State<FormularioPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Resumo do Formulário',
-                    style: context.textStyles.titleSmallStyle,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(ctx),
-                  ),
+                  Text('Resumo do Formulário', style: context.textStyles.titleSmallStyle),
+                  IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(ctx)),
                 ],
               ),
             ),
@@ -198,14 +279,10 @@ class _FormularioPageState extends State<FormularioPage> {
                 itemBuilder: (_, index) {
                   final section = summary[index];
                   final categoria = section['categoria'] as String;
-                  final items = Map<String, String>.from(section)
-                    ..remove('categoria');
+                  final items = Map<String, String>.from(section)..remove('categoria');
 
                   return Card(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: Spacing.md,
-                      vertical: Spacing.xs,
-                    ),
+                    margin: EdgeInsets.symmetric(horizontal: Spacing.md, vertical: Spacing.xs),
                     child: Padding(
                       padding: EdgeInsets.all(Spacing.lg),
                       child: Column(
@@ -213,14 +290,10 @@ class _FormularioPageState extends State<FormularioPage> {
                         children: [
                           Text(
                             categoria,
-                            style: context.textStyles.subTitleStyle.copyWith(
-                              color: context.colors.primary500,
-                            ),
+                            style: context.textStyles.subTitleStyle.copyWith(color: context.colors.primary500),
                           ),
                           SizedBox(height: Spacing.sm),
-                          ...items.entries.map(
-                            (e) => _buildSummaryItem(e.key, e.value),
-                          ),
+                          ...items.entries.map((e) => _buildSummaryItem(e.key, e.value)),
                         ],
                       ),
                     ),
@@ -245,34 +318,20 @@ class _FormularioPageState extends State<FormularioPage> {
                                 Navigator.pop(ctx);
                                 _surfacePersistenceFeedback();
                                 if (estimate != null && mounted) {
-                                  await showRiskEstimateResultSheet(
-                                    context,
-                                    estimate,
-                                  );
+                                  await showRiskEstimateResultSheet(context, estimate);
                                 }
                                 if (mounted) {
                                   _afterResultSheet();
                                 }
                               } else {
                                 _surfacePersistenceFeedback();
-                                Messages.showError(
-                                  controller.error ??
-                                      'Não foi possível enviar o formulário.',
-                                );
+                                Messages.showError(controller.error ?? 'Não foi possível enviar o formulário.');
                               }
                             },
                       icon: controller.loading
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
+                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                           : const Icon(Icons.check_circle),
-                      label: Text(
-                        controller.loading
-                            ? 'Enviando...'
-                            : 'Confirmar e Enviar',
-                      ),
+                      label: Text(controller.loading ? 'Enviando...' : 'Confirmar e Enviar'),
                     );
                   },
                 ),
@@ -294,9 +353,7 @@ class _FormularioPageState extends State<FormularioPage> {
         'salvas, mas você ainda pode visualizar a estimativa.',
       );
     } else if (controller.persistenceError != null) {
-      Messages.showWarning(
-        'Não foi possível salvar suas respostas. A estimativa não foi afetada.',
-      );
+      Messages.showWarning('Não foi possível salvar suas respostas. A estimativa não foi afetada.');
     } else if (controller.persisted) {
       Messages.showSuccess('Respostas salvas com sucesso.');
     }
@@ -326,14 +383,9 @@ class _FormularioPageState extends State<FormularioPage> {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: RichText(
         text: TextSpan(
-          style: context.textStyles.textStyle.copyWith(
-            color: context.colors.onSurface,
-          ),
+          style: context.textStyles.textStyle.copyWith(color: context.colors.onSurface),
           children: [
-            TextSpan(
-              text: '$label: ',
-              style: context.textStyles.buttonTextStyle,
-            ),
+            TextSpan(text: '$label: ', style: context.textStyles.buttonTextStyle),
             TextSpan(text: value.isNotEmpty ? value : 'Não informado'),
           ],
         ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:mobx/mobx.dart';
 
 import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
@@ -9,7 +8,6 @@ import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/plano_parto/plano_parto_enums.dart';
 import '../../../../widgets/base_card.dart';
 import 'birth_controller.dart';
-import 'birth_form_controller.dart';
 
 class BirthPage extends StatefulWidget {
   const BirthPage({super.key});
@@ -18,30 +16,13 @@ class BirthPage extends StatefulWidget {
   State<BirthPage> createState() => _BirthPageState();
 }
 
-class _BirthPageState extends State<BirthPage> with BirthFormController {
+class _BirthPageState extends State<BirthPage> {
   final _controller = Modular.get<BirthController>();
-  late ReactionDisposer _reactionDisposer;
 
   @override
   void initState() {
     super.initState();
-    // Re-hidrata o formulário sempre que `plano` (observable) mudar, para que
-    // os dados persistidos apareçam SEM interação do usuário.
-    _reactionDisposer = reaction(
-      (_) => _controller.plano,
-      (plano) {
-        initializeForm(plano);
-        if (mounted) setState(() {});
-      },
-    );
     _controller.initialize();
-  }
-
-  @override
-  void dispose() {
-    _reactionDisposer();
-    disposeControllers();
-    super.dispose();
   }
 
   @override
@@ -69,31 +50,31 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
                     SizedBox(height: Spacing.lg),
                     Text('Quem cortará o cordão umbilical?', style: textStyles.textStyle),
                     SizedBox(height: Spacing.sm),
-                    _buildActorTabBar(whoCutEC),
+                    _buildActorTabBar(_controller.quemCortaCordao, _controller.setQuemCortaCordao),
                     SizedBox(height: Spacing.lg),
                     _buildSwitchTile(
                       'Coleta de células-tronco?',
-                      collectStemCells,
-                      (v) => setState(() => collectStemCells = v),
+                      _controller.coletaCelulasTronco,
+                      _controller.setColetaCelulasTronco,
                     ),
                     SizedBox(height: Spacing.lg),
                     Text('Contato pele a pele?', style: textStyles.textStyle),
                     SizedBox(height: Spacing.sm),
-                    _buildTriTabBar(skinBabyContactEC),
+                    _buildTriTabBar(_controller.contatoPeleAPele, _controller.setContatoPeleAPele),
                     SizedBox(height: Spacing.lg),
                     Text('Amamentação na primeira hora?', style: textStyles.textStyle),
                     SizedBox(height: Spacing.sm),
-                    _buildTriTabBar(breastfeedFirstHourEC),
+                    _buildTriTabBar(_controller.amamentarPrimeiraHora, _controller.setAmamentarPrimeiraHora),
                     SizedBox(height: Spacing.lg),
                     _buildSwitchTile(
                       'Restrições à amamentação?',
-                      breastfeedRestrictions,
-                      (v) => setState(() => breastfeedRestrictions = v),
+                      _controller.restricoesAmamentacao,
+                      _controller.setRestricoesAmamentacao,
                     ),
                     SizedBox(height: Spacing.lg),
                     Text('Primeiro banho do bebê por?', style: textStyles.textStyle),
                     SizedBox(height: Spacing.sm),
-                    _buildActorTabBar(firstBathEC),
+                    _buildActorTabBar(_controller.primeiroBanho, _controller.setPrimeiroBanho),
                     SizedBox(height: Spacing.xxl),
                     _saveButton(),
                   ],
@@ -106,20 +87,20 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
     );
   }
 
-  Widget _buildActorTabBar(TextEditingController controller) {
+  Widget _buildActorTabBar(ActorChoice selected, ValueChanged<ActorChoice> onSelect) {
     return Row(
       spacing: 5,
       children: ActorChoice.values.map((v) {
         return Expanded(
           child: InkWell(
-            onTap: () => setState(() => controller.text = v.value),
+            onTap: () => onSelect(v),
             child: Container(
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: RadiusTokens.mdAll,
                 border: Border.all(color: context.colors.darkText),
-                color: controller.text == v.value ? context.colors.secondary : context.colors.surface,
+                color: selected == v ? context.colors.secondary : context.colors.surface,
                 boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
               ),
               child: Text(v.label, style: context.textStyles.caption, textAlign: TextAlign.center),
@@ -130,20 +111,20 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
     );
   }
 
-  Widget _buildTriTabBar(TextEditingController controller) {
+  Widget _buildTriTabBar(TriState selected, ValueChanged<TriState> onSelect) {
     return Row(
       spacing: 5,
       children: TriState.values.map((v) {
         return Expanded(
           child: InkWell(
-            onTap: () => setState(() => controller.text = v.value),
+            onTap: () => onSelect(v),
             child: Container(
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: RadiusTokens.mdAll,
                 border: Border.all(color: context.colors.darkText),
-                color: controller.text == v.value ? context.colors.secondary : context.colors.surface,
+                color: selected == v ? context.colors.secondary : context.colors.surface,
                 boxShadow: [ElevationTokens.subtleShadow(Theme.of(context).colorScheme.onSurface)],
               ),
               child: Text(v.label, style: context.textStyles.caption, textAlign: TextAlign.center),
@@ -173,16 +154,7 @@ class _BirthPageState extends State<BirthPage> with BirthFormController {
       width: double.infinity,
       height: 48,
       child: ElevatedButton.icon(
-        onPressed: () {
-          _controller.saveBirth(
-            quemCortaCordao: actor(whoCutEC),
-            coletaCelulasTronco: collectStemCells,
-            contatoPeleAPele: triState(skinBabyContactEC),
-            amamentarPrimeiraHora: triState(breastfeedFirstHourEC),
-            restricoesAmamentacao: breastfeedRestrictions,
-            primeiroBanho: actor(firstBathEC),
-          );
-        },
+        onPressed: _controller.saveBirth,
         icon: const Icon(Icons.save, size: 18),
         label: const Text('Salvar'),
       ),

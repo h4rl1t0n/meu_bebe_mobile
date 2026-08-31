@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
-import '../profile_data_controller.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
+import '../profile_data_controller.dart';
 
 class CustomTextField extends StatefulWidget {
   final ProfileDataController controller;
@@ -38,7 +38,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       style: context.textStyles.textStyle.copyWith(color: colors.darkText),
       controller: widget.textController,
       validator: widget.validator,
-      decoration: InputDecoration(fillColor: colors.primary, label: Text(widget.label)),
+      decoration: InputDecoration(fillColor: Colors.white, label: Text(widget.label)),
       keyboardType: widget.keyboardType,
       textCapitalization: widget.textCapitalization,
       inputFormatters: widget.inputFormatters,

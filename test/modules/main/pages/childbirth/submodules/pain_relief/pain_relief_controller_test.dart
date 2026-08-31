@@ -26,6 +26,7 @@ void main() {
 
       expect(c.hasGestacao, isTrue);
       expect(c.plano?.querAlivioDor, 'sim');
+      expect(c.querAlivioDor, TriState.sim);
       expect(c.isLoading, isFalse);
     });
   });
@@ -43,17 +44,16 @@ void main() {
       final c = PainReliefController(planoRepo, perfil);
       await c.initialize();
 
-      await c.savePainRelief(
-        querAlivioDor: TriState.sim,
-        massagem: true,
-        exerciciosBola: true,
-        exerciciosRespiracao: false,
-        banhoChuveiro: true,
-        banhoBanheira: false,
-        acupuntura: false,
-        acupressao: true,
-        outroMetodo: false,
-      );
+      c.setQuerAlivioDor(TriState.sim);
+      c.setMassagem(true);
+      c.setExerciciosBola(true);
+      c.setExerciciosRespiracao(false);
+      c.setBanhoChuveiro(true);
+      c.setBanhoBanheira(false);
+      c.setAcupuntura(false);
+      c.setAcupressao(true);
+      c.setOutroMetodo(false);
+      await c.savePainRelief();
 
       final sent = planoRepo.lastUpserted!;
       expect(sent.querAlivioDor, 'sim');
@@ -82,17 +82,16 @@ void main() {
       final c = PainReliefController(planoRepo, perfil);
       await c.initialize();
 
-      await c.savePainRelief(
-        querAlivioDor: TriState.nao,
-        massagem: false,
-        exerciciosBola: false,
-        exerciciosRespiracao: false,
-        banhoChuveiro: false,
-        banhoBanheira: false,
-        acupuntura: false,
-        acupressao: false,
-        outroMetodo: false,
-      );
+      c.setQuerAlivioDor(TriState.nao);
+      c.setMassagem(false);
+      c.setExerciciosBola(false);
+      c.setExerciciosRespiracao(false);
+      c.setBanhoChuveiro(false);
+      c.setBanhoBanheira(false);
+      c.setAcupuntura(false);
+      c.setAcupressao(false);
+      c.setOutroMetodo(false);
+      await c.savePainRelief();
 
       expect(c.saved, isFalse);
     });
@@ -107,17 +106,16 @@ void main() {
       final c = PainReliefController(planoRepo, perfil);
       await c.initialize();
 
-      await c.savePainRelief(
-        querAlivioDor: TriState.nao,
-        massagem: false,
-        exerciciosBola: false,
-        exerciciosRespiracao: false,
-        banhoChuveiro: false,
-        banhoBanheira: false,
-        acupuntura: false,
-        acupressao: false,
-        outroMetodo: false,
-      );
+      c.setQuerAlivioDor(TriState.nao);
+      c.setMassagem(false);
+      c.setExerciciosBola(false);
+      c.setExerciciosRespiracao(false);
+      c.setBanhoChuveiro(false);
+      c.setBanhoBanheira(false);
+      c.setAcupuntura(false);
+      c.setAcupressao(false);
+      c.setOutroMetodo(false);
+      await c.savePainRelief();
 
       expect(planoRepo.upsertCalls, 0);
       expect(c.saved, isFalse);

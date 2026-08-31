@@ -12,6 +12,10 @@ part 'birth_controller.g.dart';
 class BirthController = BirthControllerBase with _$BirthController;
 
 /// Controlador de NASCIMENTO (seção do Plano de Parto) — API como fonte.
+///
+/// O estado de seleção do formulário vive AQUI (observables), não em
+/// `TextEditingController`/bools locais da página: a UI apenas lê e chama os
+/// setters, sem `setState`.
 abstract class BirthControllerBase with Store {
   final PlanoPartoRepository planoPartoRepository;
   final PerfilRepository perfilRepository;
@@ -30,6 +34,24 @@ abstract class BirthControllerBase with Store {
   @observable
   PlanoPartoModel? plano;
 
+  @observable
+  ActorChoice quemCortaCordao = ActorChoice.naoSei;
+
+  @observable
+  bool coletaCelulasTronco = false;
+
+  @observable
+  TriState contatoPeleAPele = TriState.naoSei;
+
+  @observable
+  TriState amamentarPrimeiraHora = TriState.naoSei;
+
+  @observable
+  bool restricoesAmamentacao = false;
+
+  @observable
+  ActorChoice primeiroBanho = ActorChoice.naoSei;
+
   String? _gestacaoId;
   bool _busy = false;
 
@@ -47,6 +69,7 @@ abstract class BirthControllerBase with Store {
       if (gid == null) {
         hasGestacao = false;
         plano = null;
+        _hydrate(null);
         return;
       }
       hasGestacao = true;
@@ -54,10 +77,12 @@ abstract class BirthControllerBase with Store {
       switch (result) {
         case Success():
           plano = result.success ?? PlanoPartoModel.empty();
+          _hydrate(plano);
         case Error(error: final failure):
           Messages.showError(failure.message);
           plano = null;
           loadFailed = true;
+          _hydrate(null);
       }
     } finally {
       isLoading = false;
@@ -75,15 +100,37 @@ abstract class BirthControllerBase with Store {
     }
   }
 
+  /// Re-hidrata o estado de seleção a partir do plano carregado.
   @action
-  Future<void> saveBirth({
-    required ActorChoice quemCortaCordao,
-    required bool coletaCelulasTronco,
-    required TriState contatoPeleAPele,
-    required TriState amamentarPrimeiraHora,
-    required bool restricoesAmamentacao,
-    required ActorChoice primeiroBanho,
-  }) async {
+  void _hydrate(PlanoPartoModel? plano) {
+    quemCortaCordao = ActorChoice.fromValue(plano?.quemCortaCordao);
+    coletaCelulasTronco = plano?.coletaCelulasTronco ?? false;
+    contatoPeleAPele = TriState.fromValue(plano?.contatoPeleAPele);
+    amamentarPrimeiraHora = TriState.fromValue(plano?.amamentarPrimeiraHora);
+    restricoesAmamentacao = plano?.restricoesAmamentacao ?? false;
+    primeiroBanho = ActorChoice.fromValue(plano?.primeiroBanho);
+  }
+
+  @action
+  void setQuemCortaCordao(ActorChoice value) => quemCortaCordao = value;
+
+  @action
+  void setColetaCelulasTronco(bool value) => coletaCelulasTronco = value;
+
+  @action
+  void setContatoPeleAPele(TriState value) => contatoPeleAPele = value;
+
+  @action
+  void setAmamentarPrimeiraHora(TriState value) => amamentarPrimeiraHora = value;
+
+  @action
+  void setRestricoesAmamentacao(bool value) => restricoesAmamentacao = value;
+
+  @action
+  void setPrimeiroBanho(ActorChoice value) => primeiroBanho = value;
+
+  @action
+  Future<void> saveBirth() async {
     if (_busy) return;
     final gid = _gestacaoId;
     if (gid == null) {
@@ -91,9 +138,7 @@ abstract class BirthControllerBase with Store {
       return;
     }
     if (loadFailed) {
-      Messages.showInfo(
-        'Não foi possível carregar o plano de parto. Tente novamente antes de salvar.',
-      );
+      Messages.showInfo('Não foi possível carregar o plano de parto. Tente novamente antes de salvar.');
       return;
     }
     _busy = true;

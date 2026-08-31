@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
+import 'onboarding_gate_controller.dart';
 import 'onboarding_gate_page.dart';
 import 'onboarding_module.dart';
 
@@ -9,6 +10,11 @@ import 'onboarding_module.dart';
 class OnboardingGateModule extends Module {
   @override
   List<Module> get imports => [OnboardingModule()];
+
+  @override
+  void binds(i) {
+    i.addSingleton(OnboardingGateController.new);
+  }
 
   @override
   void routes(r) {

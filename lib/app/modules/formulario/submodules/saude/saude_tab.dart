@@ -26,96 +26,105 @@ class _SaudeTabState extends State<SaudeTab> {
       key: formKey,
       child: Observer(
         builder: (_) => ItemTabPage(
-          title: 'Saúde',
           children: [
-            DropdownButtonFormField<DistanciaUBS>(
-              decoration: const InputDecoration(
-                labelText: 'Há uma UBS próxima da sua casa? *',
-                border: OutlineInputBorder(),
+            DssQuestionCard(
+              child: DssDropdownQuestion<DistanciaUBS>(
+                title: 'Há uma UBS próxima da sua casa?',
+                value: controller.distanciaUBS,
+                options: DistanciaUBS.values,
+                labelOf: (e) => e.label,
+                onChanged: controller.setDistanciaUBS,
+                required: true,
+                validator: SaudeValidator.distanciaUBS,
               ),
-              validator: SaudeValidator.distanciaUBS,
-              initialValue: controller.distanciaUBS,
-              items: DistanciaUBS.values
-                  .map((e) => DropdownMenuItem<DistanciaUBS>(value: e, child: Text(e.label)))
-                  .toList(),
-              onChanged: (v) => controller.setDistanciaUBS(v),
             ),
             SizedBox(height: Spacing.lg),
-            DssBinaryQuestion(
-              title: 'Já faltou a alguma consulta por dificuldade de transporte ou trabalho?',
-              value: controller.faltouConsulta,
-              onChanged: controller.setFaltouConsulta,
-            ),
-            SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<AcessoUBS>(
-              decoration: const InputDecoration(
-                labelText: 'Como você costuma chegar à UBS? *',
-                border: OutlineInputBorder(),
+            DssQuestionCard(
+              child: DssBinaryQuestion(
+                title: 'Já faltou a alguma consulta por dificuldade de transporte ou trabalho?',
+                value: controller.faltouConsulta,
+                onChanged: controller.setFaltouConsulta,
               ),
-              validator: SaudeValidator.acessoUBS,
-              initialValue: controller.acessoUBS,
-              items: AcessoUBS.values.map((e) => DropdownMenuItem<AcessoUBS>(value: e, child: Text(e.label))).toList(),
-              onChanged: (v) => controller.setAcessoUBS(v),
             ),
             SizedBox(height: Spacing.lg),
-            DssBinaryQuestion(
-              title: 'Você possui cadastro em uma Unidade Básica de Saúde (UBS)?',
-              value: controller.cadastradaUBS,
-              onChanged: controller.setCadastradaUBS,
-              required: true,
-              showError: controller.showErrors,
-            ),
-            SizedBox(height: Spacing.lg),
-            DssMultiChoiceQuestion<ServicoPreNatal>(
-              title: 'Quais serviços de pré-natal você utiliza?',
-              options: ServicoPreNatal.values,
-              selected: controller.servicosPreNatal,
-              labelOf: (s) => s.label,
-              onToggle: controller.toggleServicoPreNatal,
-              required: true,
-              showError: controller.showErrors,
-              exclusive: ServicoPreNatal.nenhumDosListados,
-            ),
-            SizedBox(height: Spacing.lg),
-            DssBinaryQuestion(
-              title: 'Realizou todos os exames solicitados no pré-natal?',
-              value: controller.examesPreNatalCompletos,
-              onChanged: controller.setExamesPreNatalCompletos,
-            ),
-            DssBinaryQuestion(
-              title: 'Tomou todas as vacinas indicadas para gestantes?',
-              value: controller.vacinasEmDia,
-              onChanged: controller.setVacinasEmDia,
-            ),
-            SizedBox(height: Spacing.lg),
-            DropdownButtonFormField<AvaliacaoPreNatal>(
-              decoration: const InputDecoration(
-                labelText: 'Como avalia o atendimento de pré-natal? *',
-                border: OutlineInputBorder(),
+            DssQuestionCard(
+              child: DssDropdownQuestion<AcessoUBS>(
+                title: 'Como você costuma chegar à UBS?',
+                value: controller.acessoUBS,
+                options: AcessoUBS.values,
+                labelOf: (e) => e.label,
+                onChanged: controller.setAcessoUBS,
+                required: true,
+                validator: SaudeValidator.acessoUBS,
               ),
-              validator: SaudeValidator.avaliacaoPreNatal,
-              initialValue: controller.avaliacaoPreNatal,
-              items: AvaliacaoPreNatal.values
-                  .map((e) => DropdownMenuItem<AvaliacaoPreNatal>(value: e, child: Text(e.label)))
-                  .toList(),
-              onChanged: (v) => controller.setAvaliacaoPreNatal(v),
             ),
             SizedBox(height: Spacing.lg),
-            DssMultiChoiceQuestion<DificuldadeSaude>(
-              title: 'Quais dificuldades você enfrenta para acessar/utilizar os serviços de saúde?',
-              options: DificuldadeSaude.values,
-              selected: controller.dificuldadesSaude,
-              labelOf: (d) => d.label,
-              onToggle: controller.toggleDificuldadeSaude,
-              required: true,
-              showError: controller.showErrors,
-              exclusive: DificuldadeSaude.semDificuldades,
+            DssQuestionCard(
+              child: DssBinaryQuestion(
+                title: 'Você possui cadastro em uma Unidade Básica de Saúde (UBS)?',
+                value: controller.cadastradaUBS,
+                onChanged: controller.setCadastradaUBS,
+                required: true,
+                showError: controller.showErrors,
+              ),
+            ),
+            SizedBox(height: Spacing.lg),
+            DssQuestionCard(
+              child: DssMultiChoiceQuestion<ServicoPreNatal>(
+                title: 'Quais serviços de pré-natal você utiliza?',
+                options: ServicoPreNatal.values,
+                selected: controller.servicosPreNatal,
+                labelOf: (s) => s.label,
+                onToggle: controller.toggleServicoPreNatal,
+                required: true,
+                showError: controller.showErrors,
+                exclusive: ServicoPreNatal.nenhumDosListados,
+              ),
+            ),
+            SizedBox(height: Spacing.lg),
+            DssQuestionCard(
+              child: DssBinaryQuestion(
+                title: 'Realizou todos os exames solicitados no pré-natal?',
+                value: controller.examesPreNatalCompletos,
+                onChanged: controller.setExamesPreNatalCompletos,
+              ),
+            ),
+            SizedBox(height: Spacing.lg),
+            DssQuestionCard(
+              child: DssBinaryQuestion(
+                title: 'Tomou todas as vacinas indicadas para gestantes?',
+                value: controller.vacinasEmDia,
+                onChanged: controller.setVacinasEmDia,
+              ),
+            ),
+            SizedBox(height: Spacing.lg),
+            DssQuestionCard(
+              child: DssDropdownQuestion<AvaliacaoPreNatal>(
+                title: 'Como avalia o atendimento de pré-natal?',
+                value: controller.avaliacaoPreNatal,
+                options: AvaliacaoPreNatal.values,
+                labelOf: (e) => e.label,
+                onChanged: controller.setAvaliacaoPreNatal,
+                required: true,
+                validator: SaudeValidator.avaliacaoPreNatal,
+              ),
+            ),
+            SizedBox(height: Spacing.lg),
+            DssQuestionCard(
+              child: DssMultiChoiceQuestion<DificuldadeSaude>(
+                title: 'Quais dificuldades você enfrenta para acessar/utilizar os serviços de saúde?',
+                options: DificuldadeSaude.values,
+                selected: controller.dificuldadesSaude,
+                labelOf: (d) => d.label,
+                onToggle: controller.toggleDificuldadeSaude,
+                required: true,
+                showError: controller.showErrors,
+                exclusive: DificuldadeSaude.semDificuldades,
+              ),
             ),
           ],
         ),
       ),
     );
   }
-
-  bool validateTab() => formKey.currentState?.validate() ?? false;
 }

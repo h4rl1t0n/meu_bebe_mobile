@@ -44,4 +44,37 @@ void main() {
       expect(await storage.getRefreshToken(), isNull);
     });
   });
+
+  group('TokenStorage — Lembrar-me (FASE 9J)', () {
+    test('getRememberMe retorna true por padrão', () async {
+      expect(await storage.getRememberMe(), isTrue);
+    });
+
+    test('setRememberMe persiste a flag e getRememberMe a devolve', () async {
+      await storage.setRememberMe(false);
+      expect(await storage.getRememberMe(), isFalse);
+
+      await storage.setRememberMe(true);
+      expect(await storage.getRememberMe(), isTrue);
+    });
+
+    test('nenhuma senha é persistida (apenas access/refresh/rememberMe)', () async {
+      await storage.saveTokens(accessToken: 'a', refreshToken: 'r');
+      await storage.setRememberMe(true);
+
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs
+          .getKeys()
+          .where((k) => k.toLowerCase().contains('senha') || k.toLowerCase().contains('password'));
+      expect(keys, isEmpty);
+      expect(
+        prefs.getKeys(),
+        {
+          LocalStorageConstants.accessToken,
+          LocalStorageConstants.refreshToken,
+          LocalStorageConstants.rememberMe,
+        },
+      );
+    });
+  });
 }

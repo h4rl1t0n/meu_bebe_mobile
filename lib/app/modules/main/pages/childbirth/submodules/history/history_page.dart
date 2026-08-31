@@ -148,7 +148,9 @@ class _HistoryPageState extends State<HistoryPage> with HistoryFormController {
     );
 
     if (ok && mounted) {
-      Navigator.pop(context);
+      // Retorna `true` para a aba Gestação poder detectar que houve SAVE e
+      // recarregar o histórico imediatamente (FASE 9J-PRE-FIX1).
+      Navigator.pop(context, true);
     }
   }
 
