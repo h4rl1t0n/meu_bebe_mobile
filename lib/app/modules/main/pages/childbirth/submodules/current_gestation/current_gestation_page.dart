@@ -9,7 +9,7 @@ import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/gestacao/gestacao_model.dart';
 import '../../../../../../modules/onboarding/onboarding_route_args.dart';
-import '../../../../widgets/base_card.dart';
+import '../../../../../formulario/widgets/dss_question.dart';
 import 'current_gestation_controller.dart';
 import 'current_gestation_form_controller.dart';
 
@@ -20,8 +20,7 @@ class CurrentGestationPage extends StatefulWidget {
   State<CurrentGestationPage> createState() => _CurrentGestationPageState();
 }
 
-class _CurrentGestationPageState extends State<CurrentGestationPage>
-    with CurrentGestationFormController {
+class _CurrentGestationPageState extends State<CurrentGestationPage> with CurrentGestationFormController {
   final formKey = GlobalKey<FormState>();
   final _controller = Modular.get<CurrentGestationController>();
 
@@ -42,10 +41,7 @@ class _CurrentGestationPageState extends State<CurrentGestationPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Gravidez Atual', style: context.textStyles.titleSmallStyle),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text('Gravidez Atual', style: context.textStyles.titleSmallStyle), centerTitle: true),
       body: Observer(
         builder: (_) {
           if (_controller.loading) {
@@ -59,31 +55,22 @@ class _CurrentGestationPageState extends State<CurrentGestationPage>
 
   Widget get _buildBody {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.pageH,
-        vertical: Spacing.pageV,
-      ),
-      child: SingleChildScrollView(
-        child: BaseCard(
+      padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
+      child: DssQuestionCard(
+        child: SingleChildScrollView(
           child: Form(
             key: formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  'Sobre a minha gravidez',
-                  style: context.textStyles.titleSmallStyle,
-                ),
+                Text('Sobre a minha gravidez', style: context.textStyles.titleSmallStyle),
                 SizedBox(height: Spacing.lg),
                 _buildTextField(
                   lastMenstrualPeriodEC,
                   'Data da última menstruação',
                   validator: _validateDum,
                   keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    DataInputFormatter(),
-                  ],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, DataInputFormatter()],
                 ),
                 SizedBox(height: Spacing.lg),
                 _buildTextField(
@@ -142,10 +129,7 @@ class _CurrentGestationPageState extends State<CurrentGestationPage>
     return SizedBox(
       width: double.infinity,
       height: 48,
-      child: ElevatedButton(
-        onPressed: _controller.loading ? null : _handleSave,
-        child: const Text('Salvar'),
-      ),
+      child: ElevatedButton(onPressed: _controller.loading ? null : _handleSave, child: const Text('Salvar')),
     );
   }
 

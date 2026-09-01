@@ -18,10 +18,7 @@ final class PrivacyLogInterceptor extends Interceptor {
   }
 
   @override
-  void onResponse(
-    Response<dynamic> response,
-    ResponseInterceptorHandler handler,
-  ) {
+  void onResponse(Response<dynamic> response, ResponseInterceptorHandler handler) {
     _log(response.requestOptions, response.statusCode, null);
     handler.next(response);
   }

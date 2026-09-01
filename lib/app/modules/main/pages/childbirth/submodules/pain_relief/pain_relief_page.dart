@@ -6,7 +6,7 @@ import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/plano_parto/plano_parto_enums.dart';
-import '../../../../widgets/base_card.dart';
+import '../../../../../formulario/widgets/dss_question.dart';
 import 'pain_relief_controller.dart';
 
 class PainReliefPage extends StatefulWidget {
@@ -42,11 +42,14 @@ class _PainReliefPageState extends State<PainReliefPage> {
           body: Container(
             padding: EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
             child: SingleChildScrollView(
-              child: BaseCard(
+              child: DssQuestionCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Deseja medidas para alívio da dor?', style: textStyles.titleSmallStyle),
+                    Text(
+                      'Deseja medidas para alívio da dor?',
+                      style: textStyles.textStyle.copyWith(color: Colors.black),
+                    ),
                     SizedBox(height: Spacing.md),
                     _buildTabBar(_controller.querAlivioDor, _controller.setQuerAlivioDor),
                     if (_controller.querAlivioDor == TriState.sim)
@@ -88,6 +91,7 @@ class _PainReliefPageState extends State<PainReliefPage> {
 
   Widget _buildTabBar(TriState selected, ValueChanged<TriState> onSelect) {
     return Row(
+      spacing: 5,
       children: TriState.values.map((v) {
         return Expanded(
           child: InkWell(

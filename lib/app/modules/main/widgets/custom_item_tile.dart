@@ -29,7 +29,7 @@ class CustomItemTile extends StatelessWidget {
             height: 40,
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.all(Spacing.xs),
-            decoration: BoxDecoration(color: colors.secondary, borderRadius: RadiusTokens.smAll),
+            decoration: BoxDecoration(color: colors.secondary, borderRadius: RadiusTokens.mdAll),
             child: Text(content, style: textStyles.bodyMedium),
           ),
         ],

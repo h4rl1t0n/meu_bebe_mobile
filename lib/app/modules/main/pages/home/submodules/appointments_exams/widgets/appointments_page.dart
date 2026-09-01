@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../../../../../../core/helpers/civil_date.dart';
+import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../../model/consulta/consulta_model.dart';
-import '../../../../../widgets/add_consulta_dialog.dart';
 import '../appointments_exams_controller.dart';
 import 'card_with_date.dart';
 
@@ -41,11 +40,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           }
           return Column(
             children: [
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(onPressed: () => addAppointmentDialog(), child: const Text('Adicionar consulta')),
-              ),
               const SizedBox(height: Spacing.lg),
               _controller.appointments.isNotEmpty
                   ? Expanded(
@@ -67,7 +61,10 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                   : Expanded(
                       child: SizedBox(
                         child: Center(
-                          child: Text('Não foram encontradas consultas', style: context.textStyles.subTitleStyle),
+                          child: Text(
+                            'Não foram encontradas consultas',
+                            style: TextStyle(color: context.colors.darkText),
+                          ),
                         ),
                       ),
                     ),
@@ -76,11 +73,5 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         },
       ),
     );
-  }
-
-  Future<void> addAppointmentDialog() async {
-    final ConsultaModel? consulta = await showAddConsultaDialog(context);
-    if (consulta == null || !mounted) return;
-    _controller.saveAppointment(consulta);
   }
 }

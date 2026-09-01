@@ -6,6 +6,7 @@ import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/plano_parto/plano_parto_enums.dart';
+import '../../../../../formulario/widgets/dss_question.dart';
 import '../../../../widgets/base_card.dart';
 import 'expectations_controller.dart';
 
@@ -53,27 +54,107 @@ class _ExpectationsPageState extends State<ExpectationsPage> {
                     children: [
                       Text('Você gostaria de ...', style: textStyles.titleSmallStyle),
                       SizedBox(height: Spacing.lg),
-                      Text('Ter um acompanhante?', style: textStyles.textStyle),
-                      _customTabBar(_controller.acompanhante, _controller.setAcompanhante),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text('Ter um acompanhante?', style: textStyles.textStyle.copyWith(color: Colors.black)),
+                            SizedBox(height: Spacing.sm),
+                            _customTabBar(_controller.acompanhante, _controller.setAcompanhante),
+                          ],
+                        ),
+                      ),
+
                       SizedBox(height: Spacing.sm),
-                      Text('Raspar os pelos íntimos?', style: textStyles.textStyle),
-                      _customTabBar(_controller.rasparPelosIntimos, _controller.setRasparPelosIntimos),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text('Raspar os pelos íntimos?', style: textStyles.textStyle.copyWith(color: Colors.black)),
+                            SizedBox(height: Spacing.sm),
+                            _customTabBar(_controller.rasparPelosIntimos, _controller.setRasparPelosIntimos),
+                          ],
+                        ),
+                      ),
+
                       SizedBox(height: Spacing.sm),
-                      Text('Fazer lavagem intestinal?', style: textStyles.textStyle),
-                      _customTabBar(_controller.lavagemIntestinal, _controller.setLavagemIntestinal),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              'Fazer lavagem intestinal?',
+                              style: textStyles.textStyle.copyWith(color: Colors.black),
+                            ),
+                            SizedBox(height: Spacing.sm),
+                            _customTabBar(_controller.lavagemIntestinal, _controller.setLavagemIntestinal),
+                          ],
+                        ),
+                      ),
+
                       SizedBox(height: Spacing.sm),
-                      Text('Ter um ambiente com pouca luminosidade?', style: textStyles.textStyle),
-                      _customTabBar(_controller.ambientePoucaLuz, _controller.setAmbientePoucaLuz),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              'Ter um ambiente com pouca luminosidade?',
+                              style: textStyles.textStyle.copyWith(color: Colors.black),
+                            ),
+                            SizedBox(height: Spacing.sm),
+                            _customTabBar(_controller.ambientePoucaLuz, _controller.setAmbientePoucaLuz),
+                          ],
+                        ),
+                      ),
+
                       SizedBox(height: Spacing.sm),
-                      Text('Ouvir música?', style: textStyles.textStyle),
-                      _customTabBar(_controller.ouvirMusica, _controller.setOuvirMusica),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text('Ouvir música?', style: textStyles.textStyle.copyWith(color: Colors.black)),
+                            SizedBox(height: Spacing.sm),
+                            _customTabBar(_controller.ouvirMusica, _controller.setOuvirMusica),
+                          ],
+                        ),
+                      ),
+
                       SizedBox(height: Spacing.sm),
-                      Text('Beber líquidos', style: textStyles.textStyle),
-                      _customTabBar(_controller.beberLiquidos, _controller.setBeberLiquidos),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text('Beber líquidos', style: textStyles.textStyle.copyWith(color: Colors.black)),
+                            SizedBox(height: Spacing.sm),
+                            _customTabBar(_controller.beberLiquidos, _controller.setBeberLiquidos),
+                          ],
+                        ),
+                      ),
+
                       SizedBox(height: Spacing.sm),
-                      Text('Registar com fotos ou filmagens?', style: textStyles.textStyle),
-                      _customTabBar(_controller.registrarFotosVideos, _controller.setRegistrarFotosVideos),
-                      SizedBox(height: Spacing.lg),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              'Registar com fotos ou filmagens?',
+                              style: textStyles.textStyle.copyWith(color: Colors.black),
+                            ),
+                            SizedBox(height: Spacing.lg),
+                            _customTabBar(_controller.registrarFotosVideos, _controller.setRegistrarFotosVideos),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: Spacing.sm),
+
                       _saveButton(),
                     ],
                   ),

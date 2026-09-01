@@ -55,8 +55,8 @@ class _FormularioPageState extends State<FormularioPage> {
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: Text('Formulário'),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: _handleBack),
+        title: Text('Questionário'),
+        // leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: _handleBack),
       ),
       body: Column(
         children: [
@@ -64,7 +64,6 @@ class _FormularioPageState extends State<FormularioPage> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                // Imagem de fundo MUITO discreta (opacidade reduzida).
                 image: DecorationImage(opacity: .03, fit: BoxFit.contain, image: AssetImage(Images.mother)),
               ),
               child: Observer(
@@ -88,9 +87,6 @@ class _FormularioPageState extends State<FormularioPage> {
     );
   }
 
-  /// Cabeçalho da dimensão (FASE 9J-PRE-FIX1): ícone + "QUESTIONÁRIO DSS" +
-  /// título da dimensão + badge "X de 6" + barra de progresso segmentada +
-  /// "Próxima etapa".
   Widget _buildHeader(int step) {
     final colors = context.colors;
     final textStyles = context.textStyles;
@@ -98,16 +94,14 @@ class _FormularioPageState extends State<FormularioPage> {
 
     return Container(
       color: colors.surface,
-      padding: const EdgeInsets.fromLTRB(Spacing.pageH, Spacing.md, Spacing.pageH, Spacing.md),
+      padding: const EdgeInsets.fromLTRB(Spacing.pageH, Spacing.md, Spacing.pageH, Spacing.md / 2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(dimension.icon, size: 18, color: colors.primary500),
-              const SizedBox(width: Spacing.xs),
               Text(
-                'QUESTIONÁRIO DETERMINANTES SOCIAIS DE SAÚDE',
+                'DETERMINANTES SOCIAIS DE SAÚDE',
                 style: textStyles.overline.copyWith(
                   color: colors.primary500,
                   fontWeight: FontWeight.w700,
@@ -121,9 +115,16 @@ class _FormularioPageState extends State<FormularioPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Text(dimension.title, style: textStyles.titleSmallStyle.copyWith(color: colors.onSurface)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 5,
+                  children: [
+                    Icon(dimension.icon, size: 27.5, color: colors.primary500),
+                    Text(dimension.title, style: textStyles.titleSmallStyle.copyWith(color: colors.onSurface)),
+                  ],
+                ),
               ),
-              const SizedBox(width: Spacing.sm),
+              const SizedBox(width: Spacing.xs),
               _stepBadge(step),
             ],
           ),
@@ -221,9 +222,9 @@ class _FormularioPageState extends State<FormularioPage> {
   /// inferior — quem volta à etapa anterior do questionário é o "Voltar"
   /// inferior (`controller.voltar()`), enquanto esta seta apenas desempilha a
   /// rota atual.
-  void _handleBack() {
-    Modular.to.pop();
-  }
+  // void _handleBack() {
+  //   Modular.to.pop();
+  // }
 
   void _handleNext(int currentStep) {
     if (controller.isCurrentStepValid()) {

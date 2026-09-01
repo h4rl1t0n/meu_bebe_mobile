@@ -54,7 +54,7 @@ class _OnboardingGatePageState extends State<OnboardingGatePage> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.cloud_off, size: 64, color: colors.secondary),
+        Icon(Icons.cloud_off, size: 64, color: colors.primary300),
         SizedBox(height: Spacing.lg),
         Text(
           'Não foi possível verificar seus dados no momento. Tente novamente.',

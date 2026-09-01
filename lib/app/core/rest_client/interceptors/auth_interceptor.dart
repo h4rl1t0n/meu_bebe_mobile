@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 
+import '../../../model/auth/auth_models.dart';
 import '../../auth/session_manager.dart';
 import '../../auth/token_storage.dart';
-import '../../../model/auth/auth_models.dart';
 
 /// Injetor de ``Authorization`` + renovação de sessão (FASE 9A).
 ///
@@ -26,13 +26,9 @@ final class AuthInterceptor extends Interceptor {
   final TokenStorage storage;
   final SessionManager session;
 
-  AuthInterceptor({
-    required this.client,
-    TokenStorage? storage,
-    SessionManager? session,
-  }) : storage = storage ?? const TokenStorage(),
-       session =
-           session ?? SessionManager(storage: storage ?? const TokenStorage());
+  AuthInterceptor({required this.client, TokenStorage? storage, SessionManager? session})
+    : storage = storage ?? const TokenStorage(),
+      session = session ?? SessionManager(storage: storage ?? const TokenStorage());
 
   static const _authHeaderKey = 'Authorization';
   static const _refreshPath = '/api/v1/auth/refresh';
@@ -42,10 +38,7 @@ final class AuthInterceptor extends Interceptor {
   Future<TokenResponseModel?>? _refreshFuture;
 
   @override
-  Future<void> onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     final RequestOptions(:headers, :extra) = options;
     headers.remove(_authHeaderKey);
 
@@ -60,10 +53,7 @@ final class AuthInterceptor extends Interceptor {
   }
 
   @override
-  Future<void> onError(
-    DioException err,
-    ErrorInterceptorHandler handler,
-  ) async {
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     final request = err.requestOptions;
 
     final isAuth = request.extra['DIO_AUTH_KEY'] == true;
@@ -72,12 +62,7 @@ final class AuthInterceptor extends Interceptor {
     final isRefreshEndpoint = request.path == _refreshPath;
     final isUnauthorized = err.response?.statusCode == 401;
 
-    final shouldRefresh =
-        isUnauthorized &&
-        isAuth &&
-        !skipRefresh &&
-        !alreadyRefreshed &&
-        !isRefreshEndpoint;
+    final shouldRefresh = isUnauthorized && isAuth && !skipRefresh && !alreadyRefreshed && !isRefreshEndpoint;
 
     if (!shouldRefresh) {
       handler.next(err);
@@ -139,9 +124,7 @@ final class AuthInterceptor extends Interceptor {
       final refreshResponse = await client.post(
         _refreshPath,
         data: {'refresh_token': refreshToken},
-        options: Options(
-          extra: const {'DIO_AUTH_KEY': false, 'DIO_SKIP_REFRESH': true},
-        ),
+        options: Options(extra: const {'DIO_AUTH_KEY': false, 'DIO_SKIP_REFRESH': true}),
       );
 
       final token = TokenResponseModel.tryParse(refreshResponse.data);
@@ -150,10 +133,7 @@ final class AuthInterceptor extends Interceptor {
         return null;
       }
 
-      await storage.saveTokens(
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
-      );
+      await storage.saveTokens(accessToken: token.accessToken, refreshToken: token.refreshToken);
 
       return token;
     } catch (_) {

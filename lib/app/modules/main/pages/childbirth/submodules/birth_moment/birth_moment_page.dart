@@ -7,6 +7,7 @@ import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/plano_parto/plano_parto_enums.dart';
+import '../../../../../formulario/widgets/dss_question.dart';
 import '../../../../widgets/base_card.dart';
 import 'birth_moment_controller.dart';
 
@@ -65,36 +66,80 @@ class _BirthMomentPageState extends State<BirthMomentPage> {
                     children: [
                       Text('Como você prefere ...', style: textStyles.titleSmallStyle),
                       SizedBox(height: Spacing.lg),
-                      Text('Via de parto?', style: textStyles.textStyle),
-                      SizedBox(height: Spacing.sm),
-                      _buildViaPartoTabBar(_controller.viaParto, _controller.setViaParto),
-                      SizedBox(height: Spacing.lg),
-                      Text('Anestesia?', style: textStyles.textStyle),
-                      SizedBox(height: Spacing.sm),
-                      _buildTriTabBar(_controller.anestesia, _controller.setAnestesia),
-                      SizedBox(height: Spacing.lg),
-                      Text('Corte vaginal (episiotomia)?', style: textStyles.textStyle),
-                      SizedBox(height: Spacing.sm),
-                      _buildTriTabBar(_controller.corteVaginal, _controller.setCorteVaginal),
-                      SizedBox(height: Spacing.lg),
-                      Text('Posição preferida para o parto?', style: textStyles.textStyle),
-                      SizedBox(height: Spacing.sm),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: PosicaoParto.values.map((p) => _buildPositionTab(p)).toList(),
-                      ),
-                      if (_controller.posicaoPreferida == PosicaoParto.outra)
-                        Padding(
-                          padding: EdgeInsets.only(top: Spacing.md),
-                          child: TextFormField(
-                            controller: otherPositionEC,
-                            decoration: const InputDecoration(
-                              label: Text('Descreva a posição'),
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text('Via de parto?', style: textStyles.textStyle.copyWith(color: Colors.black)),
+                            SizedBox(height: Spacing.sm),
+                            _buildViaPartoTabBar(_controller.viaParto, _controller.setViaParto),
+                          ],
                         ),
+                      ),
+
+                      SizedBox(height: Spacing.sm),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text('Anestesia?', style: textStyles.textStyle.copyWith(color: Colors.black)),
+                            SizedBox(height: Spacing.sm),
+                            _buildTriTabBar(_controller.anestesia, _controller.setAnestesia),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: Spacing.sm),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              'Corte vaginal (episiotomia)?',
+                              style: textStyles.textStyle.copyWith(color: Colors.black),
+                            ),
+                            SizedBox(height: Spacing.sm),
+                            _buildTriTabBar(_controller.corteVaginal, _controller.setCorteVaginal),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: Spacing.sm),
+
+                      DssQuestionCard(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              'Posição preferida para o parto?',
+                              style: textStyles.textStyle.copyWith(color: Colors.black),
+                            ),
+                            SizedBox(height: Spacing.sm),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: PosicaoParto.values.map((p) => _buildPositionTab(p)).toList(),
+                            ),
+                            if (_controller.posicaoPreferida == PosicaoParto.outra) ...[
+                              SizedBox(height: Spacing.sm),
+                              Padding(
+                                padding: EdgeInsets.only(top: Spacing.md),
+                                child: TextFormField(
+                                  controller: otherPositionEC,
+                                  decoration: const InputDecoration(
+                                    label: Text('Descreva a posição'),
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+
                       SizedBox(height: Spacing.xxl),
                       _saveButton(),
                     ],

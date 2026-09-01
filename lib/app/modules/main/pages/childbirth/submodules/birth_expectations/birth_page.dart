@@ -6,6 +6,7 @@ import '../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/plano_parto/plano_parto_enums.dart';
+import '../../../../../formulario/widgets/dss_question.dart';
 import '../../../../widgets/base_card.dart';
 import 'birth_controller.dart';
 
@@ -48,33 +49,83 @@ class _BirthPageState extends State<BirthPage> {
                   children: [
                     Text('Expectativas para o nascimento', style: textStyles.titleSmallStyle),
                     SizedBox(height: Spacing.lg),
-                    Text('Quem cortará o cordão umbilical?', style: textStyles.textStyle),
-                    SizedBox(height: Spacing.sm),
-                    _buildActorTabBar(_controller.quemCortaCordao, _controller.setQuemCortaCordao),
-                    SizedBox(height: Spacing.lg),
-                    _buildSwitchTile(
-                      'Coleta de células-tronco?',
-                      _controller.coletaCelulasTronco,
-                      _controller.setColetaCelulasTronco,
+
+                    DssQuestionCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Quem cortará o cordão umbilical?',
+                            style: textStyles.textStyle.copyWith(color: Colors.black),
+                          ),
+                          SizedBox(height: Spacing.sm),
+                          _buildActorTabBar(_controller.quemCortaCordao, _controller.setQuemCortaCordao),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: Spacing.lg),
-                    Text('Contato pele a pele?', style: textStyles.textStyle),
+
                     SizedBox(height: Spacing.sm),
-                    _buildTriTabBar(_controller.contatoPeleAPele, _controller.setContatoPeleAPele),
-                    SizedBox(height: Spacing.lg),
-                    Text('Amamentação na primeira hora?', style: textStyles.textStyle),
-                    SizedBox(height: Spacing.sm),
-                    _buildTriTabBar(_controller.amamentarPrimeiraHora, _controller.setAmamentarPrimeiraHora),
-                    SizedBox(height: Spacing.lg),
-                    _buildSwitchTile(
-                      'Restrições à amamentação?',
-                      _controller.restricoesAmamentacao,
-                      _controller.setRestricoesAmamentacao,
+
+                    DssQuestionCard(
+                      child: _buildSwitchTile(
+                        'Coleta de células-tronco?',
+                        _controller.coletaCelulasTronco,
+                        _controller.setColetaCelulasTronco,
+                      ),
                     ),
-                    SizedBox(height: Spacing.lg),
-                    Text('Primeiro banho do bebê por?', style: textStyles.textStyle),
+
                     SizedBox(height: Spacing.sm),
-                    _buildActorTabBar(_controller.primeiroBanho, _controller.setPrimeiroBanho),
+
+                    DssQuestionCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Contato pele a pele?', style: textStyles.textStyle.copyWith(color: Colors.black)),
+                          SizedBox(height: Spacing.sm),
+                          _buildTriTabBar(_controller.contatoPeleAPele, _controller.setContatoPeleAPele),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: Spacing.sm),
+
+                    DssQuestionCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Amamentação na primeira hora?',
+                            style: textStyles.textStyle.copyWith(color: Colors.black),
+                          ),
+                          SizedBox(height: Spacing.sm),
+                          _buildTriTabBar(_controller.amamentarPrimeiraHora, _controller.setAmamentarPrimeiraHora),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: Spacing.sm),
+
+                    DssQuestionCard(
+                      child: _buildSwitchTile(
+                        'Restrições à amamentação?',
+                        _controller.restricoesAmamentacao,
+                        _controller.setRestricoesAmamentacao,
+                      ),
+                    ),
+
+                    SizedBox(height: Spacing.sm),
+
+                    DssQuestionCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Primeiro banho do bebê por?', style: textStyles.textStyle),
+                          SizedBox(height: Spacing.sm),
+                          _buildActorTabBar(_controller.primeiroBanho, _controller.setPrimeiroBanho),
+                        ],
+                      ),
+                    ),
+
                     SizedBox(height: Spacing.xxl),
                     _saveButton(),
                   ],
@@ -139,7 +190,7 @@ class _BirthPageState extends State<BirthPage> {
     return Material(
       color: Colors.transparent,
       child: SwitchListTile(
-        title: Text(label, style: context.textStyles.textStyle),
+        title: Text(label, style: context.textStyles.textStyle.copyWith(color: Colors.black)),
         value: value,
         onChanged: onChanged,
         activeThumbColor: context.colors.text,

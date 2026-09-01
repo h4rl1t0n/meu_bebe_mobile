@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../../../../../../core/helpers/civil_date.dart';
+import '../../../../../../../core/ui/theme/styles/colors_app.dart';
 import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
-import '../../../../../../../model/exame/exame_model.dart';
-import '../../../../../widgets/add_exame_dialog.dart';
 import '../appointments_exams_controller.dart';
 import 'card_with_date.dart';
 
@@ -41,11 +40,6 @@ class _ExamsPageState extends State<ExamsPage> {
           }
           return Column(
             children: [
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(onPressed: () => addExamDialog(), child: const Text('Adicionar exame')),
-              ),
               const SizedBox(height: Spacing.lg),
               _controller.exams.isNotEmpty
                   ? Expanded(
@@ -67,7 +61,7 @@ class _ExamsPageState extends State<ExamsPage> {
                   : Expanded(
                       child: SizedBox(
                         child: Center(
-                          child: Text('Não foram encontrados exames', style: context.textStyles.subTitleStyle),
+                          child: Text('Não foram encontrados exames', style: TextStyle(color: context.colors.darkText)),
                         ),
                       ),
                     ),
@@ -76,11 +70,5 @@ class _ExamsPageState extends State<ExamsPage> {
         },
       ),
     );
-  }
-
-  Future<void> addExamDialog() async {
-    final ExameModel? exame = await showAddExameDialog(context);
-    if (exame == null || !mounted) return;
-    _controller.saveExam(exame);
   }
 }

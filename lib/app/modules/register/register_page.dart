@@ -3,9 +3,12 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:validatorless/validatorless.dart';
 
+import '../../core/constants/images.dart';
 import '../../core/ui/theme/styles/colors_app.dart';
 import '../../core/ui/theme/styles/design_tokens.dart';
 import '../../core/ui/theme/styles/text_styles.dart';
+import '../formulario/widgets/dss_question.dart';
+import '../login/widgets/chip_login.dart';
 import 'register_controller.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -48,109 +51,122 @@ class _RegisterPageState extends State<RegisterPage> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(backgroundColor: Colors.white, elevation: 0, title: const Text('Criar conta')),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: Spacing.xl),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 430),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text('Cadastre-se para começar', textAlign: TextAlign.center, style: context.textStyles.titleStyle),
-                    const SizedBox(height: Spacing.xxxl),
-                    _field(
-                      controller: emailTEC,
-                      label: 'E-mail',
-                      icon: Icons.email_outlined,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: Validatorless.multiple([
-                        Validatorless.required('E-mail obrigatório'),
-                        Validatorless.email('E-mail inválido'),
-                      ]),
-                    ),
-                    const SizedBox(height: Spacing.lg),
-                    Observer(
-                      builder: (_) => _field(
-                        controller: passwordTEC,
-                        label: 'Senha',
-                        icon: Icons.lock_outline,
-                        obscureText: controller.obscurePassword,
-                        validator: Validatorless.multiple([
-                          Validatorless.required('Senha obrigatória'),
-                          Validatorless.min(8, 'Senha deve ter no mínimo 8 caracteres'),
-                        ]),
-                        suffix: IconButton(
-                          onPressed: controller.passwordToggle,
-                          icon: Icon(
-                            controller.obscurePassword ? Icons.visibility : Icons.visibility_off,
-                            size: 20,
-                            color: colors.darkText,
+        appBar: AppBar(backgroundColor: Colors.white, centerTitle: true, title: const Text('Criar conta')),
+        body: Container(
+          decoration: BoxDecoration(
+            // Imagem de fundo MUITO discreta (opacidade reduzida).
+            image: DecorationImage(opacity: .03, fit: BoxFit.contain, image: AssetImage(Images.mother)),
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: Spacing.xl),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 430),
+                child: Form(
+                  key: formKey,
+                  child: DssQuestionCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Cadastre-se para começar',
+                          textAlign: TextAlign.center,
+                          style: context.textStyles.titleStyle.copyWith(fontWeight: .w700),
+                        ),
+                        const SizedBox(height: Spacing.xxxl),
+                        _field(
+                          controller: emailTEC,
+                          label: 'E-mail',
+                          icon: Icons.email_outlined,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: Validatorless.multiple([
+                            Validatorless.required('E-mail obrigatório'),
+                            Validatorless.email('E-mail inválido'),
+                          ]),
+                        ),
+                        const SizedBox(height: Spacing.lg),
+                        Observer(
+                          builder: (_) => _field(
+                            controller: passwordTEC,
+                            label: 'Senha',
+                            icon: Icons.lock_outline,
+                            obscureText: controller.obscurePassword,
+                            validator: Validatorless.multiple([
+                              Validatorless.required('Senha obrigatória'),
+                              Validatorless.min(8, 'Senha deve ter no mínimo 8 caracteres'),
+                            ]),
+                            suffix: IconButton(
+                              onPressed: controller.passwordToggle,
+                              icon: Icon(
+                                controller.obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                size: 20,
+                                color: colors.darkText,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.lg),
-                    Observer(
-                      builder: (_) => _field(
-                        controller: confirmPasswordTEC,
-                        label: 'Confirmar senha',
-                        icon: Icons.lock_outline,
-                        obscureText: controller.obscureConfirmPassword,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) return 'Confirmação obrigatória';
-                          if (value != passwordTEC.text) return 'As senhas não conferem';
-                          return null;
-                        },
-                        suffix: IconButton(
-                          onPressed: controller.confirmPasswordToggle,
-                          icon: Icon(
-                            controller.obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
-                            size: 20,
-                            color: colors.darkText,
+                        const SizedBox(height: Spacing.lg),
+                        Observer(
+                          builder: (_) => _field(
+                            controller: confirmPasswordTEC,
+                            label: 'Confirmar senha',
+                            icon: Icons.lock_outline,
+                            obscureText: controller.obscureConfirmPassword,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) return 'Confirmação obrigatória';
+                              if (value != passwordTEC.text) return 'As senhas não conferem';
+                              return null;
+                            },
+                            suffix: IconButton(
+                              onPressed: controller.confirmPasswordToggle,
+                              icon: Icon(
+                                controller.obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                                size: 20,
+                                color: colors.darkText,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.xxl),
-                    SizedBox(
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: colors.darkText),
-                        onPressed: controller.loading
-                            ? null
-                            : () {
-                                final valid = formKey.currentState?.validate() ?? false;
-                                if (valid) {
-                                  controller.register(emailTEC.text, passwordTEC.text, confirmPasswordTEC.text);
-                                }
-                              },
-                        child: Observer(
-                          builder: (_) {
-                            if (controller.loading) {
-                              return const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                        const SizedBox(height: Spacing.xxl),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: colors.darkText),
+                          onPressed: controller.loading
+                              ? null
+                              : () {
+                                  final valid = formKey.currentState?.validate() ?? false;
+                                  if (valid) {
+                                    controller.register(emailTEC.text, passwordTEC.text, confirmPasswordTEC.text);
+                                  }
+                                },
+                          child: Observer(
+                            builder: (_) {
+                              if (controller.loading) {
+                                return const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                );
+                              }
+                              return Text(
+                                'Criar conta',
+                                style: context.textStyles.buttonLargeStyle.copyWith(color: Colors.white),
                               );
-                            }
-                            return Text(
-                              'Criar conta',
-                              style: context.textStyles.buttonLargeStyle.copyWith(color: Colors.white),
-                            );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: Spacing.lg),
+                        Divider(height: 0),
+                        const SizedBox(height: Spacing.lg),
+                        ChipLogin(
+                          label: 'Já tenho uma conta',
+                          icon: Icons.person,
+                          onTap: () {
+                            Modular.to.pop();
                           },
                         ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: Spacing.lg),
-                    TextButton(
-                      onPressed: () => Modular.to.pop(),
-                      child: Text('Já tenho uma conta', style: context.textStyles.bodyMedium),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

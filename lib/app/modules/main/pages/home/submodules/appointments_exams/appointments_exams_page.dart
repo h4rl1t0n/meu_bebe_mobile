@@ -4,6 +4,10 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
+import '../../../../../../model/consulta/consulta_model.dart';
+import '../../../../../../model/exame/exame_model.dart';
+import '../../../../widgets/add_consulta_dialog.dart';
+import '../../../../widgets/add_exame_dialog.dart';
 import 'appointments_exams_controller.dart';
 import 'widgets/appointments_page.dart';
 import 'widgets/exams_page.dart';
@@ -64,6 +68,35 @@ class _AppointmentsExamsPageState extends State<AppointmentsExamsPage> with Sing
           );
         },
       ),
+      floatingActionButton: Observer(
+        builder: (context) {
+          final index = controller.index;
+          return FloatingActionButton.extended(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(20)),
+            onPressed: () async {
+              if (index == 0) {
+                await addAppointmentDialog();
+                return;
+              }
+
+              await addExamDialog();
+            },
+            label: Text(index == 0 ? 'Adicionar consulta' : 'Adicionar exame'),
+          );
+        },
+      ),
     );
+  }
+
+  Future<void> addAppointmentDialog() async {
+    final ConsultaModel? consulta = await showAddConsultaDialog(context);
+    if (consulta == null || !mounted) return;
+    controller.saveAppointment(consulta);
+  }
+
+  Future<void> addExamDialog() async {
+    final ExameModel? exame = await showAddExameDialog(context);
+    if (exame == null || !mounted) return;
+    controller.saveExam(exame);
   }
 }

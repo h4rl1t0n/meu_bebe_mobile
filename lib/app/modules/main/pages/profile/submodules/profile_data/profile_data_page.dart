@@ -13,6 +13,7 @@ import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/gestante/gestante_model.dart';
 import '../../../../../../modules/onboarding/onboarding_route_args.dart';
+import '../../../../../formulario/widgets/dss_question.dart';
 import 'profile_data_controller.dart';
 import 'profile_form_controller.dart';
 import 'widgets/custom_text_field.dart';
@@ -87,24 +88,26 @@ class _ProfileDataPageState extends State<ProfileDataPage> with ProfileFormContr
 
   Widget _form() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.pageH, vertical: Spacing.pageV),
-      child: SingleChildScrollView(
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              _nameField(),
-              const SizedBox(height: Spacing.md),
-              _socialNameField(),
-              const SizedBox(height: Spacing.md),
-              _birthDateField(),
-              const SizedBox(height: Spacing.md),
-              _cpfField(),
-              const SizedBox(height: Spacing.md),
-              _cnsField(),
-              const SizedBox(height: Spacing.md),
-              _emailField(),
-            ],
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: Spacing.pageV),
+      child: DssQuestionCard(
+        child: SingleChildScrollView(
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                _nameField(),
+                const SizedBox(height: Spacing.md),
+                _socialNameField(),
+                const SizedBox(height: Spacing.md),
+                _birthDateField(),
+                const SizedBox(height: Spacing.md),
+                _cpfField(),
+                const SizedBox(height: Spacing.md),
+                _cnsField(),
+                const SizedBox(height: Spacing.md),
+                _emailField(),
+              ],
+            ),
           ),
         ),
       ),

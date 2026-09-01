@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
-import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../widgets/base_card.dart';
 
 class CardWithDate extends StatelessWidget {
@@ -27,6 +25,7 @@ class CardWithDate extends StatelessWidget {
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
+                insetPadding: EdgeInsets.all(15),
                 title: const Text('Deseja excluir?'),
                 actions: [
                   TextButton(onPressed: () => Navigator.pop(context), child: const Text('Não')),
@@ -42,27 +41,14 @@ class CardWithDate extends StatelessWidget {
             );
           },
           child: BaseCard(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(title, overflow: TextOverflow.ellipsis, style: context.textStyles.subTitleStyle),
-                    Text(date, style: context.textStyles.textStyle),
-                  ],
-                ),
-                const SizedBox(height: Spacing.sm),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(description, style: context.textStyles.textStyle),
-                ),
-              ],
+            child: ListTile(
+              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+              title: Text(title),
+              subtitle: Text(description),
+              trailing: Text(date),
             ),
           ),
         ),
-        const SizedBox(height: Spacing.sm),
       ],
     );
   }
