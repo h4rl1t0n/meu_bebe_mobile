@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
-import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 /// Card "Gestação atual" do resumo. Recebe a DUM da API (ISO) e a primeira
 /// ultrassonografia (ISO) derivada de EXAMES — nunca um campo de GESTAÇÃO.
@@ -13,6 +13,9 @@ class CurrentGestationCard extends StatelessWidget {
     super.key,
     required this.lastMenstrualPeriod,
     required this.firstUltrasound,
+    required this.localPreNatal,
+    required this.profissionalPreNatal,
+    required this.contatoLocalPreNatal,
     this.onEdit,
   });
 
@@ -21,6 +24,11 @@ class CurrentGestationCard extends StatelessWidget {
 
   /// Primeira ultrassonografia (`YYYY-MM-DD`) derivada de EXAMES (FASE 8F).
   final String? firstUltrasound;
+
+  /// Pré-natal da gestação atual (contrato GESTAÇÃO — FASE 8D).
+  final String? localPreNatal;
+  final String? profissionalPreNatal;
+  final String? contatoLocalPreNatal;
 
   final VoidCallback? onEdit;
 
@@ -55,15 +63,19 @@ class CurrentGestationCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: Spacing.sm),
-          const Row(
+          Row(
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [CustomItemTile(flex: 1, title: 'Sobre a minha gravidez atual', content: '')],
+            children: [CustomItemTile(flex: 1, title: 'Sobre a minha gravidez atual', content: _getPrenatalSummary())],
           ),
           const SizedBox(height: Spacing.lg),
           SizedBox(
             width: double.infinity,
             height: 48,
-            child: ElevatedButton.icon(onPressed: onEdit, icon: const Icon(Icons.edit, size: 18), label: const Text('Editar')),
+            child: ElevatedButton.icon(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit, size: 18),
+              label: const Text('Editar'),
+            ),
           ),
         ],
       ),
@@ -95,5 +107,17 @@ class CurrentGestationCard extends StatelessWidget {
     if (menstrualDay == null) return 'Sem dados';
     final birth = menstrualDay.add(const Duration(days: 280));
     return '${birth.day.toString().padLeft(2, '0')}/${birth.month.toString().padLeft(2, '0')}/${birth.year}';
+  }
+
+  /// Compõe o resumo "Sobre a minha gravidez atual" a partir do pré-natal
+  /// (local/profissional/contato) — campos reais do contrato GESTAÇÃO (FASE 8D).
+  /// Todos vazios → "Não informado".
+  String _getPrenatalSummary() {
+    final parts = <String>[
+      if (localPreNatal != null && localPreNatal!.isNotEmpty) 'Local: $localPreNatal',
+      if (profissionalPreNatal != null && profissionalPreNatal!.isNotEmpty) 'Profissional: $profissionalPreNatal',
+      if (contatoLocalPreNatal != null && contatoLocalPreNatal!.isNotEmpty) 'Contato: $contatoLocalPreNatal',
+    ];
+    return parts.isEmpty ? 'Não informado' : parts.join(' • ');
   }
 }

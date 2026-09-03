@@ -20,17 +20,17 @@ class CustomItemTile extends StatelessWidget {
       fit: FlexFit.tight,
       flex: flex,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: textStyles.bodyMedium),
           Container(
             width: double.infinity,
-            height: 40,
+            constraints: const BoxConstraints(minHeight: 40),
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.all(Spacing.xs),
             decoration: BoxDecoration(color: colors.secondary, borderRadius: RadiusTokens.mdAll),
-            child: Text(content, style: textStyles.bodyMedium),
+            child: Text(content, style: textStyles.bodyMedium, softWrap: true),
           ),
         ],
       ),

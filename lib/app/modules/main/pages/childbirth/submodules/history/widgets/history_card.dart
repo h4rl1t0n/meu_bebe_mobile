@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../../core/ui/theme/styles/colors_app.dart';
+import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../widgets/base_card.dart';
 import '../../../../../widgets/custom_item_tile.dart';
-import '../../../../../../../core/ui/theme/styles/design_tokens.dart';
 
 /// Card "Minha história" do resumo. Recebe os contadores do histórico já
 /// vindos da API. `null` (não informado) difere de `0` (zero ocorrências).
@@ -46,9 +46,11 @@ class HistoryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: Spacing.sm),
-          const Row(
+          Row(
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [CustomItemTile(flex: 1, title: 'História das gestações anteriores', content: '')],
+            children: [
+              CustomItemTile(flex: 1, title: 'História das gestações anteriores', content: _getHistorySummary()),
+            ],
           ),
           const SizedBox(height: Spacing.lg),
           SizedBox(
@@ -66,4 +68,21 @@ class HistoryCard extends StatelessWidget {
   }
 
   String _getCount(int? value) => value == null ? 'Sem dados' : '$value';
+
+  /// Compõe o resumo "História das gestações anteriores" a partir dos três
+  /// contadores reais do histórico (FASE 8E). Todos nulos → "Não informado".
+  String _getHistorySummary() {
+    final parts = <String>[
+      if (pregnancyNumber != null)
+        '$pregnancyNumber ${_plural(pregnancyNumber!, 'gestação', 'gestações')}',
+      if (givenBirthNumber != null)
+        '$givenBirthNumber ${_plural(givenBirthNumber!, 'parto', 'partos')}',
+      if (abortionsNumber != null)
+        '$abortionsNumber ${_plural(abortionsNumber!, 'aborto', 'abortos')}',
+    ];
+    return parts.isEmpty ? 'Não informado' : parts.join(', ');
+  }
+
+  String _plural(int n, String singular, String plural) =>
+      n == 1 ? singular : plural;
 }
