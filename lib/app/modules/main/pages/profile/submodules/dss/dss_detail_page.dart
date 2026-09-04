@@ -6,23 +6,16 @@ import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../../../../../../model/avaliacao_dss/avaliacao_dss_model.dart';
 import 'dss_date_format.dart';
+import 'dss_display_mapper.dart';
 
 /// Detalhe (somente leitura) de uma avaliação DSS já persistida.
 ///
 /// Lê o modelo de `Modular.args.data`. Nenhuma edição: o recurso é append-only
-/// (FASE 9G). As respostas são exibidas por dimensão em chave/valor bruto
-/// (códigos canônicos estáveis — ver [DssSchema]).
+/// (FASE 9G). As respostas são exibidas por dimensão com texto humanizado
+/// (pergunta acima da resposta), sem expor os identificadores técnicos do
+/// Schema DSS — o mapeamento vive centralizado em [DssDisplayMapper].
 class DssDetailPage extends StatelessWidget {
   const DssDetailPage({super.key});
-
-  static const _dimensionNames = <String, String>{
-    'educacao': 'Educação',
-    'trabalho': 'Trabalho e Renda',
-    'saneamento': 'Saneamento',
-    'saude': 'Saúde',
-    'habitacao': 'Habitação',
-    'alimentacao': 'Alimentação',
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -84,10 +77,17 @@ class DssDetailPage extends StatelessWidget {
     final textStyles = context.textStyles;
     final widgets = <Widget>[];
 
-    for (final entry in respostas.entries) {
-      final dimension = entry.key;
-      final value = entry.value;
-      final label = _dimensionNames[dimension] ?? dimension;
+    final ordered = <String>[];
+    for (final dimension in DssDisplayMapper.dimensionOrder) {
+      if (respostas.containsKey(dimension)) ordered.add(dimension);
+    }
+    for (final dimension in respostas.keys) {
+      if (!ordered.contains(dimension)) ordered.add(dimension);
+    }
+
+    for (final dimension in ordered) {
+      final value = respostas[dimension];
+      final label = DssDisplayMapper.labelForDimension(dimension);
 
       widgets.add(
         Container(
@@ -98,8 +98,11 @@ class DssDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label, style: textStyles.subTitleStyle),
-              const SizedBox(height: Spacing.sm),
-              if (value is Map) ..._fields(context, value) else Text(_formatValue(value), style: textStyles.bodyMedium),
+              const SizedBox(height: Spacing.md),
+              if (value is Map)
+                ..._fields(context, dimension, value)
+              else
+                Text(_formatScalar(dimension, value), style: textStyles.bodyMedium),
             ],
           ),
         ),
@@ -110,35 +113,65 @@ class DssDetailPage extends StatelessWidget {
     return widgets;
   }
 
-  List<Widget> _fields(BuildContext context, Map value) {
+  List<Widget> _fields(BuildContext context, String dimension, Map value) {
     final colors = context.colors;
     final textStyles = context.textStyles;
     final rows = <Widget>[];
 
-    value.forEach((key, v) {
+    final ordered = DssDisplayMapper.orderedFields(dimension, value.cast<String, dynamic>());
+
+    for (var i = 0; i < ordered.length; i++) {
+      final key = ordered[i];
+      final v = value[key];
+      if (i > 0) rows.add(const SizedBox(height: Spacing.sm));
+
       rows.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text('$key', style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant)),
-              ),
-              Expanded(child: Text(_formatValue(v), style: textStyles.bodyMedium)),
-            ],
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              DssDisplayMapper.labelForField(key),
+              style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: Spacing.xs),
+            if (v is List)
+              ..._listValue(context, key, v)
+            else
+              Text(_formatScalar(key, v), style: textStyles.bodyMedium),
+          ],
         ),
       );
-    });
+    }
 
     return rows;
   }
 
-  String _formatValue(dynamic v) {
-    if (v == null) return '—';
-    if (v is bool) return v ? 'Sim' : 'Não';
-    if (v is List) return v.isEmpty ? '—' : v.join(', ');
-    return v.toString();
+  List<Widget> _listValue(BuildContext context, String field, List value) {
+    final textStyles = context.textStyles;
+    final labels = DssDisplayMapper.formatList(field, value);
+    if (labels.isEmpty) {
+      return [Text('Não informado', style: textStyles.bodyMedium)];
+    }
+
+    final items = <Widget>[];
+    for (var i = 0; i < labels.length; i++) {
+      if (i > 0) items.add(const SizedBox(height: Spacing.xs));
+      items.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: Spacing.xs),
+              child: Text('•', style: textStyles.bodyMedium),
+            ),
+            const SizedBox(width: Spacing.sm),
+            Expanded(child: Text(labels[i], style: textStyles.bodyMedium)),
+          ],
+        ),
+      );
+    }
+    return items;
   }
+
+  String _formatScalar(String field, dynamic v) => DssDisplayMapper.formatValue(field, v);
 }
