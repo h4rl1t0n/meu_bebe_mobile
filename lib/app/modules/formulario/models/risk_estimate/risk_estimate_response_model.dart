@@ -1,6 +1,6 @@
 /// Modelos da resposta `200` de `POST /api/v1/risk-estimate`.
 ///
-/// Espelham o contrato congelado em `api/API_CONTRACT_V1.md` §4.1:
+/// Espelham o contrato congelado em `docs/api/API_CONTRACT_V1.md` §4.1:
 ///   `{ result: {target, probability}, model: {name, schema_version,
 ///     raw_feature_count, transformed_feature_count}, notice }`.
 ///

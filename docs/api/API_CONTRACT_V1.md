@@ -8,9 +8,16 @@ Flutter deverá consumir na próxima fase (via `Dio`). Ele foi produzido na
 FASE 4D a partir da auditoria somente-leitura do Flutter (`lib/`) contra a API
 (`api/`). Nenhuma implementação de cliente faz parte deste contrato.
 
-> **Escopo do contrato:** somente os três endpoints documentados abaixo.
-> Não há autenticação, CORS, persistência, rate limiting nem base URL neste
-> contrato. Não há endpoint de classificação (`/predict`, `/classify`, etc.).
+> **Nota de Contexto e Escopo:** Este documento constitui a especificação
+> **normativa e congelada** do contrato HTTP específico para a integração do
+> questionário dos Determinantes Sociais da Saúde (DSS 1.13) e o endpoint de
+> estimativa experimental (`POST /api/v1/risk-estimate`), além dos probes `/health`
+> e `/ready`, estabelecido na FASE 4D.
+> 
+> A documentação e os contratos das rotas subsequentes de domínio (autenticação JWT,
+> gestantes, gestações, consultas, exames, medicamentos, vacinas, plano de parto e
+> persistência de avaliações DSS) estão documentados no [README da API](README.md)
+> e estruturados como modelos Pydantic no pacote `meu_bebe_api.contracts`.
 
 ---
 
