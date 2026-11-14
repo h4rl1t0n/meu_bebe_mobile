@@ -7,13 +7,10 @@ import 'package:meu_bebe/app/core/rest_client/rest_client.dart';
 
 void main() {
   group('RestClient (backend — baseline restaurado)', () {
-    test(
-      'baseUrl vem de Env.backendBaseUrl (BACKEND_BASE_URL), não de API_BASE_URL',
-      () {
-        final client = RestClient();
-        expect(client.options.baseUrl, Env.backendBaseUrl);
-      },
-    );
+    test('baseUrl vem de Env.apiBaseUrl (API_BASE_URL)', () {
+      final client = RestClient();
+      expect(client.options.baseUrl, Env.apiBaseUrl);
+    });
 
     test(
       'timeouts do baseline restaurados (conexão 10s / recepção 60s / sem envio)',

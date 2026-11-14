@@ -18,7 +18,7 @@
 5. **Apresentação visual não classificatória** (`RiskEstimateResultSheet`), exibindo percentual e nota metodológica sem rotular risco como baixo/médio/alto.
 
 ### 1.2 Eixo de Acompanhamento Pré-natal e Autenticação (Fases 8–10)
-1. **Cliente HTTP do Backend** (`RestClient` / `DioForNative`) configurado com `BACKEND_BASE_URL`.
+1. **Cliente HTTP do Backend** (`RestClient` / `DioForNative`) configurado com a URL unificada `API_BASE_URL`.
 2. **Autenticação e Sessão:** Gerenciamento seguro via `AuthInterceptor` com injeção automática de header `Authorization: Bearer <token>` e renovação transparente em HTTP `401`.
 3. **Resolução de Privacidade no Backend:** O `RestClient` foi atualizado para utilizar `PrivacyLogInterceptor`, sanando a dívida técnica de logging em rotas autenticadas.
 4. **Eliminação do SQLite:** Remoção integral do pacote `sqflite` e da camada `database.dart`. Todas as operações de leitura e escrita agora utilizam repositórios REST conectando-se ao backend PostgreSQL via FastAPI.
@@ -30,7 +30,7 @@
 
 ```
 lib/app/core/
-├── env.dart                                         → BACKEND_BASE_URL
+├── env.dart                                         → API_BASE_URL
 ├── config/api_config.dart                           → API_BASE_URL
 ├── rest_client/
 │   ├── rest_client.dart                             → Dio para o backend (Auth, Pré-natal e Avaliações DSS)
@@ -54,28 +54,25 @@ lib/app/repositories/
 
 ### Isolamento dos Clientes HTTP
 
-| Cliente | Destino HTTP | Variável `--dart-define` | Interceptors Ativos | Finalidade |
+| Cliente | Destino HTTP | Variável de Ambiente | Interceptors Ativos | Finalidade |
 | --- | --- | --- | --- | --- |
-| `RestClient` | Backend API | `BACKEND_BASE_URL` | `PrivacyLogInterceptor`, `AuthInterceptor` | Autenticação, dados de saúde e histórico |
+| `RestClient` | Backend API | `API_BASE_URL` | `PrivacyLogInterceptor`, `AuthInterceptor` | Autenticação, dados de saúde e histórico |
 | `RiskEstimateRestClient` | Backend API (DSS) | `API_BASE_URL` | `PrivacyLogInterceptor` (sem Auth) | Estimativa probabilística anônima |
 
-> No ambiente de desenvolvimento padrão, tanto `API_BASE_URL` quanto `BACKEND_BASE_URL` apontam para o mesmo servidor FastAPI (ex.: `http://10.0.2.2:8000` no Android Emulator). A segregação de clientes garante que o endpoint DSS continue desacoplado e anônimo.
+> Ambos os clientes utilizam a URL unificada `API_BASE_URL` (definida em `env-meu-bebe.json`). A segregação de clientes garante que o endpoint DSS continue desacoplado e anônimo, sem transportar tokens nem credenciais.
 
 ---
 
 ## 3. Configuração de Base URL (Sem Hardcode)
 
-As URLs são obtidas em tempo de execução via `String.fromEnvironment`:
+A URL unificada é obtida em tempo de execução via `String.fromEnvironment('API_BASE_URL')` ou lida do arquivo `env-meu-bebe.json`:
 
 ```bash
-flutter run \
-  --dart-define=API_BASE_URL=http://10.0.2.2:8000 \
-  --dart-define=BACKEND_BASE_URL=http://10.0.2.2:8000
+flutter run --dart-define-from-file=env-meu-bebe.json
 ```
 
-- **Sem fallback cruzado:** Se `API_BASE_URL` não for definida, o cliente DSS não assume `BACKEND_BASE_URL`, disparando `ConfigurationFailure` defensivamente.
 - **Normalização:** `ApiConfig.normalizedBaseUrl` remove barras finais automaticamente.
-- **Ambientes prontos:** O arquivo `.vscode/launch.json` disponibiliza atalhos para Emulador (`10.0.2.2`) e Dispositivo Físico (`192.168.x.x`).
+- **Ambientes prontos:** O arquivo `.vscode/launch.json` disponibiliza atalhos para Emulador (`10.0.2.2`) e Dispositivo Físico (`192.168.x.x`), ambos consumindo `env-meu-bebe.json`.
 
 ---
 

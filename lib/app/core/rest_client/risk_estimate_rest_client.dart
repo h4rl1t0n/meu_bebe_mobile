@@ -6,8 +6,7 @@ import 'interceptors/privacy_log_interceptor.dart';
 
 /// Cliente HTTP dedicado à API DSS (`POST /api/v1/risk-estimate`).
 ///
-/// O destino é configurado por `API_BASE_URL` (via [ApiConfig]) — independente
-/// do [RestClient] do backend existente, que usa `BACKEND_BASE_URL`.
+/// O destino é configurado pela URL unificada `API_BASE_URL` (via [ApiConfig]).
 ///
 /// Não registra [AuthInterceptor] (a API DSS das Fases 4A–4D não exige
 /// autenticação) nem [LogInterceptor] com body (o questionário transporta

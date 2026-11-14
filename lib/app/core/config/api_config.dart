@@ -1,9 +1,7 @@
-/// Configuração central do endpoint da API DSS (estimativa de risco).
+/// Configuração central do endpoint da API (estimativa de risco e serviços).
 ///
-/// Lê exclusivamente `API_BASE_URL` (nome recomendado pela fase de integração).
-/// **Não há fallback** para `BACKEND_BASE_URL`: a API DSS e o backend existente
-/// (login) são destinos HTTP independentes. Quando `API_BASE_URL` é vazio, a
-/// API de estimativa é considerada **não configurada** (`isConfigured == false`).
+/// Lê a variável de ambiente unificada `API_BASE_URL`.
+/// Quando `API_BASE_URL` é vazio, a API de estimativa é considerada **não configurada** (`isConfigured == false`).
 ///
 /// É injetável (construtor explícito) para que os testes forneçam uma URL
 /// determinística sem depender de `--dart-define`.

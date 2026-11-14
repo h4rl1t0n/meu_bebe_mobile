@@ -7,16 +7,13 @@ import 'package:meu_bebe/app/core/rest_client/risk_estimate_rest_client.dart';
 
 void main() {
   group('RiskEstimateRestClient (API DSS dedicada)', () {
-    test(
-      'baseUrl vem de ApiConfig (API_BASE_URL), não de BACKEND_BASE_URL',
-      () {
-        final client = RiskEstimateRestClient();
-        expect(
-          client.options.baseUrl,
-          ApiConfig.fromEnvironment().normalizedBaseUrl,
-        );
-      },
-    );
+    test('baseUrl vem de ApiConfig (API_BASE_URL)', () {
+      final client = RiskEstimateRestClient();
+      expect(
+        client.options.baseUrl,
+        ApiConfig.fromEnvironment().normalizedBaseUrl,
+      );
+    });
 
     test('timeouts configurados (conexão 10s / envio 15s / recepção 15s)', () {
       final client = RiskEstimateRestClient();

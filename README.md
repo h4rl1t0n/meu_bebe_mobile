@@ -142,28 +142,39 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### 2.2 Execução no Emulador Android
+### 2.2 Configuração de Ambiente (`env-meu-bebe.json`)
 
-O emulador Android acessa o host local através do endereço especial `10.0.2.2`. Ambas as variáveis de ambiente devem ser fornecidas via `--dart-define`:
+A URL de comunicação do aplicativo foi centralizada no arquivo [`env-meu-bebe.json`](env-meu-bebe.json) na raiz do projeto, utilizando a chave única unificada `API_BASE_URL`:
 
-```bash
-flutter run -d emulator-5554 \
-  --dart-define=API_BASE_URL=http://10.0.2.2:8000 \
-  --dart-define=BACKEND_BASE_URL=http://10.0.2.2:8000
+```json
+{
+  "API_BASE_URL": "http://192.168.1.2:8000"
+}
 ```
 
-> **Dica:** O arquivo [`.vscode/launch.json`](.vscode/launch.json) já contém perfis prontos para executar no Emulador (`10.0.2.2:8000`) ou em Dispositivo Físico (`192.168.x.x:8000`), bastando pressionar <kbd>F5</kbd> no VS Code.
+> **Dica (VS Code):** O arquivo [`.vscode/launch.json`](.vscode/launch.json) já está configurado para ler automaticamente esse arquivo via `--dart-define-from-file=env-meu-bebe.json` em todos os perfis (Emulador, Celular Físico Debug e Release), bastando pressionar <kbd>F5</kbd>.
 
-### 2.3 Execução em Dispositivo Físico via Wi-Fi
+### 2.3 Execução via Terminal
 
-Para rodar em um celular físico conectado na mesma rede Wi-Fi que o computador:
-1. Obtenha o IP da máquina na rede local (ex.: `192.168.1.15`).
-2. Execute o app passando o IP:
+Você pode executar o app referenciando o arquivo de ambiente ou definindo a URL diretamente na linha de comando:
+
 ```bash
-flutter run \
-  --dart-define=API_BASE_URL=http://192.168.1.15:8000 \
-  --dart-define=BACKEND_BASE_URL=http://192.168.1.15:8000
+# Opção 1: Utilizando o arquivo de configuração unificado
+flutter run --dart-define-from-file=env-meu-bebe.json
+
+# Opção 2: Passando a URL diretamente via terminal
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
 ```
+
+### 2.4 Geração do APK de Produção (Release)
+
+Para gerar o APK de release para dispositivos físicos:
+
+```bash
+flutter build apk --release --dart-define-from-file=env-meu-bebe.json
+```
+
+O arquivo gerado estará disponível em `build/app/outputs/flutter-apk/app-release.apk`.
 
 ---
 

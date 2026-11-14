@@ -8,9 +8,9 @@
       "program": "lib/main.dart",
       "deviceId": "emulator-5554",
       "flutterMode": "debug",
-      "toolArgs": [
-        "--dart-define=API_BASE_URL=http://10.0.2.2:8000",
-        "--dart-define=BACKEND_BASE_URL=http://10.0.2.2:8000"
+      "args": [
+        "--dart-define-from-file",
+        "env-meu-bebe-emulator.json"
       ]
     },
     {
@@ -19,9 +19,9 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "debug",
-      "toolArgs": [
-        "--dart-define=API_BASE_URL=http://192.168.1.2:8000",
-        "--dart-define=BACKEND_BASE_URL=http://192.168.1.2:8000"
+      "args": [
+        "--dart-define-from-file",
+        "env-meu-bebe.json"
       ]
     },
     {
@@ -30,9 +30,9 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "release",
-      "toolArgs": [
-        "--dart-define=API_BASE_URL=http://192.168.1.2:8000",
-        "--dart-define=BACKEND_BASE_URL=http://192.168.1.2:8000"
+      "args": [
+        "--dart-define-from-file",
+        "env-meu-bebe.json"
       ]
     }
   ]
