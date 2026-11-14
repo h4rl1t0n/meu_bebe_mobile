@@ -1,0 +1,24 @@
+{
+  "iv_dss_version": "1.0",
+  "schema_version": "1.13",
+  "generator_version": "1.0",
+  "n_samples": 5000,
+  "timestamp": "2026-08-23T19:34:03.186447+00:00",
+  "generation_elapsed_seconds": 0.2383,
+  "method": {
+    "principal": "arithmetic_mean",
+    "weights": "1/6 para cada dimensão (escolha metodológica transparente, não validada)",
+    "completeness_rule": "6/6 dimensões válidas",
+    "partial_rule": "exatamente 5/6 dimensões válidas",
+    "coverage": "n_dimensoes_validas / 6",
+    "sensitivity_generalized_p2": "sqrt(mean(D^2)), somente 6/6",
+    "sensitivity_housing_binary": "densidade > 3 -> 1, senão 0; substitui apenas D_habitacao, 6/6"
+  },
+  "n_principal_calculable": 4643,
+  "n_partial_calculable": 352,
+  "hashes_sha256": {
+    "q_full_v1.jsonl": "48998d489bc60fadca7e503e343abaed800f3becf4b3328c27a7ab3c210fdbe8",
+    "iv_dss_v1.jsonl": "b3f43477f78bf56ba5f05b1cd18998da3dd890a2bc86b6928ed1196f519ab3d4",
+    "iv_dss_audit_v1.csv": "487dd01edc5c9e73472bd40b9fbea716c15040051a92ccbfb8d5829daf2208b3"
+  }
+}

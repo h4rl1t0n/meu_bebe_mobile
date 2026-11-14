@@ -1,0 +1,768 @@
+{
+  "generated_at": "2026-08-23T17:55:06.030104+00:00",
+  "n_records": 5000,
+  "categoricals": {
+    "escolaridade": {
+      "medio_completo": {
+        "count": 1237,
+        "pct": 24.74
+      },
+      "superior_completo": {
+        "count": 823,
+        "pct": 16.46
+      },
+      "fundamental_incompleto": {
+        "count": 806,
+        "pct": 16.12
+      },
+      "medio_incompleto": {
+        "count": 670,
+        "pct": 13.4
+      },
+      "superior_incompleto": {
+        "count": 594,
+        "pct": 11.88
+      },
+      "fundamental_completo": {
+        "count": 577,
+        "pct": 11.54
+      },
+      "sem_instrucao": {
+        "count": 293,
+        "pct": 5.86
+      }
+    },
+    "situacao_estudos_gestacao": {
+      "nao_estudava": {
+        "count": 2863,
+        "pct": 57.26
+      },
+      "nao_interrompeu": {
+        "count": 1078,
+        "pct": 21.56
+      },
+      "interrompeu": {
+        "count": 1059,
+        "pct": 21.18
+      }
+    },
+    "tipo_emprego": {
+      "nan": {
+        "count": 2097,
+        "pct": 41.94
+      },
+      "clt": {
+        "count": 1569,
+        "pct": 31.38
+      },
+      "informal": {
+        "count": 730,
+        "pct": 14.6
+      },
+      "autonomo": {
+        "count": 604,
+        "pct": 12.08
+      }
+    },
+    "faixa_renda": {
+      "ate_1_sm": {
+        "count": 1476,
+        "pct": 29.52
+      },
+      "entre_1_2_sm": {
+        "count": 1337,
+        "pct": 26.74
+      },
+      "entre_2_3_sm": {
+        "count": 969,
+        "pct": 19.38
+      },
+      "mais_3_sm": {
+        "count": 933,
+        "pct": 18.66
+      },
+      "nao_informar": {
+        "count": 285,
+        "pct": 5.7
+      }
+    },
+    "motivo_desemprego": {
+      "nan": {
+        "count": 2903,
+        "pct": 58.06
+      },
+      "dificuldade_encontrar_vaga": {
+        "count": 702,
+        "pct": 14.04
+      },
+      "cuidado_casa_filhos": {
+        "count": 428,
+        "pct": 8.56
+      },
+      "opcao_propria": {
+        "count": 300,
+        "pct": 6.0
+      },
+      "problemas_saude": {
+        "count": 238,
+        "pct": 4.76
+      },
+      "gestacao": {
+        "count": 234,
+        "pct": 4.68
+      },
+      "outro": {
+        "count": 195,
+        "pct": 3.9
+      }
+    },
+    "impacto_gestacao_trabalho": {
+      "nao_afetou": {
+        "count": 2402,
+        "pct": 48.04
+      },
+      "reduziu_jornada": {
+        "count": 858,
+        "pct": 17.16
+      },
+      "afastamento_temporario": {
+        "count": 598,
+        "pct": 11.96
+      },
+      "outro": {
+        "count": 405,
+        "pct": 8.1
+      },
+      "pediu_demissao": {
+        "count": 378,
+        "pct": 7.56
+      },
+      "demitida": {
+        "count": 359,
+        "pct": 7.18
+      }
+    },
+    "fonte_agua": {
+      "rede_publica": {
+        "count": 3267,
+        "pct": 65.34
+      },
+      "poco_nascente": {
+        "count": 695,
+        "pct": 13.9
+      },
+      "cisterna": {
+        "count": 398,
+        "pct": 7.96
+      },
+      "outra": {
+        "count": 323,
+        "pct": 6.46
+      },
+      "carro_pipa": {
+        "count": 317,
+        "pct": 6.34
+      }
+    },
+    "esgotamento_sanitario": {
+      "rede_coletora": {
+        "count": 2655,
+        "pct": 53.1
+      },
+      "fossa_septica": {
+        "count": 1600,
+        "pct": 32.0
+      },
+      "ceu_aberto": {
+        "count": 409,
+        "pct": 8.18
+      },
+      "outro": {
+        "count": 336,
+        "pct": 6.72
+      }
+    },
+    "frequencia_coleta_lixo": {
+      "regular": {
+        "count": 3649,
+        "pct": 72.98
+      },
+      "irregular": {
+        "count": 883,
+        "pct": 17.66
+      },
+      "nao_possui": {
+        "count": 468,
+        "pct": 9.36
+      }
+    },
+    "destino_lixo_sem_coleta": {
+      "nan": {
+        "count": 3649,
+        "pct": 72.98
+      },
+      "aguarda_proxima_coleta": {
+        "count": 484,
+        "pct": 9.68
+      },
+      "queima": {
+        "count": 320,
+        "pct": 6.4
+      },
+      "terreno_baldio": {
+        "count": 197,
+        "pct": 3.94
+      },
+      "outro": {
+        "count": 195,
+        "pct": 3.9
+      },
+      "enterra": {
+        "count": 155,
+        "pct": 3.1
+      }
+    },
+    "distancia_ubs": {
+      "razoavelmente_proxima": {
+        "count": 1885,
+        "pct": 37.7
+      },
+      "muito_proxima": {
+        "count": 1880,
+        "pct": 37.6
+      },
+      "distante": {
+        "count": 1235,
+        "pct": 24.7
+      }
+    },
+    "acesso_ubs": {
+      "a_pe": {
+        "count": 2025,
+        "pct": 40.5
+      },
+      "carro_moto": {
+        "count": 1356,
+        "pct": 27.12
+      },
+      "transporte_publico": {
+        "count": 1325,
+        "pct": 26.5
+      },
+      "outro": {
+        "count": 294,
+        "pct": 5.88
+      }
+    },
+    "avaliacao_pre_natal": {
+      "bom": {
+        "count": 2022,
+        "pct": 40.44
+      },
+      "regular": {
+        "count": 1197,
+        "pct": 23.94
+      },
+      "excelente": {
+        "count": 947,
+        "pct": 18.94
+      },
+      "ruim": {
+        "count": 529,
+        "pct": 10.58
+      },
+      "pessimo": {
+        "count": 305,
+        "pct": 6.1
+      }
+    },
+    "tipo_moradia": {
+      "casa": {
+        "count": 3280,
+        "pct": 65.6
+      },
+      "apartamento": {
+        "count": 845,
+        "pct": 16.9
+      },
+      "comodo_unico": {
+        "count": 489,
+        "pct": 9.78
+      },
+      "outro": {
+        "count": 386,
+        "pct": 7.72
+      }
+    },
+    "material_moradia": {
+      "alvenaria": {
+        "count": 3552,
+        "pct": 71.04
+      },
+      "madeira": {
+        "count": 732,
+        "pct": 14.64
+      },
+      "mista": {
+        "count": 466,
+        "pct": 9.32
+      },
+      "outro": {
+        "count": 250,
+        "pct": 5.0
+      }
+    },
+    "seguranca_residencia": {
+      "segura": {
+        "count": 1879,
+        "pct": 37.58
+      },
+      "regular": {
+        "count": 1434,
+        "pct": 28.68
+      },
+      "insegura": {
+        "count": 784,
+        "pct": 15.68
+      },
+      "muito_segura": {
+        "count": 635,
+        "pct": 12.7
+      },
+      "muito_insegura": {
+        "count": 268,
+        "pct": 5.36
+      }
+    },
+    "refeicoes_por_dia": {
+      "tres": {
+        "count": 2413,
+        "pct": 48.26
+      },
+      "quatro_mais": {
+        "count": 1712,
+        "pct": 34.24
+      },
+      "uma_duas": {
+        "count": 875,
+        "pct": 17.5
+      }
+    },
+    "avaliacao_alimentacao": {
+      "boa": {
+        "count": 2034,
+        "pct": 40.68
+      },
+      "regular": {
+        "count": 1661,
+        "pct": 33.22
+      },
+      "muito_boa": {
+        "count": 734,
+        "pct": 14.68
+      },
+      "ruim": {
+        "count": 571,
+        "pct": 11.42
+      }
+    }
+  },
+  "booleans": {
+    "estuda_atualmente": {
+      "true": {
+        "count": 1078,
+        "pct": 21.56
+      },
+      "false": {
+        "count": 3922,
+        "pct": 78.44
+      }
+    },
+    "entende_orientacoes_saude": {
+      "true": {
+        "count": 4144,
+        "pct": 82.88
+      },
+      "false": {
+        "count": 856,
+        "pct": 17.12
+      }
+    },
+    "fez_curso_qualificacao_profissional": {
+      "true": {
+        "count": 2099,
+        "pct": 41.98
+      },
+      "false": {
+        "count": 2901,
+        "pct": 58.02
+      }
+    },
+    "empregado": {
+      "true": {
+        "count": 2903,
+        "pct": 58.06
+      },
+      "false": {
+        "count": 2097,
+        "pct": 41.94
+      }
+    },
+    "trabalho_permite_pre_natal": {
+      "true": {
+        "count": 2112,
+        "pct": 42.24
+      },
+      "false": {
+        "count": 791,
+        "pct": 15.82
+      },
+      "null": {
+        "count": 2097,
+        "pct": 41.94
+      }
+    },
+    "ambiente_trabalho_seguro": {
+      "true": {
+        "count": 2280,
+        "pct": 45.6
+      },
+      "false": {
+        "count": 623,
+        "pct": 12.46
+      },
+      "null": {
+        "count": 2097,
+        "pct": 41.94
+      }
+    },
+    "tem_pausas_descanso": {
+      "true": {
+        "count": 1876,
+        "pct": 37.52
+      },
+      "false": {
+        "count": 1027,
+        "pct": 20.54
+      },
+      "null": {
+        "count": 2097,
+        "pct": 41.94
+      }
+    },
+    "recebe_beneficio_social": {
+      "true": {
+        "count": 1086,
+        "pct": 21.72
+      },
+      "false": {
+        "count": 3914,
+        "pct": 78.28
+      }
+    },
+    "interrupcoes_agua": {
+      "true": {
+        "count": 1009,
+        "pct": 20.18
+      },
+      "false": {
+        "count": 3991,
+        "pct": 79.82
+      }
+    },
+    "problema_saude_agua": {
+      "true": {
+        "count": 531,
+        "pct": 10.62
+      },
+      "false": {
+        "count": 4469,
+        "pct": 89.38
+      }
+    },
+    "faltou_consulta": {
+      "true": {
+        "count": 1227,
+        "pct": 24.54
+      },
+      "false": {
+        "count": 3514,
+        "pct": 70.28
+      },
+      "null": {
+        "count": 259,
+        "pct": 5.18
+      }
+    },
+    "cadastrada_ubs": {
+      "true": {
+        "count": 4225,
+        "pct": 84.5
+      },
+      "false": {
+        "count": 775,
+        "pct": 15.5
+      }
+    },
+    "exames_pre_natal_completos": {
+      "true": {
+        "count": 3407,
+        "pct": 68.14
+      },
+      "false": {
+        "count": 1361,
+        "pct": 27.22
+      },
+      "null": {
+        "count": 232,
+        "pct": 4.64
+      }
+    },
+    "vacinas_em_dia": {
+      "true": {
+        "count": 3695,
+        "pct": 73.9
+      },
+      "false": {
+        "count": 1055,
+        "pct": 21.1
+      },
+      "null": {
+        "count": 250,
+        "pct": 5.0
+      }
+    },
+    "facil_acesso_saude": {
+      "true": {
+        "count": 3684,
+        "pct": 73.68
+      },
+      "false": {
+        "count": 1316,
+        "pct": 26.32
+      }
+    },
+    "deixou_de_comer_falta_dinheiro": {
+      "true": {
+        "count": 937,
+        "pct": 18.74
+      },
+      "false": {
+        "count": 4063,
+        "pct": 81.26
+      }
+    },
+    "mudanca_alimentacao_gestacao": {
+      "true": {
+        "count": 2755,
+        "pct": 55.1
+      },
+      "false": {
+        "count": 2245,
+        "pct": 44.9
+      }
+    },
+    "usa_suplementos": {
+      "true": {
+        "count": 3579,
+        "pct": 71.58
+      },
+      "false": {
+        "count": 1421,
+        "pct": 28.42
+      }
+    }
+  },
+  "nulls_by_field": {
+    "tipo_emprego": 2097,
+    "trabalho_permite_pre_natal": 2097,
+    "ambiente_trabalho_seguro": 2097,
+    "tem_pausas_descanso": 2097,
+    "beneficios_trabalho": 2097,
+    "motivo_desemprego": 2903,
+    "destino_lixo_sem_coleta": 3649,
+    "faltou_consulta": 259,
+    "exames_pre_natal_completos": 232,
+    "vacinas_em_dia": 250
+  },
+  "multiselects": {
+    "dificuldades_educacao": {
+      "sem_dificuldades": 1960,
+      "falta_dinheiro": 961,
+      "trabalho": 709,
+      "gravidez": 589,
+      "distancia": 581,
+      "cuidado_filhos": 535,
+      "falta_transporte": 463,
+      "falta_vagas": 422,
+      "outro": 222
+    },
+    "beneficios_trabalho": {
+      "vale_transporte": 1221,
+      "vale_alimentacao": 1082,
+      "auxilio_maternidade": 1055,
+      "sem_beneficios": 1042
+    },
+    "cuidados_vetores": {
+      "mantem_ambiente_limpo": 3686,
+      "mantem_reservatorios_tampados": 3189,
+      "elimina_agua_parada": 3143,
+      "usa_repelente": 2242,
+      "usa_mosquiteiro_telas": 1555,
+      "usa_inseticida": 1289,
+      "outro": 204,
+      "sem_cuidados": 59
+    },
+    "servicos_pre_natal": {
+      "consulta_medica": 4045,
+      "consulta_enfermagem": 3492,
+      "grupo_gestantes": 1316,
+      "nenhum_dos_listados": 246
+    },
+    "dificuldades_saude": {
+      "sem_dificuldades": 1421,
+      "demora_atendimento": 1273,
+      "dificuldade_agendamento": 908,
+      "horario_incompativel": 871,
+      "falta_exames": 808,
+      "falta_transporte": 649,
+      "falta_profissional": 637,
+      "distancia": 604,
+      "outro": 260
+    },
+    "itens_residencia": {
+      "banheiro_interno": 4458,
+      "cozinha_separada": 4440,
+      "agua_encanada": 4374,
+      "nenhum_dos_listados": 6
+    },
+    "melhorias_desejadas": {
+      "ampliacao_espaco": 1274,
+      "sem_melhorias": 1153,
+      "reforma_estrutura": 1082,
+      "melhorar_banheiro": 1007,
+      "melhorar_ventilacao": 873,
+      "melhorar_seguranca": 801,
+      "melhorar_instalacao_eletrica": 785,
+      "melhorar_abastecimento_agua": 645,
+      "outro": 229
+    },
+    "alimentos_consumidos": {
+      "feijao_leguminosas": 4076,
+      "carnes": 3474,
+      "frutas_verduras": 3228,
+      "leite_derivados": 3049,
+      "nenhum_dos_listados": 58
+    },
+    "fonte_alimentos": {
+      "supermercado_feira": 4632,
+      "horta_propria": 606,
+      "cesta_basica": 572,
+      "doacoes": 428,
+      "outro": 274
+    }
+  },
+  "housing_stats": {
+    "numero_pessoas": {
+      "mean": 3.565,
+      "std": 1.61,
+      "min": 1,
+      "max": 8
+    },
+    "numero_comodos": {
+      "mean": 3.14,
+      "std": 1.514,
+      "min": 1,
+      "max": 9
+    },
+    "numero_dormitorios": {
+      "mean": 1.799,
+      "std": 0.908,
+      "min": 1,
+      "max": 6
+    },
+    "adensamento_pessoas_por_dormitorio": {
+      "mean": 2.146,
+      "median": 2.0,
+      "max": 8.0
+    },
+    "adensamento_pessoas_por_comodo": {
+      "mean": 1.446,
+      "median": 1.0,
+      "max": 8.0
+    }
+  },
+  "faixa_renda_nao_informar_rate": 0.057,
+  "empregado_true_rate": 0.5806,
+  "distancia_ubs_distribution": {
+    "razoavelmente_proxima": {
+      "count": 1885,
+      "pct": 37.7
+    },
+    "muito_proxima": {
+      "count": 1880,
+      "pct": 37.6
+    },
+    "distante": {
+      "count": 1235,
+      "pct": 24.7
+    }
+  },
+  "deixou_de_comer_falta_dinheiro_rate": 0.1874,
+  "dificuldades_saude_rates": {
+    "dificuldade_agendamento": 0.1816,
+    "demora_atendimento": 0.2546,
+    "distancia": 0.1208,
+    "falta_transporte": 0.1298,
+    "horario_incompativel": 0.1742,
+    "falta_profissional": 0.1274,
+    "falta_exames": 0.1616,
+    "outro": 0.052
+  },
+  "z_correlation_sample": {
+    "columns": [
+      "Z_SES",
+      "Z_LAB",
+      "Z_TERR",
+      "Z_INFRA",
+      "Z_SERV"
+    ],
+    "matrix": [
+      [
+        1.0,
+        0.4667,
+        0.2324,
+        0.4638,
+        0.0821
+      ],
+      [
+        0.4667,
+        1.0,
+        0.1918,
+        0.2836,
+        0.0933
+      ],
+      [
+        0.2324,
+        0.1918,
+        1.0,
+        0.218,
+        0.2317
+      ],
+      [
+        0.4638,
+        0.2836,
+        0.218,
+        1.0,
+        0.1204
+      ],
+      [
+        0.0821,
+        0.0933,
+        0.2317,
+        0.1204,
+        1.0
+      ]
+    ]
+  }
+}

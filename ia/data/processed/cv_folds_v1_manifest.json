@@ -1,0 +1,40 @@
+{
+  "protocol_version": "1.0",
+  "schema_version": "1.13",
+  "preprocessing_version": "1.0",
+  "split_file_hash_sha256": "55eeaf0f68cedb4288cc2b1362858a8113ca3a9b78c1a057ff64b037ed802506",
+  "n_splits": 5,
+  "shuffle": true,
+  "random_state": 42,
+  "fold_sizes": {
+    "0": 800,
+    "1": 800,
+    "2": 800,
+    "3": 800,
+    "4": 800
+  },
+  "fold_class_counts": {
+    "0": {
+      "Y0": 605,
+      "Y1": 195
+    },
+    "1": {
+      "Y0": 605,
+      "Y1": 195
+    },
+    "2": {
+      "Y0": 605,
+      "Y1": 195
+    },
+    "3": {
+      "Y0": 604,
+      "Y1": 196
+    },
+    "4": {
+      "Y0": 604,
+      "Y1": 196
+    }
+  },
+  "folds_file_hash_sha256": "7b3cf1ff049320725f12b5bd7b0d75a8e4587f8284f34b5b2f0e1f6de60a0532",
+  "timestamp": "2026-08-23T20:37:56.940195+00:00"
+}

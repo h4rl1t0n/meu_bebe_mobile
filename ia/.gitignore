@@ -15,23 +15,23 @@ dist/
 
 # --- Datasets gerados (não versionar) -------------------------------------
 # Dados sintéticos e processados são artefatos de execução, não código-fonte.
-data/raw/*.csv
-data/raw/*.parquet
-data/raw/*.json
-data/raw/*.jsonl
-data/processed/*
-data/audit/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-!data/audit/.gitkeep
+# data/raw/*.csv
+# data/raw/*.parquet
+# data/raw/*.json
+# data/raw/*.jsonl
+# data/processed/*
+# data/audit/*
+# !data/raw/.gitkeep
+# !data/processed/.gitkeep
+# !data/audit/.gitkeep
 
 # --- Artefatos de modelos/treinamento -------------------------------------
-artifacts/models/*
-artifacts/metrics/*
-artifacts/figures/*
-!artifacts/models/.gitkeep
-!artifacts/metrics/.gitkeep
-!artifacts/figures/.gitkeep
+# artifacts/models/*
+# artifacts/metrics/*
+# artifacts/figures/*
+# !artifacts/models/.gitkeep
+# !artifacts/metrics/.gitkeep
+# !artifacts/figures/.gitkeep
 
 # --- Outros ---------------------------------------------------------------
 *.log

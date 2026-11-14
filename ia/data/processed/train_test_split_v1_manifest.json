@@ -1,0 +1,28 @@
+{
+  "protocol_version": "1.0",
+  "schema_version": "1.13",
+  "preprocessing_version": "1.0",
+  "dataset_hash_sha256": "36a0e342400857514842205b2ffb0bb46e52e0cb3e8f94d0ce606e786371b47f",
+  "preprocessing_config_hash_sha256": "21da57db5480f8b5ba3e3c4bf9d0490126add0b5f39a60299076008a8f50a215",
+  "random_state": 42,
+  "test_size": 0.2,
+  "stratified": true,
+  "shuffle": true,
+  "total_rows": 5000,
+  "train_rows": 4000,
+  "test_rows": 1000,
+  "class_counts_total": {
+    "Y0": 3779,
+    "Y1": 1221
+  },
+  "class_counts_train": {
+    "Y0": 3023,
+    "Y1": 977
+  },
+  "class_counts_test": {
+    "Y0": 756,
+    "Y1": 244
+  },
+  "split_file_hash_sha256": "55eeaf0f68cedb4288cc2b1362858a8113ca3a9b78c1a057ff64b037ed802506",
+  "timestamp": "2026-08-23T20:37:56.930185+00:00"
+}

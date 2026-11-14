@@ -1,0 +1,61 @@
+{
+  "selected_model": "random_forest",
+  "selected_display_name": "random_forest",
+  "threshold": 0.5,
+  "n_test": 1000,
+  "class_counts_test": {
+    "Y0": 756,
+    "Y1": 244
+  },
+  "accuracy": 0.755,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "tn": 755,
+  "fp": 1,
+  "fn": 244,
+  "tp": 0,
+  "roc_auc": 0.6174239960100617,
+  "pr_auc": 0.33562097879165265,
+  "average_precision": 0.3378987155379725,
+  "brier_score": 0.178717056,
+  "calibration_curve": {
+    "prob_true": [
+      0.13333333333333333,
+      0.13725490196078433,
+      0.26262626262626265,
+      0.1919191919191919,
+      0.21212121212121213,
+      0.18691588785046728,
+      0.2808988764044944,
+      0.3069306930693069,
+      0.34615384615384615,
+      0.4
+    ],
+    "prob_pred": [
+      0.13718095238095238,
+      0.1759607843137255,
+      0.19569696969696984,
+      0.2145656565656566,
+      0.23232323232323251,
+      0.2533271028037383,
+      0.2713483146067415,
+      0.28998019801980196,
+      0.3235961538461538,
+      0.38599999999999995
+    ]
+  },
+  "model_file_hash_sha256": "17db2db0c2b87c2a52c46e953162b3f1509a01857b651370ebcc2b4354ce883b",
+  "dataset_hash_sha256": "36a0e342400857514842205b2ffb0bb46e52e0cb3e8f94d0ce606e786371b47f",
+  "library_versions": {
+    "python": "3.14.5",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "scipy": "1.18.1",
+    "scikit_learn": "1.9.0",
+    "xgboost": "3.4.1",
+    "matplotlib": "3.11.1"
+  },
+  "timestamp": "2026-08-23T20:57:58.523933+00:00",
+  "note": "Avaliação UMA única vez no TEST, somente do modelo selecionado, após a seleção via TRAIN + CV."
+}

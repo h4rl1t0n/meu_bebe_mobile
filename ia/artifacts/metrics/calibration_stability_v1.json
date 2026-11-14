@@ -1,0 +1,617 @@
+{
+  "analysis_version": "1.0",
+  "analysis_type": "secondary_diagnostic",
+  "model": "random_forest",
+  "source": "OOF_TRAIN",
+  "n": 4000,
+  "y0": 3023,
+  "y1": 977,
+  "observed_positive_rate": 0.24425,
+  "probability": {
+    "n": 4000,
+    "mean_probability": 0.24607,
+    "std_probability": 0.07109281712776468,
+    "min_probability": 0.05,
+    "max_probability": 0.538,
+    "median_probability": 0.238,
+    "q05": 0.13990000000000005,
+    "q25": 0.196,
+    "q50": 0.238,
+    "q75": 0.292,
+    "q95": 0.372
+  },
+  "calibration_in_the_large": {
+    "mean_predicted_probability": 0.24607,
+    "observed_positive_rate": 0.24425,
+    "calibration_in_the_large_difference": 0.001820000000000016
+  },
+  "global": {
+    "brier": 0.17887237000000003,
+    "baseline_brier": 0.18459193750000003,
+    "brier_difference": -0.005719567499999995,
+    "brier_relative_improvement": 0.030984925871965528,
+    "mean_fold_roc_auc": 0.6098307327258905,
+    "mean_fold_pr_auc": 0.35078591570487283,
+    "pooled_oof_roc_auc": 0.6096841648352058,
+    "pooled_oof_pr_auc": 0.34489061928647763,
+    "calibration_bins": [
+      {
+        "bin_index": 0,
+        "n": 409,
+        "min_probability": 0.05,
+        "max_probability": 0.16,
+        "mean_predicted_probability": 0.13583863080684602,
+        "fraction_of_positives": 0.16381418092909536,
+        "calibration_gap": 0.027975550122249337,
+        "absolute_calibration_gap": 0.027975550122249337
+      },
+      {
+        "bin_index": 1,
+        "n": 404,
+        "min_probability": 0.162,
+        "max_probability": 0.186,
+        "mean_predicted_probability": 0.17527227722772282,
+        "fraction_of_positives": 0.15841584158415842,
+        "calibration_gap": -0.0168564356435644,
+        "absolute_calibration_gap": 0.0168564356435644
+      },
+      {
+        "bin_index": 2,
+        "n": 404,
+        "min_probability": 0.188,
+        "max_probability": 0.204,
+        "mean_predicted_probability": 0.19656435643564332,
+        "fraction_of_positives": 0.1782178217821782,
+        "calibration_gap": -0.018346534653465113,
+        "absolute_calibration_gap": 0.018346534653465113
+      },
+      {
+        "bin_index": 3,
+        "n": 415,
+        "min_probability": 0.206,
+        "max_probability": 0.222,
+        "mean_predicted_probability": 0.21424096385542157,
+        "fraction_of_positives": 0.2216867469879518,
+        "calibration_gap": 0.00744578313253022,
+        "absolute_calibration_gap": 0.00744578313253022
+      },
+      {
+        "bin_index": 4,
+        "n": 391,
+        "min_probability": 0.224,
+        "max_probability": 0.238,
+        "mean_predicted_probability": 0.23051150895140646,
+        "fraction_of_positives": 0.22506393861892582,
+        "calibration_gap": -0.005447570332480639,
+        "absolute_calibration_gap": 0.005447570332480639
+      },
+      {
+        "bin_index": 5,
+        "n": 392,
+        "min_probability": 0.24,
+        "max_probability": 0.258,
+        "mean_predicted_probability": 0.24907142857142844,
+        "fraction_of_positives": 0.23979591836734693,
+        "calibration_gap": -0.009275510204081516,
+        "absolute_calibration_gap": 0.009275510204081516
+      },
+      {
+        "bin_index": 6,
+        "n": 387,
+        "min_probability": 0.26,
+        "max_probability": 0.278,
+        "mean_predicted_probability": 0.2689509043927654,
+        "fraction_of_positives": 0.24806201550387597,
+        "calibration_gap": -0.020888888888889456,
+        "absolute_calibration_gap": 0.020888888888889456
+      },
+      {
+        "bin_index": 7,
+        "n": 421,
+        "min_probability": 0.28,
+        "max_probability": 0.304,
+        "mean_predicted_probability": 0.2921662707838486,
+        "fraction_of_positives": 0.2826603325415677,
+        "calibration_gap": -0.009505938242280909,
+        "absolute_calibration_gap": 0.009505938242280909
+      },
+      {
+        "bin_index": 8,
+        "n": 392,
+        "min_probability": 0.306,
+        "max_probability": 0.342,
+        "mean_predicted_probability": 0.322760204081632,
+        "fraction_of_positives": 0.3163265306122449,
+        "calibration_gap": -0.006433673469387058,
+        "absolute_calibration_gap": 0.006433673469387058
+      },
+      {
+        "bin_index": 9,
+        "n": 385,
+        "min_probability": 0.344,
+        "max_probability": 0.538,
+        "mean_predicted_probability": 0.3849766233766235,
+        "fraction_of_positives": 0.41818181818181815,
+        "calibration_gap": 0.03320519480519468,
+        "absolute_calibration_gap": 0.03320519480519468
+      }
+    ],
+    "mean_absolute_bin_gap": 0.015538107949412332,
+    "weighted_mean_absolute_bin_gap": 0.015477999999999999
+  },
+  "distribution_by_class": {
+    "y0": {
+      "n": 3023,
+      "mean_probability": 0.23894078729738674,
+      "std_probability": 0.0676637176773197,
+      "min_probability": 0.05,
+      "max_probability": 0.538,
+      "median_probability": 0.232,
+      "q05": 0.136,
+      "q25": 0.192,
+      "q50": 0.232,
+      "q75": 0.282,
+      "q95": 0.356
+    },
+    "y1": {
+      "n": 977,
+      "mean_probability": 0.26812896622313204,
+      "std_probability": 0.07673397033342554,
+      "min_probability": 0.07,
+      "max_probability": 0.532,
+      "median_probability": 0.262,
+      "q05": 0.152,
+      "q25": 0.212,
+      "q50": 0.262,
+      "q75": 0.316,
+      "q95": 0.406
+    }
+  },
+  "per_fold": [
+    {
+      "fold": 0,
+      "n": 800,
+      "y0": 605,
+      "y1": 195,
+      "observed_positive_rate": 0.24375,
+      "mean_probability": 0.2457775,
+      "std_probability": 0.07151796290109151,
+      "min_probability": 0.07,
+      "max_probability": 0.506,
+      "median_probability": 0.236,
+      "q05": 0.136,
+      "q25": 0.196,
+      "q50": 0.236,
+      "q75": 0.2925,
+      "q95": 0.372,
+      "brier": 0.176545005,
+      "baseline_brier": 0.184336328125,
+      "brier_difference": -0.007791323124999999,
+      "brier_relative_improvement": 0.042266889029690544,
+      "training_prevalence_used_for_baseline": 0.244375,
+      "roc_auc": 0.6273108709472345,
+      "pr_auc": 0.3900243753487852,
+      "calibration_in_the_large_difference": 0.0020275000000000154,
+      "calibration_bins": [
+        {
+          "bin_index": 0,
+          "n": 162,
+          "min_probability": 0.07,
+          "max_probability": 0.184,
+          "mean_predicted_probability": 0.15382716049382714,
+          "fraction_of_positives": 0.15432098765432098,
+          "calibration_gap": 0.0004938271604938427,
+          "absolute_calibration_gap": 0.0004938271604938427
+        },
+        {
+          "bin_index": 1,
+          "n": 166,
+          "min_probability": 0.186,
+          "max_probability": 0.222,
+          "mean_predicted_probability": 0.20540963855421704,
+          "fraction_of_positives": 0.18674698795180722,
+          "calibration_gap": -0.01866265060240982,
+          "absolute_calibration_gap": 0.01866265060240982
+        },
+        {
+          "bin_index": 2,
+          "n": 154,
+          "min_probability": 0.224,
+          "max_probability": 0.26,
+          "mean_predicted_probability": 0.23929870129870132,
+          "fraction_of_positives": 0.24025974025974026,
+          "calibration_gap": 0.0009610389610389403,
+          "absolute_calibration_gap": 0.0009610389610389403
+        },
+        {
+          "bin_index": 3,
+          "n": 163,
+          "min_probability": 0.262,
+          "max_probability": 0.304,
+          "mean_predicted_probability": 0.28165644171779136,
+          "fraction_of_positives": 0.24539877300613497,
+          "calibration_gap": -0.03625766871165639,
+          "absolute_calibration_gap": 0.03625766871165639
+        },
+        {
+          "bin_index": 4,
+          "n": 155,
+          "min_probability": 0.306,
+          "max_probability": 0.506,
+          "mean_predicted_probability": 0.3538193548387097,
+          "fraction_of_positives": 0.4,
+          "calibration_gap": 0.046180645161290335,
+          "absolute_calibration_gap": 0.046180645161290335
+        }
+      ]
+    },
+    {
+      "fold": 1,
+      "n": 800,
+      "y0": 605,
+      "y1": 195,
+      "observed_positive_rate": 0.24375,
+      "mean_probability": 0.243815,
+      "std_probability": 0.07311393734982059,
+      "min_probability": 0.074,
+      "max_probability": 0.538,
+      "median_probability": 0.236,
+      "q05": 0.136,
+      "q25": 0.192,
+      "q50": 0.236,
+      "q75": 0.292,
+      "q95": 0.366,
+      "brier": 0.17946972000000003,
+      "baseline_brier": 0.184336328125,
+      "brier_difference": -0.004866608124999977,
+      "brier_relative_improvement": 0.02640070014685271,
+      "training_prevalence_used_for_baseline": 0.244375,
+      "roc_auc": 0.6066327611782157,
+      "pr_auc": 0.3276619851834422,
+      "calibration_in_the_large_difference": 6.50000000000095e-05,
+      "calibration_bins": [
+        {
+          "bin_index": 0,
+          "n": 166,
+          "min_probability": 0.074,
+          "max_probability": 0.178,
+          "mean_predicted_probability": 0.14901204819277125,
+          "fraction_of_positives": 0.1686746987951807,
+          "calibration_gap": 0.01966265060240946,
+          "absolute_calibration_gap": 0.01966265060240946
+        },
+        {
+          "bin_index": 1,
+          "n": 162,
+          "min_probability": 0.18,
+          "max_probability": 0.222,
+          "mean_predicted_probability": 0.2038024691358024,
+          "fraction_of_positives": 0.18518518518518517,
+          "calibration_gap": -0.018617283950617236,
+          "absolute_calibration_gap": 0.018617283950617236
+        },
+        {
+          "bin_index": 2,
+          "n": 153,
+          "min_probability": 0.224,
+          "max_probability": 0.258,
+          "mean_predicted_probability": 0.23955555555555552,
+          "fraction_of_positives": 0.2549019607843137,
+          "calibration_gap": 0.015346405228758186,
+          "absolute_calibration_gap": 0.015346405228758186
+        },
+        {
+          "bin_index": 3,
+          "n": 163,
+          "min_probability": 0.26,
+          "max_probability": 0.302,
+          "mean_predicted_probability": 0.28083435582822075,
+          "fraction_of_positives": 0.24539877300613497,
+          "calibration_gap": -0.03543558282208578,
+          "absolute_calibration_gap": 0.03543558282208578
+        },
+        {
+          "bin_index": 4,
+          "n": 156,
+          "min_probability": 0.304,
+          "max_probability": 0.538,
+          "mean_predicted_probability": 0.3517435897435896,
+          "fraction_of_positives": 0.3717948717948718,
+          "calibration_gap": 0.020051282051282204,
+          "absolute_calibration_gap": 0.020051282051282204
+        }
+      ]
+    },
+    {
+      "fold": 2,
+      "n": 800,
+      "y0": 605,
+      "y1": 195,
+      "observed_positive_rate": 0.24375,
+      "mean_probability": 0.24732500000000002,
+      "std_probability": 0.07049465401934131,
+      "min_probability": 0.086,
+      "max_probability": 0.494,
+      "median_probability": 0.238,
+      "q05": 0.14,
+      "q25": 0.196,
+      "q50": 0.238,
+      "q75": 0.2925,
+      "q95": 0.376,
+      "brier": 0.18034793999999998,
+      "baseline_brier": 0.184336328125,
+      "brier_difference": -0.00398838812500002,
+      "brier_relative_improvement": 0.021636473751909933,
+      "training_prevalence_used_for_baseline": 0.244375,
+      "roc_auc": 0.5851451578724306,
+      "pr_auc": 0.34073985356149145,
+      "calibration_in_the_large_difference": 0.0035750000000000226,
+      "calibration_bins": [
+        {
+          "bin_index": 0,
+          "n": 165,
+          "min_probability": 0.086,
+          "max_probability": 0.188,
+          "mean_predicted_probability": 0.15722424242424246,
+          "fraction_of_positives": 0.1696969696969697,
+          "calibration_gap": 0.012472727272727246,
+          "absolute_calibration_gap": 0.012472727272727246
+        },
+        {
+          "bin_index": 1,
+          "n": 162,
+          "min_probability": 0.19,
+          "max_probability": 0.224,
+          "mean_predicted_probability": 0.2079012345679014,
+          "fraction_of_positives": 0.2345679012345679,
+          "calibration_gap": 0.026666666666666478,
+          "absolute_calibration_gap": 0.026666666666666478
+        },
+        {
+          "bin_index": 2,
+          "n": 160,
+          "min_probability": 0.226,
+          "max_probability": 0.258,
+          "mean_predicted_probability": 0.24072500000000016,
+          "fraction_of_positives": 0.20625,
+          "calibration_gap": -0.03447500000000017,
+          "absolute_calibration_gap": 0.03447500000000017
+        },
+        {
+          "bin_index": 3,
+          "n": 153,
+          "min_probability": 0.26,
+          "max_probability": 0.308,
+          "mean_predicted_probability": 0.28175163398692815,
+          "fraction_of_positives": 0.2549019607843137,
+          "calibration_gap": -0.026849673202614444,
+          "absolute_calibration_gap": 0.026849673202614444
+        },
+        {
+          "bin_index": 4,
+          "n": 160,
+          "min_probability": 0.31,
+          "max_probability": 0.494,
+          "mean_predicted_probability": 0.35383750000000014,
+          "fraction_of_positives": 0.35625,
+          "calibration_gap": 0.002412499999999873,
+          "absolute_calibration_gap": 0.002412499999999873
+        }
+      ]
+    },
+    {
+      "fold": 3,
+      "n": 800,
+      "y0": 604,
+      "y1": 196,
+      "observed_positive_rate": 0.245,
+      "mean_probability": 0.245245,
+      "std_probability": 0.06956823736132714,
+      "min_probability": 0.05,
+      "max_probability": 0.504,
+      "median_probability": 0.236,
+      "q05": 0.142,
+      "q25": 0.196,
+      "q50": 0.236,
+      "q75": 0.29,
+      "q95": 0.372,
+      "brier": 0.17776879999999998,
+      "baseline_brier": 0.18497587890625,
+      "brier_difference": -0.007207078906250025,
+      "brier_relative_improvement": 0.038962263344091135,
+      "training_prevalence_used_for_baseline": 0.2440625,
+      "roc_auc": 0.6241088322746318,
+      "pr_auc": 0.3614984059447779,
+      "calibration_in_the_large_difference": 0.0002449999999999952,
+      "calibration_bins": [
+        {
+          "bin_index": 0,
+          "n": 167,
+          "min_probability": 0.05,
+          "max_probability": 0.188,
+          "mean_predicted_probability": 0.16028742514970057,
+          "fraction_of_positives": 0.1317365269461078,
+          "calibration_gap": -0.028550898203592773,
+          "absolute_calibration_gap": 0.028550898203592773
+        },
+        {
+          "bin_index": 1,
+          "n": 155,
+          "min_probability": 0.19,
+          "max_probability": 0.218,
+          "mean_predicted_probability": 0.20326451612903232,
+          "fraction_of_positives": 0.1935483870967742,
+          "calibration_gap": -0.00971612903225813,
+          "absolute_calibration_gap": 0.00971612903225813
+        },
+        {
+          "bin_index": 2,
+          "n": 163,
+          "min_probability": 0.22,
+          "max_probability": 0.256,
+          "mean_predicted_probability": 0.23732515337423302,
+          "fraction_of_positives": 0.26993865030674846,
+          "calibration_gap": 0.032613496932515446,
+          "absolute_calibration_gap": 0.032613496932515446
+        },
+        {
+          "bin_index": 3,
+          "n": 156,
+          "min_probability": 0.258,
+          "max_probability": 0.302,
+          "mean_predicted_probability": 0.278871794871795,
+          "fraction_of_positives": 0.2564102564102564,
+          "calibration_gap": -0.022461538461538588,
+          "absolute_calibration_gap": 0.022461538461538588
+        },
+        {
+          "bin_index": 4,
+          "n": 159,
+          "min_probability": 0.304,
+          "max_probability": 0.504,
+          "mean_predicted_probability": 0.3505283018867924,
+          "fraction_of_positives": 0.37735849056603776,
+          "calibration_gap": 0.02683018867924536,
+          "absolute_calibration_gap": 0.02683018867924536
+        }
+      ]
+    },
+    {
+      "fold": 4,
+      "n": 800,
+      "y0": 604,
+      "y1": 196,
+      "observed_positive_rate": 0.245,
+      "mean_probability": 0.24818749999999998,
+      "std_probability": 0.07081396837062229,
+      "min_probability": 0.07,
+      "max_probability": 0.532,
+      "median_probability": 0.242,
+      "q05": 0.146,
+      "q25": 0.2,
+      "q50": 0.242,
+      "q75": 0.292,
+      "q95": 0.372,
+      "brier": 0.180230385,
+      "baseline_brier": 0.18497587890625,
+      "brier_difference": -0.004745493906250009,
+      "brier_relative_improvement": 0.025654663377245708,
+      "training_prevalence_used_for_baseline": 0.2440625,
+      "roc_auc": 0.6059560413569401,
+      "pr_auc": 0.33400495848586764,
+      "calibration_in_the_large_difference": 0.003187499999999982,
+      "calibration_bins": [
+        {
+          "bin_index": 0,
+          "n": 166,
+          "min_probability": 0.07,
+          "max_probability": 0.19,
+          "mean_predicted_probability": 0.16007228915662655,
+          "fraction_of_positives": 0.18072289156626506,
+          "calibration_gap": 0.020650602409638508,
+          "absolute_calibration_gap": 0.020650602409638508
+        },
+        {
+          "bin_index": 1,
+          "n": 155,
+          "min_probability": 0.192,
+          "max_probability": 0.222,
+          "mean_predicted_probability": 0.20754838709677434,
+          "fraction_of_positives": 0.18064516129032257,
+          "calibration_gap": -0.02690322580645177,
+          "absolute_calibration_gap": 0.02690322580645177
+        },
+        {
+          "bin_index": 2,
+          "n": 167,
+          "min_probability": 0.224,
+          "max_probability": 0.26,
+          "mean_predicted_probability": 0.24214371257485032,
+          "fraction_of_positives": 0.2155688622754491,
+          "calibration_gap": -0.02657485029940121,
+          "absolute_calibration_gap": 0.02657485029940121
+        },
+        {
+          "bin_index": 3,
+          "n": 159,
+          "min_probability": 0.262,
+          "max_probability": 0.304,
+          "mean_predicted_probability": 0.2823018867924526,
+          "fraction_of_positives": 0.3081761006289308,
+          "calibration_gap": 0.0258742138364782,
+          "absolute_calibration_gap": 0.0258742138364782
+        },
+        {
+          "bin_index": 4,
+          "n": 153,
+          "min_probability": 0.306,
+          "max_probability": 0.532,
+          "mean_predicted_probability": 0.35610457516339855,
+          "fraction_of_positives": 0.3464052287581699,
+          "calibration_gap": -0.009699346405228626,
+          "absolute_calibration_gap": 0.009699346405228626
+        }
+      ]
+    }
+  ],
+  "stability": {
+    "brier": {
+      "mean": 0.17887236999999997,
+      "std": 0.001659279450224554,
+      "min": 0.176545005,
+      "max": 0.18034793999999998,
+      "range": 0.0038029349999999795
+    },
+    "roc_auc": {
+      "mean": 0.6098307327258905,
+      "std": 0.01691180963137286,
+      "min": 0.5851451578724306,
+      "max": 0.6273108709472345,
+      "range": 0.04216571307480388
+    },
+    "pr_auc": {
+      "mean": 0.35078591570487283,
+      "std": 0.025355740054777122,
+      "min": 0.3276619851834422,
+      "max": 0.3900243753487852,
+      "range": 0.06236239016534301
+    },
+    "mean_probability": {
+      "mean": 0.24607,
+      "std": 0.001725546109207165,
+      "min": 0.243815,
+      "max": 0.24818749999999998,
+      "range": 0.004372499999999974
+    },
+    "observed_positive_rate": {
+      "mean": 0.24425,
+      "std": 0.0006846531968814582,
+      "min": 0.24375,
+      "max": 0.245,
+      "range": 0.0012500000000000011
+    },
+    "calibration_in_the_large_difference": {
+      "mean": 0.001820000000000005,
+      "std": 0.001624329669432903,
+      "min": 6.50000000000095e-05,
+      "max": 0.0035750000000000226,
+      "range": 0.003510000000000013
+    }
+  },
+  "recalibration_performed": false,
+  "test_used": false,
+  "model_modified": false,
+  "input_hashes": {
+    "cv_oof_predictions_v1.csv": "1c08fa733a018cd8156e9ef09e37ae0ca930422e52923176028baaebb42b2cf9",
+    "train_test_split_v1.csv": "55eeaf0f68cedb4288cc2b1362858a8113ca3a9b78c1a057ff64b037ed802506",
+    "cv_folds_v1.csv": "7b3cf1ff049320725f12b5bd7b0d75a8e4587f8284f34b5b2f0e1f6de60a0532",
+    "calibration_stability_v1.yaml": "caff17efe3554659315c7fd2cf3dbe3be545ca9fbdd6d758f427fd85bceafff0"
+  },
+  "versions": {
+    "python": "3.14.5",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "scikit-learn": "1.9.0"
+  },
+  "timestamp": "2026-08-23T21:57:34.348554+00:00"
+}

@@ -1,0 +1,35 @@
+{
+  "model_name": "random_forest",
+  "display_name": "Random Forest",
+  "model_class": "RandomForestClassifier",
+  "protocol_version": "1.0",
+  "schema_version": "1.13",
+  "preprocessing_version": "1.0",
+  "fit_scope": "TRAIN apenas (4000 registros); TEST nunca usado no fit",
+  "n_train": 4000,
+  "class_counts_train": {
+    "Y0": 3023,
+    "Y1": 977
+  },
+  "n_features": 96,
+  "scale_pos_weight": null,
+  "threshold": 0.5,
+  "dataset_hash_sha256": "36a0e342400857514842205b2ffb0bb46e52e0cb3e8f94d0ce606e786371b47f",
+  "split_file_hash_sha256": "55eeaf0f68cedb4288cc2b1362858a8113ca3a9b78c1a057ff64b037ed802506",
+  "folds_file_hash_sha256": "7b3cf1ff049320725f12b5bd7b0d75a8e4587f8284f34b5b2f0e1f6de60a0532",
+  "training_protocol_config_hash_sha256": "0d2c9272ba60bf607de265544e5f087b3956996867d4e42ed99acefa059f6a35",
+  "preprocessing_config_hash_sha256": "21da57db5480f8b5ba3e3c4bf9d0490126add0b5f39a60299076008a8f50a215",
+  "model_file_hash_sha256": "17db2db0c2b87c2a52c46e953162b3f1509a01857b651370ebcc2b4354ce883b",
+  "library_versions": {
+    "python": "3.14.5",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "scipy": "1.18.1",
+    "scikit_learn": "1.9.0",
+    "xgboost": "3.4.1",
+    "matplotlib": "3.11.1",
+    "joblib": "1.5.3"
+  },
+  "timestamp": "2026-08-23T20:57:58.499880+00:00",
+  "note": "Modelo selecionado por mean PR-AUC → mean Recall → mean F1 via CV 5-fold congelado; ajustado nos 4000 TRAIN; avaliado uma vez nos 1000 TEST."
+}

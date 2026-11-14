@@ -1,0 +1,137 @@
+{
+  "dgm_version": "1.0",
+  "schema_version": "1.13",
+  "generator_version": "1.0",
+  "seed": 42,
+  "rng_strategy": "numpy.random.SeedSequence(master_seed).spawn(2) -> [ruído U, Bernoulli Y]; streams independentes do RNG que gerou Q_full (FASE 3B)",
+  "n_samples": 5000,
+  "target_positive_rate": 0.25,
+  "noise_sd": 0.5,
+  "alpha": -2.458768018566068,
+  "mean_p_true": 0.24999999999999878,
+  "realized_positive_count": 1221,
+  "realized_positive_rate": 0.2442,
+  "min_p_true": 0.022525345974406034,
+  "max_p_true": 0.849855954870732,
+  "timestamp": "2026-08-23T18:18:47.316805+00:00",
+  "generation_elapsed_seconds": 0.0265,
+  "validation": {
+    "q_full_valid_records": 5000,
+    "q_full_invalid_records": 0,
+    "dataset_keys": [
+      "estuda_atualmente",
+      "escolaridade",
+      "dificuldades_educacao",
+      "entende_orientacoes_saude",
+      "fez_curso_qualificacao_profissional",
+      "empregado",
+      "tipo_emprego",
+      "faixa_renda",
+      "trabalho_permite_pre_natal",
+      "ambiente_trabalho_seguro",
+      "tem_pausas_descanso",
+      "beneficios_trabalho",
+      "recebe_beneficio_social",
+      "fonte_agua",
+      "interrupcoes_agua",
+      "esgotamento_sanitario",
+      "frequencia_coleta_lixo",
+      "destino_lixo_sem_coleta",
+      "distancia_ubs",
+      "acesso_ubs",
+      "cadastrada_ubs",
+      "dificuldades_saude",
+      "tipo_moradia",
+      "material_moradia",
+      "numero_pessoas",
+      "numero_comodos",
+      "numero_dormitorios",
+      "itens_residencia",
+      "seguranca_residencia",
+      "refeicoes_por_dia",
+      "deixou_de_comer_falta_dinheiro",
+      "alimentos_consumidos",
+      "fonte_alimentos",
+      "avaliacao_alimentacao",
+      "faltou_consulta",
+      "servicos_pre_natal",
+      "exames_pre_natal_completos",
+      "vacinas_em_dia",
+      "avaliacao_pre_natal",
+      "situacao_estudos_gestacao",
+      "motivo_desemprego",
+      "impacto_gestacao_trabalho",
+      "mudanca_alimentacao_gestacao",
+      "usa_suplementos",
+      "cuidados_vetores",
+      "melhorias_desejadas",
+      "problema_saude_agua",
+      "facil_acesso_saude",
+      "descontinuou_pre_natal"
+    ]
+  },
+  "dgm_config": {
+    "g_factors": [
+      {
+        "name": "g_escolaridade",
+        "coefficient": 0.5
+      },
+      {
+        "name": "g_renda",
+        "coefficient": 0.55
+      },
+      {
+        "name": "g_distancia",
+        "coefficient": 0.45
+      },
+      {
+        "name": "g_transporte",
+        "coefficient": 0.55
+      },
+      {
+        "name": "g_organizacao",
+        "coefficient": 0.4
+      },
+      {
+        "name": "g_trabalho",
+        "coefficient": 0.4
+      },
+      {
+        "name": "g_privacao_alimentar",
+        "coefficient": 0.3
+      },
+      {
+        "name": "g_adensamento",
+        "coefficient": 0.25
+      }
+    ],
+    "interactions": [
+      {
+        "name": "I1",
+        "expression": "g_renda * g_privacao_alimentar",
+        "coefficient": 0.3
+      },
+      {
+        "name": "I2",
+        "expression": "g_distancia * g_transporte",
+        "coefficient": 0.35
+      }
+    ],
+    "intercept": {
+      "calibrated": true,
+      "target": "target_positive_rate"
+    },
+    "noise": {
+      "distribution": "normal",
+      "mean": 0.0,
+      "sd": 0.5
+    }
+  },
+  "hashes_sha256": {
+    "q_full_v1.jsonl": "48998d489bc60fadca7e503e343abaed800f3becf4b3328c27a7ab3c210fdbe8",
+    "q_full_generation_audit_v1.csv": "e6282cbe012e1643774862d8fa1ed45bb30dc83570878874bc6576a9b6b6f1f3",
+    "simulation_v1.yaml": "9ba1b969bb785d888064cb7a33ba25ca9bdc283008d8837944c8bdf21f6be3e3",
+    "dataset_synthetic_v1.jsonl": "36a0e342400857514842205b2ffb0bb46e52e0cb3e8f94d0ce606e786371b47f",
+    "dgm_audit_v1.csv": "9185751f20f829f61e883bef53ea973310e71d3a52e6d74fb182edb1e3efc5cc"
+  }
+}
