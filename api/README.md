@@ -1,5 +1,7 @@
 # Meu Bebê API
 
+> 💡 **Documentação Técnica Central:** Para o catálogo completo de arquitetura, banco de dados, autenticação e contratos congelados, consulte [`docs/api/`](../docs/api/README.md).
+
 API Python (FastAPI) do projeto **Meu Bebê** — **FASE 4C: endpoint HTTP de
 estimativa probabilística experimental**.
 

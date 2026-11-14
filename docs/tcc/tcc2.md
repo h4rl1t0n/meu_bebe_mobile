@@ -1,8 +1,10 @@
 # TCC2 — Estrutura e Metodologia (documento principal)
 
-> **Status:** documento acadêmico principal do TCC2 (em construção).
+> **Status:** documento acadêmico principal do TCC2.
 > Não reproduz decisões do TCC1; o TCC1 (`docs/TCC - Hárliton Martins.pdf`) é
-> usado apenas como referência estrutural e histórica.
+> usado apenas como referência estrutural e histórica. Para o mapa consolidado
+> de documentos técnicos e o estado de implementação dos componentes de software,
+> consulte o [Guia de Documentação (docs/README.md)](../README.md).
 
 > ⚠️ **Disclaimer (terminologia congelada):** o resultado produzido pelo modelo
 > será uma estimativa estatística **experimental de probabilidade/propensão à
