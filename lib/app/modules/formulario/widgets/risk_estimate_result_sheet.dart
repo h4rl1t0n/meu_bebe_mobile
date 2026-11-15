@@ -36,7 +36,7 @@ Future<void> showRiskEstimateResultSheet(
 ///
 /// Apresenta a `probability` em destaque (sem classificar, sem threshold e sem
 /// variar a cor pelo valor), o rótulo semântico e o `notice` metodológico em um
-/// bloco informativo sempre visível. O botão "Entendi" apenas fecha o sheet.
+/// bloco informativo sempre visível. Se disponíveis, exibe também os fatores determinantes (XAI).
 class RiskEstimateResultContent extends StatelessWidget {
   final RiskEstimateResponseModel estimate;
 
@@ -78,6 +78,10 @@ class RiskEstimateResultContent extends StatelessWidget {
             textAlign: TextAlign.center,
             style: textStyles.subTitleSmallStyle,
           ),
+          if (estimate.factors != null && estimate.factors!.isNotEmpty) ...[
+            SizedBox(height: Spacing.xl),
+            _FactorsSection(factors: estimate.factors!),
+          ],
           SizedBox(height: Spacing.xxl),
           _NoticeCard(notice: estimate.notice),
           SizedBox(height: Spacing.xl),
@@ -125,6 +129,137 @@ class _NoticeCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _FactorsSection extends StatelessWidget {
+  final List<RiskFactorContributionModel> factors;
+
+  const _FactorsSection({required this.factors});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final textStyles = context.textStyles;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.auto_awesome, color: colors.primary500, size: 20),
+            SizedBox(width: Spacing.xs),
+            Expanded(
+              child: Text(
+                'Fatores determinantes (IA Explicável)',
+                style: textStyles.titleSmallStyle.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: Spacing.xs),
+        Text(
+          'Principais variáveis que influenciaram a estimativa:',
+          style: textStyles.bodySmall.copyWith(
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+        SizedBox(height: Spacing.sm),
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: factors.length,
+          separatorBuilder: (_, __) => SizedBox(height: Spacing.xs),
+          itemBuilder: (context, index) {
+            final factor = factors[index];
+            final isIncrease = factor.increasesRisk;
+            final badgeBg =
+                isIncrease ? colors.warningLight : colors.successLight;
+            final badgeColor = isIncrease ? colors.warning : colors.success;
+            final badgeIcon =
+                isIncrease ? Icons.trending_up : Icons.verified_user_outlined;
+            final badgeLabel = isIncrease ? 'Atenção' : 'Proteção';
+            final pct = (factor.contribution.abs() * 100).toStringAsFixed(1);
+            final sign = isIncrease ? '+' : '-';
+
+            return Container(
+              padding: EdgeInsets.all(Spacing.md),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: RadiusTokens.mdAll,
+                border: Border.all(
+                  color: isIncrease
+                      ? colors.warning.withValues(alpha: 0.3)
+                      : colors.success.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(Spacing.xs),
+                    decoration: BoxDecoration(
+                      color: badgeBg,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(badgeIcon, color: badgeColor, size: 18),
+                  ),
+                  SizedBox(width: Spacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                factor.label,
+                                style: textStyles.bodySmall.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: badgeBg,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '$badgeLabel ($sign$pct%)',
+                                style: textStyles.bodySmall.copyWith(
+                                  color: badgeColor,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: Spacing.xs / 2),
+                        Text(
+                          factor.description,
+                          style: textStyles.bodySmall.copyWith(
+                            color: colors.onSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

@@ -71,15 +71,65 @@ class RiskEstimateModelMetadata {
   }
 }
 
+class RiskFactorContributionModel {
+  final String feature;
+  final String label;
+  final double contribution;
+  final String direction; // 'increases_risk' | 'decreases_risk'
+  final String description;
+
+  const RiskFactorContributionModel({
+    required this.feature,
+    required this.label,
+    required this.contribution,
+    required this.direction,
+    required this.description,
+  });
+
+  bool get increasesRisk => direction == 'increases_risk';
+  bool get decreasesRisk => direction == 'decreases_risk';
+
+  static RiskFactorContributionModel? tryParse(Object? data) {
+    if (data is! Map) return null;
+
+    final feature = data['feature'];
+    final label = data['label'];
+    final contribution = data['contribution'];
+    final direction = data['direction'];
+    final description = data['description'];
+
+    if (feature is! String ||
+        label is! String ||
+        contribution is! num ||
+        direction is! String ||
+        description is! String) {
+      return null;
+    }
+
+    final value = contribution.toDouble();
+    if (!value.isFinite) return null;
+
+    return RiskFactorContributionModel(
+      feature: feature,
+      label: label,
+      contribution: value,
+      direction: direction,
+      description: description,
+    );
+  }
+}
+
 class RiskEstimateResponseModel {
   final RiskEstimateResultModel result;
   final RiskEstimateModelMetadata model;
   final String notice;
+  final List<RiskFactorContributionModel>? factors;
 
   const RiskEstimateResponseModel({
     required this.result,
     required this.model,
     required this.notice,
+    this.factors,
   });
 
   static RiskEstimateResponseModel? tryParse(Object? data) {
@@ -91,10 +141,22 @@ class RiskEstimateResponseModel {
 
     if (result == null || model == null || notice is! String) return null;
 
+    List<RiskFactorContributionModel>? factors;
+    if (data['factors'] is List) {
+      final parsed = (data['factors'] as List)
+          .map(RiskFactorContributionModel.tryParse)
+          .whereType<RiskFactorContributionModel>()
+          .toList();
+      if (parsed.isNotEmpty) {
+        factors = parsed;
+      }
+    }
+
     return RiskEstimateResponseModel(
       result: result,
       model: model,
       notice: notice,
+      factors: factors,
     );
   }
 }

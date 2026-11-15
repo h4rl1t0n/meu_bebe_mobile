@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../../../app_module.dart';
+import '../../../../../../core/services/pdf/plano_parto_pdf_service.dart';
 import '../../../../../../core/ui/theme/styles/design_tokens.dart';
 import '../../../../../../core/ui/theme/styles/text_styles.dart';
 import '../birth_expectations/birth_expectations_card.dart';
@@ -40,6 +41,24 @@ class _ChildbirthResumePageState extends State<ChildbirthResumePage> {
     return AppBar(
       title: Text('Plano de parto detalhado', style: context.textStyles.titleSmallStyle),
       centerTitle: true,
+      actions: [
+        IconButton(
+          key: const Key('btn_export_pdf'),
+          tooltip: 'Exportar PDF',
+          icon: const Icon(Icons.picture_as_pdf),
+          onPressed: () async {
+            const service = PlanoPartoPdfService();
+            await service.previewOrPrint(
+              context: context,
+              gestante: _controller.gestante,
+              gestacao: _controller.gestacao,
+              historico: _controller.historico,
+              plano: _controller.plano,
+              firstUltrasound: _controller.firstUltrasound,
+            );
+          },
+        ),
+      ],
     );
   }
 

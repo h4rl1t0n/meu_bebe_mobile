@@ -54,6 +54,18 @@ class RiskEstimateModelMetadata(BaseModel):
     transformed_feature_count: int
 
 
+class RiskFactorContribution(BaseModel):
+    """Contribuição local de uma variável para a estimativa de risco (XAI)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    feature: str
+    label: str
+    contribution: float
+    direction: str
+    description: str
+
+
 class RiskEstimateResponse(BaseModel):
     """Corpo de sucesso (200) do endpoint."""
 
@@ -62,6 +74,7 @@ class RiskEstimateResponse(BaseModel):
     result: RiskEstimateResult
     model: RiskEstimateModelMetadata
     notice: str
+    factors: list[RiskFactorContribution] | None = None
 
 
 class ErrorEnvelope(BaseModel):

@@ -68,6 +68,22 @@ class HomePage extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: Spacing.sm),
+          Row(
+            spacing: Spacing.sm,
+            children: [
+              Flexible(
+                child: HomeCard(
+                  icon: Icons.touch_app_outlined,
+                  title: 'Contador de chutes',
+                  onTap: () {
+                    Modular.to.pushNamed(routeContadorChutes);
+                  },
+                ),
+              ),
+              const Flexible(child: SizedBox()),
+            ],
+          ),
         ],
       ),
     );

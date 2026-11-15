@@ -151,6 +151,53 @@ void main() {
       expect(find.text(estimate.notice), findsOneWidget);
       expect(find.text('certeza'), findsNothing);
     });
+
+    testWidgets('exibe fatores determinantes (XAI) quando presentes', (
+      tester,
+    ) async {
+      final estimate = RiskEstimateResponseModel(
+        result: const RiskEstimateResultModel(
+          target: 'descontinuou_pre_natal',
+          probability: 0.35,
+        ),
+        model: const RiskEstimateModelMetadata(
+          name: 'random_forest',
+          schemaVersion: '1.13',
+          rawFeatureCount: 34,
+          transformedFeatureCount: 96,
+        ),
+        notice: _notice,
+        factors: const [
+          RiskFactorContributionModel(
+            feature: 'renda_familiar_sm',
+            label: 'Renda Familiar',
+            contribution: 0.12,
+            direction: 'increases_risk',
+            description: 'Menor margem de estabilidade financeira.',
+          ),
+          RiskFactorContributionModel(
+            feature: 'escolaridade',
+            label: 'Escolaridade',
+            contribution: -0.08,
+            direction: 'decreases_risk',
+            description: 'Maior grau de instrução atua favoravelmente.',
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        _wrap(RiskEstimateResultContent(estimate: estimate)),
+      );
+
+      expect(find.text('Fatores determinantes (IA Explicável)'), findsOneWidget);
+      expect(find.text('Renda Familiar'), findsOneWidget);
+      expect(find.text('Menor margem de estabilidade financeira.'), findsOneWidget);
+      expect(find.text('Atenção (+12.0%)'), findsOneWidget);
+
+      expect(find.text('Escolaridade'), findsOneWidget);
+      expect(find.text('Maior grau de instrução atua favoravelmente.'), findsOneWidget);
+      expect(find.text('Proteção (-8.0%)'), findsOneWidget);
+    });
   });
 
   group('showRiskEstimateResultSheet', () {

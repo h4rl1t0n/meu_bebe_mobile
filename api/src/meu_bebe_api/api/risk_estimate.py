@@ -29,6 +29,7 @@ from ..contracts.risk_estimate import (
     RiskEstimateModelMetadata,
     RiskEstimateResponse,
     RiskEstimateResult,
+    RiskFactorContribution,
 )
 from ..ml.runtime import ModelRuntime
 from .ready import MODEL_NOT_READY_CODE, MODEL_NOT_READY_MESSAGE, get_model_runtime
@@ -51,6 +52,7 @@ INFERENCE_ERROR_MESSAGE = "Não foi possível calcular a estimativa."
         "médico nem previsão clínica validada."
     ),
     response_model=RiskEstimateResponse,
+    response_model_exclude_none=True,
     responses={
         422: {"model": ErrorResponse, "description": "Payload DSS inválido."},
         500: {"model": ErrorEnvelope, "description": "Falha inesperada na inferência."},
@@ -79,7 +81,11 @@ def risk_estimate(
         return JSONResponse(status_code=503, content={"error": error.model_dump()})
 
     try:
-        probability = runtime.predict_probability(payload)
+        if hasattr(runtime, "predict_and_explain"):
+            probability, factors = runtime.predict_and_explain(payload)
+        else:
+            probability = runtime.predict_probability(payload)
+            factors = None
     except Exception as exc:  # noqa: BLE001 — sanitizado (sem stack/payload no HTTP)
         logger.error("inferência falhou: %s", exc)
         error = ErrorResponse(
@@ -88,6 +94,10 @@ def risk_estimate(
             details=[],
         )
         return JSONResponse(status_code=500, content={"error": error.model_dump()})
+
+    factors_models = (
+        [RiskFactorContribution(**f) for f in factors] if factors is not None else None
+    )
 
     return RiskEstimateResponse(
         result=RiskEstimateResult(
@@ -101,4 +111,5 @@ def risk_estimate(
             transformed_feature_count=runtime.metadata.transformed_feature_count,
         ),
         notice=EXPERIMENTAL_ESTIMATE_NOTICE,
+        factors=factors_models,
     )

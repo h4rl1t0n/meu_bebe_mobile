@@ -245,3 +245,35 @@ class ModelRuntime:
             raise ModelError(f"probabilidade inválida produzida pelo modelo: {value!r}")
 
         return value
+
+    def predict_and_explain(
+        self, payload: DssPayload, top_k: int = 6
+    ) -> tuple[float, list[dict] | None]:
+        """Probabilidade da classe positiva + fatores explicativos (XAI).
+
+        Mecanismo defensivo fail-closed: se a explicabilidade falhar por qualquer
+        motivo inesperado, a probabilidade é retornada com factors=None, garantindo
+        que a inferência básica nunca quebre.
+        """
+        value = self.predict_probability(payload)
+        x_df = to_x_model_dataframe(payload)
+
+        factors_dicts: list[dict] | None = None
+        try:
+            from meu_bebe_ml.explainability.local_xai import explain_prediction_rf
+            steps = dict(self._pipeline.steps)
+            pre = steps["preprocessor"]
+            rf = steps["model"]
+            _, _, factors = explain_prediction_rf(
+                preprocessor=pre,
+                rf_model=rf,
+                x_raw=x_df,
+                positive_class_index=self._metadata.positive_class_index,
+                top_k=top_k,
+            )
+            factors_dicts = [f.to_dict() for f in factors]
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("cálculo de explicabilidade local (XAI) falhou: %s", exc)
+            factors_dicts = None
+
+        return value, factors_dicts

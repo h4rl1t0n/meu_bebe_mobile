@@ -5,6 +5,7 @@ import 'package:meu_bebe/app/core/fp/backend_failure.dart';
 import 'package:meu_bebe/app/core/ui/theme/app_theme.dart';
 import 'package:meu_bebe/app/core/ui/theme/styles/colors_app.dart';
 import 'package:meu_bebe/app/model/plano_parto/plano_parto_model.dart';
+import 'package:meu_bebe/app/modules/formulario/widgets/dss_question.dart';
 import 'package:meu_bebe/app/modules/main/pages/childbirth/submodules/birth_expectations/birth_controller.dart';
 import 'package:meu_bebe/app/modules/main/pages/childbirth/submodules/birth_expectations/birth_page.dart';
 import 'package:meu_bebe/app/modules/main/pages/childbirth/submodules/birth_moment/birth_moment_controller.dart';
@@ -121,15 +122,22 @@ Widget _mount(Module module, Widget page) {
   );
 }
 
-/// Conta as abas (custom `InkWell`+`Container`) cujo rótulo é [label] e cuja
-/// cor de destaque (`secondary`) indica que estão SELECIONADAS. Uma aba é
-/// selecionada quando `controller.text == value.value` no último build.
+/// Conta as abas selecionadas cujo rótulo é [label].
+/// Suporta os widgets `DssMultiOption` (usados após o redesign FASE 9J) e
+/// as abas legadas (`InkWell`+`Container`).
 int _selectedTabs(WidgetTester tester, String label) {
+  var count = 0;
+  for (final widget in tester.widgetList(find.byWidgetPredicate((w) => w is DssMultiOption))) {
+    final option = widget as DssMultiOption;
+    if (option.label == label && option.selected) {
+      count++;
+    }
+  }
+
   final finder = find.ancestor(
     of: find.text(label),
     matching: find.byType(InkWell),
   );
-  var count = 0;
   for (final ink in tester.widgetList<InkWell>(finder)) {
     final child = ink.child;
     if (child is Container &&

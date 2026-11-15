@@ -19,6 +19,7 @@ import 'modules/main/pages/childbirth/submodules/history/history_module.dart';
 import 'modules/main/pages/childbirth/submodules/identification/identification_module.dart';
 import 'modules/main/pages/home/submodules/appointments_exams/appointments_exams_module.dart';
 import 'modules/main/pages/home/submodules/information/information_module.dart';
+import 'modules/main/pages/home/submodules/kick_counter/kick_counter_module.dart';
 import 'modules/main/pages/home/submodules/medication/medication_module.dart';
 import 'modules/main/pages/home/submodules/vaccines/vaccines_module.dart';
 import 'modules/main/main_module.dart';
@@ -47,6 +48,7 @@ class AppModule extends Module {
     r.module(routeInformacoes, module: InformationModule());
     r.module(routeMedicacoes, module: MedicationModule());
     r.module(routeVacinas, module: VaccinesModule());
+    r.module(routeContadorChutes, module: KickCounterModule());
 
     // Module da Tab Gestação
 
@@ -81,6 +83,7 @@ const routeConsultasExames = '/consultas_exames/';
 const routeInformacoes = '/informacoes/';
 const routeMedicacoes = '/medicacoes/';
 const routeVacinas = '/vacinas/';
+const routeContadorChutes = '/contador_chutes/';
 
 const routeIndetificacao = '/indetificacao/';
 const routeHistoria = '/historia/';

@@ -88,5 +88,61 @@ void main() {
       );
       expect(RiskEstimateResponseModel.tryParse('não é um mapa'), isNull);
     });
+
+    test('parseia resposta com fatores determinantes (XAI)', () {
+      final json = ok();
+      json['factors'] = [
+        {
+          'feature': 'renda_familiar_sm',
+          'label': 'Renda Familiar',
+          'contribution': 0.1245,
+          'direction': 'increases_risk',
+          'description': 'Valor informado associado a menor margem de estabilidade financeira.',
+        },
+        {
+          'feature': 'escolaridade',
+          'label': 'Escolaridade',
+          'contribution': -0.0821,
+          'direction': 'decreases_risk',
+          'description': 'Maior grau de instrução atua como fator protetor de adesão.',
+        },
+      ];
+
+      final model = RiskEstimateResponseModel.tryParse(json);
+      expect(model, isNotNull);
+      expect(model!.factors, isNotNull);
+      expect(model.factors!.length, 2);
+
+      final f1 = model.factors![0];
+      expect(f1.feature, 'renda_familiar_sm');
+      expect(f1.label, 'Renda Familiar');
+      expect(f1.contribution, 0.1245);
+      expect(f1.direction, 'increases_risk');
+      expect(f1.increasesRisk, isTrue);
+      expect(f1.decreasesRisk, isFalse);
+
+      final f2 = model.factors![1];
+      expect(f2.feature, 'escolaridade');
+      expect(f2.label, 'Escolaridade');
+      expect(f2.contribution, -0.0821);
+      expect(f2.direction, 'decreases_risk');
+      expect(f2.increasesRisk, isFalse);
+      expect(f2.decreasesRisk, isTrue);
+    });
+
+    test('ignora fatores malformados defensivamente', () {
+      final json = ok();
+      json['factors'] = [
+        {'feature': 'valido', 'label': 'Válido', 'contribution': 0.05, 'direction': 'increases_risk', 'description': 'Ok'},
+        {'feature': 'sem_label', 'contribution': 0.05}, // malformado
+        'não é mapa', // malformado
+      ];
+
+      final model = RiskEstimateResponseModel.tryParse(json);
+      expect(model, isNotNull);
+      expect(model!.factors, isNotNull);
+      expect(model.factors!.length, 1);
+      expect(model.factors!.first.feature, 'valido');
+    });
   });
 }
