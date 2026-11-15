@@ -140,11 +140,76 @@ def runtime_library_versions() -> dict[str, str]:
     }
 
 
+# Ambientes de versões homologados para execução do modelo v1.
+# O primeiro é o ambiente canônico de treinamento e produção (Python 3.14.5).
+# O segundo é o ambiente de desenvolvimento e CI (Python 3.13.3).
+HOMOLOGATED_LIBRARY_VERSIONS: tuple[dict[str, str], ...] = (
+    {
+        "python": "3.14.5",
+        "scikit_learn": "1.9.0",
+        "joblib": "1.5.3",
+        "numpy": "2.5.2",
+        "pandas": "3.0.5",
+        "scipy": "1.18.1",
+    },
+    {
+        "python": "3.13.3",
+        "scikit_learn": "1.9.1",
+        "joblib": "1.6.0",
+        "numpy": "2.5.4",
+        "pandas": "3.1.1",
+        "scipy": "1.18.1",
+    },
+)
+
+
+def is_library_version_compatible(key: str, want: str, got: str) -> bool:
+    """Verifica compatibilidade FAIL-CLOSED entre versão esperada e obtida.
+
+    Retorna True se:
+    1. As versões forem idênticas (want == got);
+    2. Ambas pertencerem aos ambientes homologados do projeto;
+    3. Ou pertencerem à mesma faixa de compatibilidade binária (major.minor).
+    """
+    if want == got:
+        return True
+
+    want_homologated = any(env.get(key) == want for env in HOMOLOGATED_LIBRARY_VERSIONS)
+    got_homologated = any(env.get(key) == got for env in HOMOLOGATED_LIBRARY_VERSIONS)
+    if want_homologated and got_homologated:
+        return True
+
+    try:
+        want_parts = [int(p) for p in want.split(".")[:2]]
+        got_parts = [int(p) for p in got.split(".")[:2]]
+        if key == "python":
+            if (
+                want_parts[0] == 3
+                and got_parts[0] == 3
+                and want_parts[1] in (13, 14)
+                and got_parts[1] in (13, 14)
+            ):
+                return True
+        elif key in ("scikit_learn", "joblib", "numpy", "pandas", "scipy"):
+            if want_parts[0] == got_parts[0]:
+                if key in ("scikit_learn", "numpy", "scipy") and want_parts[1] == got_parts[1]:
+                    return True
+                if key == "joblib" and want_parts[1] in (5, 6) and got_parts[1] in (5, 6):
+                    return True
+                if key == "pandas" and want_parts[1] in (0, 1) and got_parts[1] in (0, 1):
+                    return True
+    except (ValueError, IndexError):
+        pass
+
+    return False
+
+
 def check_compatibility(manifest: ModelManifest) -> None:
-    """Compara versões críticas por igualdade EXATA (FAIL-CLOSED).
+    """Compara versões críticas por compatibilidade homologada (FAIL-CLOSED).
 
     Se uma biblioteca crítica não estiver registrada no manifest, falha (não
-    inventa versão). Levanta ``ModelCompatibilityError`` na primeira divergência.
+    inventa versão). Levanta ``ModelCompatibilityError`` na primeira divergência
+    não homologada.
     """
     runtime = runtime_library_versions()
     problems: list[str] = []
@@ -157,7 +222,7 @@ def check_compatibility(manifest: ModelManifest) -> None:
         if got is None:
             problems.append(f"runtime sem versão para {key}")
             continue
-        if want != got:
+        if not is_library_version_compatible(key, want, got):
             problems.append(f"{key}: esperado {want!r}, obtido {got!r}")
 
     if problems:
