@@ -19,10 +19,7 @@ String formatProbabilityPercent(double probability) {
 
 /// Abre o bottom sheet de resultado da estimativa, reutilizando o tema
 /// `bottomSheetTheme` já configurado no app.
-Future<void> showRiskEstimateResultSheet(
-  BuildContext context,
-  RiskEstimateResponseModel estimate,
-) {
+Future<void> showRiskEstimateResultSheet(BuildContext context, RiskEstimateResponseModel estimate) {
   return showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
@@ -48,29 +45,17 @@ class RiskEstimateResultContent extends StatelessWidget {
     final textStyles = context.textStyles;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(
-        Spacing.xl,
-        Spacing.sm,
-        Spacing.xl,
-        Spacing.xl,
-      ),
+      padding: EdgeInsets.fromLTRB(Spacing.xl, Spacing.sm, Spacing.xl, Spacing.xl),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Estimativa de acompanhamento',
-            textAlign: TextAlign.center,
-            style: textStyles.headlineStyle,
-          ),
+          Text('Estimativa de acompanhamento', textAlign: TextAlign.center, style: textStyles.headlineStyle),
           SizedBox(height: Spacing.xxl),
           Text(
             formatProbabilityPercent(estimate.result.probability),
             textAlign: TextAlign.center,
-            style: textStyles.titleStyle.copyWith(
-              fontSize: 48,
-              color: colors.primary500,
-            ),
+            style: textStyles.titleStyle.copyWith(fontSize: 48, color: colors.primary500),
           ),
           SizedBox(height: Spacing.sm),
           Text(
@@ -87,10 +72,7 @@ class RiskEstimateResultContent extends StatelessWidget {
           SizedBox(height: Spacing.xl),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Entendi'),
-            ),
+            child: ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Entendi')),
           ),
         ],
       ),
@@ -110,22 +92,14 @@ class _NoticeCard extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.all(Spacing.lg),
-      decoration: BoxDecoration(
-        color: colors.infoLight,
-        borderRadius: RadiusTokens.mdAll,
-      ),
+      decoration: BoxDecoration(color: colors.infoLight, borderRadius: RadiusTokens.mdAll),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.info_outline, color: colors.info, size: 20),
           SizedBox(width: Spacing.sm),
           Expanded(
-            child: Text(
-              notice,
-              style: textStyles.bodySmall.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
+            child: Text(notice, style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant)),
           ),
         ],
       ),
@@ -153,9 +127,7 @@ class _FactorsSection extends StatelessWidget {
             Expanded(
               child: Text(
                 'Fatores determinantes (IA Explicável)',
-                style: textStyles.titleSmallStyle.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: textStyles.titleSmallStyle.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -163,24 +135,20 @@ class _FactorsSection extends StatelessWidget {
         SizedBox(height: Spacing.xs),
         Text(
           'Principais variáveis que influenciaram a estimativa:',
-          style: textStyles.bodySmall.copyWith(
-            color: colors.onSurfaceVariant,
-          ),
+          style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
         ),
         SizedBox(height: Spacing.sm),
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: factors.length,
-          separatorBuilder: (_, __) => SizedBox(height: Spacing.xs),
+          separatorBuilder: (_, _) => SizedBox(height: Spacing.xs),
           itemBuilder: (context, index) {
             final factor = factors[index];
             final isIncrease = factor.increasesRisk;
-            final badgeBg =
-                isIncrease ? colors.warningLight : colors.successLight;
+            final badgeBg = isIncrease ? colors.warningLight : colors.successLight;
             final badgeColor = isIncrease ? colors.warning : colors.success;
-            final badgeIcon =
-                isIncrease ? Icons.trending_up : Icons.verified_user_outlined;
+            final badgeIcon = isIncrease ? Icons.trending_up : Icons.verified_user_outlined;
             final badgeLabel = isIncrease ? 'Atenção' : 'Proteção';
             final pct = (factor.contribution.abs() * 100).toStringAsFixed(1);
             final sign = isIncrease ? '+' : '-';
@@ -191,9 +159,7 @@ class _FactorsSection extends StatelessWidget {
                 color: colors.surface,
                 borderRadius: RadiusTokens.mdAll,
                 border: Border.all(
-                  color: isIncrease
-                      ? colors.warning.withValues(alpha: 0.3)
-                      : colors.success.withValues(alpha: 0.3),
+                  color: isIncrease ? colors.warning.withValues(alpha: 0.3) : colors.success.withValues(alpha: 0.3),
                 ),
               ),
               child: Row(
@@ -201,10 +167,7 @@ class _FactorsSection extends StatelessWidget {
                 children: [
                   Container(
                     padding: EdgeInsets.all(Spacing.xs),
-                    decoration: BoxDecoration(
-                      color: badgeBg,
-                      shape: BoxShape.circle,
-                    ),
+                    decoration: BoxDecoration(color: badgeBg, shape: BoxShape.circle),
                     child: Icon(badgeIcon, color: badgeColor, size: 18),
                   ),
                   SizedBox(width: Spacing.sm),
@@ -218,20 +181,12 @@ class _FactorsSection extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 factor.label,
-                                style: textStyles.bodySmall.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: textStyles.bodySmall.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: badgeBg,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(color: badgeBg, borderRadius: BorderRadius.circular(8)),
                               child: Text(
                                 '$badgeLabel ($sign$pct%)',
                                 style: textStyles.bodySmall.copyWith(
@@ -246,10 +201,7 @@ class _FactorsSection extends StatelessWidget {
                         SizedBox(height: Spacing.xs / 2),
                         Text(
                           factor.description,
-                          style: textStyles.bodySmall.copyWith(
-                            color: colors.onSurfaceVariant,
-                            fontSize: 12,
-                          ),
+                          style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant, fontSize: 12),
                         ),
                       ],
                     ),

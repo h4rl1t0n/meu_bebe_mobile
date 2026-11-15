@@ -39,12 +39,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
       showDragHandle: true,
       isScrollControlled: true,
       builder: (ctx) => SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(
-          Spacing.xl,
-          Spacing.sm,
-          Spacing.xl,
-          Spacing.xxl,
-        ),
+        padding: EdgeInsets.fromLTRB(Spacing.xl, Spacing.sm, Spacing.xl, Spacing.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,12 +48,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
               children: [
                 Icon(Icons.info_outline, color: colors.primary500),
                 SizedBox(width: Spacing.sm),
-                Expanded(
-                  child: Text(
-                    'Como funciona o monitoramento?',
-                    style: textStyles.titleSmallStyle,
-                  ),
-                ),
+                Expanded(child: Text('Como funciona o monitoramento?', style: textStyles.titleSmallStyle)),
               ],
             ),
             SizedBox(height: Spacing.md),
@@ -67,10 +57,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
               style: textStyles.bodySmall,
             ),
             SizedBox(height: Spacing.md),
-            Text(
-              'Dicas para o registro:',
-              style: textStyles.bodySmall.copyWith(fontWeight: FontWeight.bold),
-            ),
+            Text('Dicas para o registro:', style: textStyles.bodySmall.copyWith(fontWeight: FontWeight.bold)),
             SizedBox(height: Spacing.xs),
             Text(
               '• Escolha um momento calmo, de preferência após uma refeição.\n'
@@ -82,10 +69,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
             SizedBox(height: Spacing.md),
             Container(
               padding: EdgeInsets.all(Spacing.md),
-              decoration: BoxDecoration(
-                color: colors.warningLight,
-                borderRadius: RadiusTokens.mdAll,
-              ),
+              decoration: BoxDecoration(color: colors.warningLight, borderRadius: RadiusTokens.mdAll),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -103,10 +87,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
             SizedBox(height: Spacing.lg),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Entendi'),
-              ),
+              child: ElevatedButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Entendi')),
             ),
           ],
         ),
@@ -124,11 +105,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
         title: Text('Contador de Movimentos', style: textStyles.titleSmallStyle),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            tooltip: 'Orientações clínicas',
-            onPressed: _showInfoSheet,
-          ),
+          IconButton(icon: const Icon(Icons.info_outline), tooltip: 'Orientações clínicas', onPressed: _showInfoSheet),
         ],
       ),
       body: Observer(
@@ -138,10 +115,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
           }
 
           return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: Spacing.lg,
-              vertical: Spacing.md,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -162,10 +136,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                         Expanded(
                           child: Text(
                             'Mais de 2 horas e menos de 10 movimentos registrados. Recomendamos repousar do lado esquerdo, comer algo leve e tentar novamente. Se persistir, consulte sua equipe pré-natal.',
-                            style: textStyles.bodySmall.copyWith(
-                              color: colors.warning,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: textStyles.bodySmall.copyWith(color: colors.warning, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
@@ -200,9 +171,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                               ),
                               Text(
                                 '10 movimentos registrados em ${controller.formattedTime}. Seu bebê está ativo!',
-                                style: textStyles.bodySmall.copyWith(
-                                  color: colors.success,
-                                ),
+                                style: textStyles.bodySmall.copyWith(color: colors.success),
                               ),
                             ],
                           ),
@@ -226,9 +195,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                           strokeWidth: 12,
                           backgroundColor: colors.gray200,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            controller.isCompleted
-                                ? colors.success
-                                : colors.primary500,
+                            controller.isCompleted ? colors.success : colors.primary500,
                           ),
                         ),
                       ),
@@ -245,9 +212,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                           ),
                           Text(
                             'de ${controller.targetKicks} chutes',
-                            style: textStyles.bodySmall.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
+                            style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
                           ),
                         ],
                       ),
@@ -260,10 +225,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                 // Cronômetro da sessão
                 Center(
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Spacing.lg,
-                      vertical: Spacing.xs,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: Spacing.lg, vertical: Spacing.xs),
                     decoration: BoxDecoration(
                       color: colors.surfaceVariant,
                       borderRadius: BorderRadius.circular(20),
@@ -272,11 +234,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.timer_outlined,
-                          size: 18,
-                          color: colors.onSurfaceVariant,
-                        ),
+                        Icon(Icons.timer_outlined, size: 18, color: colors.onSurfaceVariant),
                         SizedBox(width: Spacing.xs),
                         Text(
                           controller.formattedTime,
@@ -287,13 +245,9 @@ class _KickCounterPageState extends State<KickCounterPage> {
                         ),
                         SizedBox(width: Spacing.xs),
                         Text(
-                          controller.isRunning
-                              ? '(ativo)'
-                              : (controller.isCompleted ? '(concluído)' : '(pausado)'),
+                          controller.isRunning ? '(ativo)' : (controller.isCompleted ? '(concluído)' : '(pausado)'),
                           style: textStyles.bodySmall.copyWith(
-                            color: controller.isRunning
-                                ? colors.success
-                                : colors.gray500,
+                            color: controller.isRunning ? colors.success : colors.gray500,
                             fontSize: 11,
                           ),
                         ),
@@ -310,9 +264,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                     width: 130,
                     height: 130,
                     child: ElevatedButton(
-                      onPressed: controller.isCompleted
-                          ? null
-                          : () => controller.registerKick(),
+                      onPressed: controller.isCompleted ? null : () => controller.registerKick(),
                       style: ElevatedButton.styleFrom(
                         shape: const CircleBorder(),
                         backgroundColor: colors.primary500,
@@ -322,11 +274,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.touch_app_rounded,
-                            size: 44,
-                            color: Colors.white,
-                          ),
+                          const Icon(Icons.touch_app_rounded, size: 44, color: Colors.white),
                           SizedBox(height: Spacing.xs),
                           Text(
                             'Chute!',
@@ -349,10 +297,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                   spacing: Spacing.sm,
                   children: [
                     OutlinedButton.icon(
-                      icon: Icon(
-                        controller.isRunning ? Icons.pause : Icons.play_arrow,
-                        size: 18,
-                      ),
+                      icon: Icon(controller.isRunning ? Icons.pause : Icons.play_arrow, size: 18),
                       label: Text(controller.isRunning ? 'Pausar' : 'Iniciar'),
                       onPressed: controller.isCompleted
                           ? null
@@ -367,9 +312,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                     OutlinedButton.icon(
                       icon: const Icon(Icons.undo, size: 18),
                       label: const Text('Desfazer'),
-                      onPressed: controller.kickCount > 0
-                          ? () => controller.undoKick()
-                          : null,
+                      onPressed: controller.kickCount > 0 ? () => controller.undoKick() : null,
                     ),
                     OutlinedButton.icon(
                       icon: const Icon(Icons.refresh, size: 18),
@@ -389,19 +332,11 @@ class _KickCounterPageState extends State<KickCounterPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Histórico de sessões',
-                      style: textStyles.titleSmallStyle,
-                    ),
+                    Text('Histórico de sessões', style: textStyles.titleSmallStyle),
                     if (controller.sessionHistory.isNotEmpty)
                       TextButton(
                         onPressed: () => controller.clearHistory(),
-                        child: Text(
-                          'Limpar',
-                          style: textStyles.bodySmall.copyWith(
-                            color: colors.error,
-                          ),
-                        ),
+                        child: Text('Limpar', style: textStyles.bodySmall.copyWith(color: colors.error)),
                       ),
                   ],
                 ),
@@ -414,9 +349,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                       child: Text(
                         'Nenhuma sessão salva ainda.\nRegistre a atividade do bebê para guardar o histórico.',
                         textAlign: TextAlign.center,
-                        style: textStyles.bodySmall.copyWith(
-                          color: colors.gray500,
-                        ),
+                        style: textStyles.bodySmall.copyWith(color: colors.gray500),
                       ),
                     ),
                   )
@@ -425,7 +358,7 @@ class _KickCounterPageState extends State<KickCounterPage> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: controller.sessionHistory.length,
-                    separatorBuilder: (_, __) => SizedBox(height: Spacing.xs),
+                    separatorBuilder: (_, _) => SizedBox(height: Spacing.xs),
                     itemBuilder: (context, index) {
                       final session = controller.sessionHistory[index];
                       return _SessionHistoryCard(session: session);
@@ -464,19 +397,13 @@ class _SessionHistoryCard extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(Spacing.sm),
               decoration: BoxDecoration(
-                color: session.completed
-                    ? colors.successLight
-                    : colors.warningLight,
+                color: session.completed ? colors.successLight : colors.warningLight,
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                session.completed
-                    ? Icons.check
-                    : Icons.access_time,
+                session.completed ? Icons.check : Icons.access_time,
                 size: 20,
-                color: session.completed
-                    ? colors.success
-                    : colors.warning,
+                color: session.completed ? colors.success : colors.warning,
               ),
             ),
             SizedBox(width: Spacing.md),
@@ -484,31 +411,18 @@ class _SessionHistoryCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    dateStr,
-                    style: textStyles.bodySmall.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(dateStr, style: textStyles.bodySmall.copyWith(fontWeight: FontWeight.bold)),
                   Text(
                     '${session.kickCount} chutes em ${session.formattedDuration}',
-                    style: textStyles.bodySmall.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
+                    style: textStyles.bodySmall.copyWith(color: colors.onSurfaceVariant),
                   ),
                 ],
               ),
             ),
             if (session.completed)
               Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Spacing.sm,
-                  vertical: Spacing.xs / 2,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.successLight,
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                padding: EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: Spacing.xs / 2),
+                decoration: BoxDecoration(color: colors.successLight, borderRadius: BorderRadius.circular(12)),
                 child: Text(
                   'Concluído',
                   style: textStyles.bodySmall.copyWith(
