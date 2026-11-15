@@ -1,8 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/material.dart';
 import 'package:meu_bebe/app/core/ui/theme/app_theme.dart';
-import 'package:meu_bebe/app/modules/main/pages/home/submodules/kick_counter/kick_counter_controller.dart';
 import 'package:meu_bebe/app/modules/main/pages/home/submodules/kick_counter/kick_counter_module.dart';
 import 'package:meu_bebe/app/modules/main/pages/home/submodules/kick_counter/kick_counter_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
